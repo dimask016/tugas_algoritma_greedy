@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fractional Knapsack Solver</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #3a8ffe 0%, #1e5cb3 100%);
+            color: white;
+            padding: 25px 30px;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            padding: 30px;
+        }
+        
+        .input-section {
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            color: #1e5cb3;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f4f8;
+        }
+        
+        .capacity-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: #f9fbfd;
+            border-radius: 8px;
+            border-left: 4px solid #3a8ffe;
+        }
+        
+        .capacity-input label {
+            font-weight: 600;
+            min-width: 180px;
+        }
+        
+        .capacity-input input {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            width: 120px;
+        }
+        
+        .items-container {
+            margin-top: 10px;
+            overflow-x: auto;
+        }
+        
+        .item-row {
+            display: grid;
+            grid-template-columns: 50px 1fr 1fr 1fr 100px;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 12px 15px;
+            background-color: #f9fbfd;
+            border-radius: 8px;
+            border-left: 4px solid #3a8ffe;
+            min-width: 600px;
+        }
+        
+        .item-header {
+            background-color: #e9f2ff;
+            font-weight: 600;
+            border-left: 4px solid #1e5cb3;
+        }
+        
+        .item-row input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 15px;
+            width: 100%;
+        }
+        
+        .item-row div {
+            text-align: center;
+        }
+        
+        .fraction-display {
+            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .fraction-top {
+            border-bottom: 1px solid #666;
+            padding: 0 5px;
+        }
+        
+        .fraction-bottom {
+            padding: 0 5px;
+        }
+        
+        .decimal-value {
+            font-size: 12px;
+            color: #666;
+            margin-top: 2px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: #3a8ffe;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #1e5cb3;
+        }
+        
+        .btn-secondary {
+            background-color: #f0f4f8;
+            color: #555;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e1e8f0;
+        }
+        
+        .btn-danger {
+            background-color: #ff5a5a;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #e04141;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 25px;
+        }
+        
+        .results-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #f0f4f8;
+        }
+        
+        .results-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            min-width: 1000px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border: 1px solid #e1e8f0;
+        }
+        
+        th {
+            font-weight: 600;
+        }
+        
+        /* Warna berbeda untuk sel data */
+        .profit-cell {
+            background-color: #fff0f0;
+        }
+        
+        .profit-cell.highlight {
+            background-color: #ffcdd2;
+        }
+        
+        .weight-cell {
+            background-color: #f0f8ff;
+        }
+        
+        .weight-cell.highlight {
+            background-color: #bbdefb;
+        }
+        
+        .density-cell {
+            background-color: #e8f7f0;
+        }
+        
+        .density-cell.highlight {
+            background-color: #c8e6c9;
+        }
+        
+        .optimal-cell {
+            background-color: #fff8e1;
+        }
+        
+        .optimal-cell.highlight {
+            background-color: #ffecb3;
+        }
+        
+        /* Styling untuk angka fraksi */
+        .fraction-value {
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+        
+        .result-row {
+            background-color: #f9fbfd;
+        }
+        
+        .total-row {
+            font-weight: 600;
+        }
+        
+        .footer-note {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #f0f7ff;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .legend {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
+        
+        .profit-legend {
+            background-color: #fff0f0;
+            color: #d32f2f;
+            border-left: 4px solid #d32f2f;
+        }
+        
+        .weight-legend {
+            background-color: #f0f8ff;
+            color: #1976d2;
+            border-left: 4px solid #1976d2;
+        }
+        
+        .density-legend {
+            background-color: #e8f7f0;
+            color: #0d904f;
+            border-left: 4px solid #0d904f;
+        }
+        
+        .optimal-legend {
+            background-color: #fff8e1;
+            color: #ff8f00;
+            border-left: 4px solid #ff8f00;
+        }
+        
+        .instructions {
+            background-color: #f9fbfd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3a8ffe;
+        }
+        
+        .instructions ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        
+        .instructions li {
+            margin-bottom: 5px;
+        }
+        
+        .conclusion {
+            margin-top: 25px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .optimal-conclusion {
+            background-color: #e8f7e8;
+            color: #2e7d32;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .solution-bits {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+        
+        .profit-bits {
+            color: #d32f2f;
+        }
+        
+        .weight-bits {
+            color: #1976d2;
+        }
+        
+        .density-bits {
+            color: #0d904f;
+        }
+        
+        .optimal-bits {
+            color: #ff8f00;
+        }
+        
+        .object-property {
+            font-size: 14px;
+            text-align: left;
+            padding-left: 20px;
+        }
+        
+        .object-property strong {
+            color: #1e5cb3;
+        }
+        
+        .selection-order {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .order-list {
+            margin-left: 20px;
+            margin-top: 5px;
+        }
+        
+        .header-row {
+            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+            color: white;
+        }
+        
+        .header-row th {
+            color: white;
+            border: none;
+        }
+        
+        @media (max-width: 768px) {
+            .item-row {
+                grid-template-columns: 40px 1fr 1fr 1fr 80px;
+                padding: 10px;
+                gap: 8px;
+            }
+            
+            .item-row input {
+                padding: 6px 8px;
+                font-size: 14px;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Fractional Knapsack Solver</h1>
+            <p class="subtitle">Alat untuk menghitung solusi Fractional Knapsack menggunakan algoritma greedy by profit, weight, dan density</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <h2 class="section-title">Input Data</h2>
+                
+                <div class="instructions">
+                    <p><strong>Cara penggunaan:</strong></p>
+                    <ul>
+                        <li>Masukkan kapasitas knapsack (K)</li>
+                        <li>Tambah item dengan mengisi bobot (w) dan profit (p)</li>
+                        <li>Klik "Hitung Solusi" untuk melihat solusi optimal</li>
+                        <li>Gunakan "Muat Contoh" untuk mengisi data dari soal</li>
+                    </ul>
+                </div>
+                
+                <div class="capacity-input">
+                    <label for="capacity">Kapasitas Knapsack (K):</label>
+                    <input type="number" id="capacity" min="1" value="50">
+                </div>
+                
+                <h3>Daftar Item (Objek)</h3>
+                <p>Masukkan bobot (w) dan profit (p) untuk setiap item:</p>
+                
+                <div class="items-container">
+                    <div class="item-row item-header">
+                        <div>#</div>
+                        <div>Bobot (w)</div>
+                        <div>Profit (p)</div>
+                        <div>p/w (Densitas)</div>
+                        <div>Aksi</div>
+                    </div>
+                    <div id="items-list">
+                        <!-- Items will be added here dynamically -->
+                    </div>
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn btn-primary" id="add-item">+ Tambah Item</button>
+                    <button class="btn btn-secondary" id="load-example">Muat Contoh</button>
+                    <button class="btn btn-secondary" id="clear-all">Hapus Semua</button>
+                    <button class="btn btn-primary" id="calculate">Hitung Solusi</button>
+                </div>
+            </div>
+            
+            <div class="results-section">
+                <h2 class="section-title">Solusi Fractional Knapsack</h2>
+                
+                <div class="legend">
+                    <div class="legend-item profit-legend">
+                        <span>Greedy by Profit</span>
+                    </div>
+                    <div class="legend-item weight-legend">
+                        <span>Greedy by Weight</span>
+                    </div>
+                    <div class="legend-item density-legend">
+                        <span>Greedy by Density</span>
+                    </div>
+                    <div class="legend-item optimal-legend">
+                        <span>Solusi Optimal Fractional</span>
+                    </div>
+                </div>
+                
+                <div class="results-container" id="results-container">
+                    <p id="no-results">Klik "Hitung Solusi" untuk melihat solusi fractional knapsack.</p>
+                    <div id="results-table" style="display: none;"></div>
+                </div>
+                
+                <div id="selection-orders" style="display: none; margin-top: 20px;">
+                    <!-- Selection orders will be added here -->
+                </div>
+                
+                <div class="footer-note">
+                    <p><strong>Algoritma Greedy untuk Fractional Knapsack:</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 5px;">
+                        <li><strong>Greedy by Profit:</strong> Ambil item dengan profit tertinggi terlebih dahulu</li>
+                        <li><strong>Greedy by Weight:</strong> Ambil item dengan bobot terendah terlebih dahulu</li>
+                        <li><strong>Greedy by Density:</strong> Ambil item dengan densitas (p/w) tertinggi terlebih dahulu</li>
+                        <li><strong>Catatan:</strong> Untuk fractional knapsack, hanya algoritma greedy by density yang selalu memberikan solusi optimal</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data contoh sesuai permintaan
+        const exampleData = [
+            { w: 35, p: 45 },  // (w1, p1) = (35, 45)
+            { w: 25, p: 30 },  // (w2, p2) = (25, 30)
+            { w: 20, p: 25 },  // (w3, p3) = (20, 25)
+            { w: 20, p: 20 }   // (w4, p4) = (20, 20)
+        ];
+        
+        let items = [];
+        
+        // Fungsi untuk mencari FPB (Faktor Persekutuan Terbesar)
+        function gcd(a, b) {
+            a = Math.abs(a);
+            b = Math.abs(b);
+            while (b) {
+                const temp = b;
+                b = a % b;
+                a = temp;
+            }
+            return a;
+        }
+        
+        // Fungsi untuk menyederhanakan pecahan
+        function simplifyFraction(numerator, denominator) {
+            if (denominator === 0) return { numerator: 0, denominator: 1 };
+            
+            const divisor = gcd(numerator, denominator);
+            return {
+                numerator: numerator / divisor,
+                denominator: denominator / divisor
+            };
+        }
+        
+        // Fungsi untuk menampilkan pecahan dalam format yang rapi
+        function formatFraction(numerator, denominator) {
+            if (denominator === 1) {
+                return numerator.toString(); // Bilangan bulat
+            }
+            
+            const simplified = simplifyFraction(numerator, denominator);
+            
+            if (simplified.denominator === 1) {
+                return simplified.numerator.toString();
+            }
+            
+            // Format sebagai pecahan vertikal
+            return `
+                <div class="fraction-display">
+                    <div class="fraction-top">${simplified.numerator}</div>
+                    <div class="fraction-bottom">${simplified.denominator}</div>
+                    <div class="decimal-value">≈ ${(simplified.numerator / simplified.denominator).toFixed(2)}</div>
+                </div>
+            `;
+        }
+        
+        // Initialize with example data
+        function init() {
+            items = [...exampleData];
+            renderItems();
+        }
+        
+        // Render items list
+        function renderItems() {
+            const itemsList = document.getElementById('items-list');
+            itemsList.innerHTML = '';
+            
+            items.forEach((item, index) => {
+                // Hitung pecahan yang disederhanakan untuk p/w
+                const densityFraction = simplifyFraction(item.p, item.w);
+                const densityDisplay = formatFraction(item.p, item.w);
+                
+                const itemRow = document.createElement('div');
+                itemRow.className = 'item-row';
+                itemRow.innerHTML = `
+                    <div>${index + 1}</div>
+                    <input type="number" class="item-w" min="1" value="${item.w}" data-index="${index}">
+                    <input type="number" class="item-p" min="1" value="${item.p}" data-index="${index}">
+                    <div>${densityDisplay}</div>
+                    <button class="btn btn-danger btn-small remove-item" data-index="${index}">Hapus</button>
+                `;
+                
+                itemsList.appendChild(itemRow);
+            });
+            
+            // Add event listeners to inputs and remove buttons
+            document.querySelectorAll('.item-w').forEach(input => {
+                input.addEventListener('change', updateItem);
+            });
+            
+            document.querySelectorAll('.item-p').forEach(input => {
+                input.addEventListener('change', updateItem);
+            });
+            
+            document.querySelectorAll('.remove-item').forEach(button => {
+                button.addEventListener('click', removeItem);
+            });
+        }
+        
+        // Add new item
+        document.getElementById('add-item').addEventListener('click', function() {
+            items.push({ w: 1, p: 1 });
+            renderItems();
+        });
+        
+        // Load example data
+        document.getElementById('load-example').addEventListener('click', function() {
+            items = [...exampleData];
+            document.getElementById('capacity').value = 50; // K = 50
+            renderItems();
+            calculateFractionalSolution();
+        });
+        
+        // Clear all items
+        document.getElementById('clear-all').addEventListener('click', function() {
+            items = [];
+            renderItems();
+            document.getElementById('results-table').style.display = 'none';
+            document.getElementById('no-results').style.display = 'block';
+            document.getElementById('selection-orders').style.display = 'none';
+        });
+        
+        // Update item when input changes
+        function updateItem(e) {
+            const index = parseInt(e.target.dataset.index);
+            const value = parseFloat(e.target.value) || 1;
+            
+            if (e.target.classList.contains('item-w')) {
+                items[index].w = value;
+            } else if (e.target.classList.contains('item-p')) {
+                items[index].p = value;
+            }
+            
+            renderItems();
+        }
+        
+        // Remove item
+        function removeItem(e) {
+            const index = parseInt(e.target.dataset.index);
+            items.splice(index, 1);
+            renderItems();
+        }
+        
+        // Greedy by profit algorithm for FRACTIONAL knapsack
+        function greedyByProfitFractional(capacity) {
+            // Create array with indices
+            const itemsWithIndex = items.map((item, index) => ({
+                ...item, 
+                index,
+                profit: item.p
+            }));
+            
+            // Sort by profit descending
+            itemsWithIndex.sort((a, b) => b.profit - a.profit);
+            
+            const solution = new Array(items.length).fill(0);
+            const fractions = new Array(items.length).fill(0);
+            const selectionOrder = new Array(items.length).fill(0);
+            let totalWeight = 0;
+            let totalProfit = 0;
+            let order = 1;
+            
+            for (const item of itemsWithIndex) {
+                if (totalWeight >= capacity) break;
+                
+                if (totalWeight + item.w <= capacity) {
+                    // Take the whole item
+                    solution[item.index] = 1;
+                    fractions[item.index] = 1;
+                    selectionOrder[item.index] = order;
+                    order++;
+                    totalWeight += item.w;
+                    totalProfit += item.p;
+                } else {
+                    // Take fraction of the item
+                    const remainingCapacity = capacity - totalWeight;
+                    const fraction = remainingCapacity / item.w;
+                    
+                    solution[item.index] = 1;
+                    fractions[item.index] = fraction;
+                    selectionOrder[item.index] = order;
+                    order++;
+                    totalWeight += remainingCapacity;
+                    totalProfit += item.p * fraction;
+                    break; // Knapsack is full
+                }
+            }
+            
+            return { solution, fractions, selectionOrder, totalWeight, totalProfit };
+        }
+        
+        // Greedy by weight algorithm for FRACTIONAL knapsack
+        function greedyByWeightFractional(capacity) {
+            // Create array with indices
+            const itemsWithIndex = items.map((item, index) => ({
+                ...item, 
+                index,
+                weight: item.w
+            }));
+            
+            // Sort by weight ascending
+            itemsWithIndex.sort((a, b) => a.weight - b.weight);
+            
+            const solution = new Array(items.length).fill(0);
+            const fractions = new Array(items.length).fill(0);
+            const selectionOrder = new Array(items.length).fill(0);
+            let totalWeight = 0;
+            let totalProfit = 0;
+            let order = 1;
+            
+            for (const item of itemsWithIndex) {
+                if (totalWeight >= capacity) break;
+                
+                if (totalWeight + item.w <= capacity) {
+                    // Take the whole item
+                    solution[item.index] = 1;
+                    fractions[item.index] = 1;
+                    selectionOrder[item.index] = order;
+                    order++;
+                    totalWeight += item.w;
+                    totalProfit += item.p;
+                } else {
+                    // Take fraction of the item
+                    const remainingCapacity = capacity - totalWeight;
+                    const fraction = remainingCapacity / item.w;
+                    
+                    solution[item.index] = 1;
+                    fractions[item.index] = fraction;
+                    selectionOrder[item.index] = order;
+                    order++;
+                    totalWeight += remainingCapacity;
+                    totalProfit += item.p * fraction;
+                    break; // Knapsack is full
+                }
+            }
+            
+            return { solution, fractions, selectionOrder, totalWeight, totalProfit };
+        }
+        
+        // Greedy by density algorithm for FRACTIONAL knapsack
+        function greedyByDensityFractional(capacity) {
+            // Create array with indices
+            const itemsWithIndex = items.map((item, index) => ({
+                ...item, 
+                index,
+                density: item.p / item.w
+            }));
+            
+            // Sort by density descending
+            itemsWithIndex.sort((a, b) => b.density - a.density);
+            
+            const solution = new Array(items.length).fill(0);
+            const fractions = new Array(items.length).fill(0);
+            const selectionOrder = new Array(items.length).fill(0);
+            let totalWeight = 0;
+            let totalProfit = 0;
+            let order = 1;
+            
+            for (const item of itemsWithIndex) {
+                if (totalWeight >= capacity) break;
+                
+                if (totalWeight + item.w <= capacity) {
+                    // Take the whole item
+                    solution[item.index] = 1;
+                    fractions[item.index] = 1;
+                    selectionOrder[item.index] = order;
+                    order++;
+                    totalWeight += item.w;
+                    totalProfit += item.p;
+                } else {
+                    // Take fraction of the item
+                    const remainingCapacity = capacity - totalWeight;
+                    const fraction = remainingCapacity / item.w;
+                    
+                    solution[item.index] = 1;
+                    fractions[item.index] = fraction;
+                    selectionOrder[item.index] = order;
+                    order++;
+                    totalWeight += remainingCapacity;
+                    totalProfit += item.p * fraction;
+                    break; // Knapsack is full
+                }
+            }
+            
+            return { solution, fractions, selectionOrder, totalWeight, totalProfit };
+        }
+        
+        // Format fraction for display in results
+        function formatFractionForDisplay(fraction) {
+            if (fraction === 0) return '0';
+            if (fraction === 1) return '1';
+            
+            // Try to represent as simple fraction (with denominator up to 20 for readability)
+            for (let denom = 2; denom <= 20; denom++) {
+                const num = Math.round(fraction * denom);
+                if (Math.abs(num / denom - fraction) < 0.001) {
+                    return formatFraction(num, denom);
+                }
+            }
+            
+            // If no simple fraction found, show as decimal
+            return `<span class="fraction-value">${fraction.toFixed(2)}</span>`;
+        }
+        
+        // Calculate and display fractional solution
+        function calculateFractionalSolution() {
+            if (items.length === 0) {
+                alert("Tambahkan setidaknya satu item terlebih dahulu.");
+                return;
+            }
+            
+            const capacity = parseFloat(document.getElementById('capacity').value) || 50;
+            
+            // Calculate all three greedy strategies
+            const profitResult = greedyByProfitFractional(capacity);
+            const weightResult = greedyByWeightFractional(capacity);
+            const densityResult = greedyByDensityFractional(capacity);
+            
+            // Find the optimal solution (maximum profit)
+            const results = [
+                { name: "Profit", result: profitResult },
+                { name: "Weight", result: weightResult },
+                { name: "Density", result: densityResult }
+            ];
+            
+            results.sort((a, b) => b.result.totalProfit - a.result.totalProfit);
+            const optimalResult = results[0].result;
+            const optimalStrategy = results[0].name;
+            
+            // Generate results table
+            let tableHTML = `
+                <table>
+                    <thead>
+                        <tr class="header-row">
+                            <th rowspan="2">Property objek</th>
+                            <th colspan="4">Greedy by</th>
+                        </tr>
+                        <tr class="header-row">
+                            <th>Profit</th>
+                            <th>Weight</th>
+                            <th>Density</th>
+                            <th>Solusi Optimal Fractional</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            // Add item rows
+            for (let i = 0; i < items.length; i++) {
+                const densityDisplay = formatFraction(items[i].p, items[i].w);
+                
+                // Get fraction values for each strategy
+                const profitFraction = profitResult.fractions[i];
+                const weightFraction = weightResult.fractions[i];
+                const densityFraction = densityResult.fractions[i];
+                const optimalFraction = optimalResult.fractions[i];
+                
+                // Determine which cells to highlight
+                const profitHighlight = profitFraction > 0 ? 'highlight' : '';
+                const weightHighlight = weightFraction > 0 ? 'highlight' : '';
+                const densityHighlight = densityFraction > 0 ? 'highlight' : '';
+                const optimalHighlight = optimalFraction > 0 ? 'highlight' : '';
+                
+                tableHTML += `
+                    <tr class="result-row">
+                        <td class="object-property">
+                            <strong>${i+1}</strong> | 
+                            w=${items[i].w}, 
+                            p=${items[i].p}, 
+                            p/w=${densityDisplay}
+                        </td>
+                        <td class="profit-cell ${profitHighlight}">
+                            ${formatFractionForDisplay(profitFraction)}
+                            ${profitResult.selectionOrder[i] > 0 ? `<div style="font-size: 11px; color: #666;">(urutan: ${profitResult.selectionOrder[i]})</div>` : ''}
+                        </td>
+                        <td class="weight-cell ${weightHighlight}">
+                            ${formatFractionForDisplay(weightFraction)}
+                            ${weightResult.selectionOrder[i] > 0 ? `<div style="font-size: 11px; color: #666;">(urutan: ${weightResult.selectionOrder[i]})</div>` : ''}
+                        </td>
+                        <td class="density-cell ${densityHighlight}">
+                            ${formatFractionForDisplay(densityFraction)}
+                            ${densityResult.selectionOrder[i] > 0 ? `<div style="font-size: 11px; color: #666;">(urutan: ${densityResult.selectionOrder[i]})</div>` : ''}
+                        </td>
+                        <td class="optimal-cell ${optimalHighlight}">
+                            ${formatFractionForDisplay(optimalFraction)}
+                        </td>
+                    </tr>
+                `;
+            }
+            
+            // Add total rows
+            tableHTML += `
+                    <tr class="total-row">
+                        <td><strong>Total bobot</strong></td>
+                        <td class="profit-cell">${profitResult.totalWeight.toFixed(1)}</td>
+                        <td class="weight-cell">${weightResult.totalWeight.toFixed(1)}</td>
+                        <td class="density-cell">${densityResult.totalWeight.toFixed(1)}</td>
+                        <td class="optimal-cell">${optimalResult.totalWeight.toFixed(1)}</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td><strong>Total keuntungan</strong></td>
+                        <td class="profit-cell">${profitResult.totalProfit.toFixed(1)}</td>
+                        <td class="weight-cell">${weightResult.totalProfit.toFixed(1)}</td>
+                        <td class="density-cell">${densityResult.totalProfit.toFixed(1)}</td>
+                        <td class="optimal-cell">${optimalResult.totalProfit.toFixed(1)}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Solusi (X) - Fraksi yang diambil</strong></td>
+                        <td><span class="solution-bits profit-bits">(${profitResult.fractions.map(f => f.toFixed(2)).join(', ')})</span></td>
+                        <td><span class="solution-bits weight-bits">(${weightResult.fractions.map(f => f.toFixed(2)).join(', ')})</span></td>
+                        <td><span class="solution-bits density-bits">(${densityResult.fractions.map(f => f.toFixed(2)).join(', ')})</span></td>
+                        <td><span class="solution-bits optimal-bits">(${optimalResult.fractions.map(f => f.toFixed(2)).join(', ')})</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            `;
+            
+            // Display results
+            document.getElementById('results-table').innerHTML = tableHTML;
+            document.getElementById('results-table').style.display = 'block';
+            document.getElementById('no-results').style.display = 'none';
+            
+            // Generate selection orders explanation
+            let ordersHTML = `
+                <div class="selection-order">
+                    <h3>Urutan Pemilihan Item:</h3>
+                    <div class="order-list">
+            `;
+            
+            // For each strategy, show selection order
+            const strategies = [
+                { name: "Greedy by Profit", result: profitResult, color: "#d32f2f" },
+                { name: "Greedy by Weight", result: weightResult, color: "#1976d2" },
+                { name: "Greedy by Density", result: densityResult, color: "#0d904f" }
+            ];
+            
+            strategies.forEach(strategy => {
+                const selectedItems = [];
+                for (let i = 0; i < strategy.result.selectionOrder.length; i++) {
+                    if (strategy.result.selectionOrder[i] > 0) {
+                        selectedItems.push({
+                            item: i + 1,
+                            order: strategy.result.selectionOrder[i],
+                            w: items[i].w,
+                            p: items[i].p,
+                            fraction: strategy.result.fractions[i],
+                            density: (items[i].p / items[i].w).toFixed(2)
+                        });
+                    }
+                }
+                selectedItems.sort((a, b) => a.order - b.order);
+                
+                if (selectedItems.length > 0) {
+                    ordersHTML += `
+                        <div style="margin-bottom: 15px; padding: 10px; background-color: #f9f9f9; border-radius: 6px; border-left: 4px solid ${strategy.color}">
+                            <strong style="color: ${strategy.color}">${strategy.name}:</strong><br>
+                            ${selectedItems.map(item => {
+                                const profitFromItem = (item.p * item.fraction).toFixed(1);
+                                if (item.fraction === 1) {
+                                    return `(${item.order}) Ambil seluruh <strong>Item ${item.item}</strong> (w=${item.w}, p=${item.p}, p/w=${item.density}) → Profit: ${profitFromItem}`;
+                                } else {
+                                    const fractionDisplay = formatFractionForDisplay(item.fraction);
+                                    return `(${item.order}) Ambil <strong>${fractionDisplay}</strong> dari <strong>Item ${item.item}</strong> (w=${item.w}, p=${item.p}, p/w=${item.density}) → Profit: ${profitFromItem}`;
+                                }
+                            }).join('<br>')}
+                            <div style="margin-top: 5px; font-weight: bold;">Total Profit: ${strategy.result.totalProfit.toFixed(1)} | Total Berat: ${strategy.result.totalWeight.toFixed(1)}</div>
+                        </div>
+                    `;
+                }
+            });
+            
+            ordersHTML += `
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('selection-orders').innerHTML = ordersHTML;
+            document.getElementById('selection-orders').style.display = 'block';
+            
+            // Remove any existing conclusion
+            const existingConclusion = document.querySelector('.conclusion');
+            if (existingConclusion) {
+                existingConclusion.remove();
+            }
+            
+            // Add conclusion note
+            const conclusion = `
+                <div class="conclusion optimal-conclusion">
+                    <p><strong>Solusi optimal: Greedy by ${optimalStrategy}</strong></p>
+                    <p>Profit maksimal: <strong>${optimalResult.totalProfit.toFixed(1)}</strong> dengan total berat: <strong>${optimalResult.totalWeight.toFixed(1)}</strong> dari kapasitas ${capacity}</p>
+                    <p style="font-size: 14px; margin-top: 5px;">Untuk fractional knapsack, greedy by density biasanya memberikan solusi optimal, tapi tidak selalu tergantung data.</p>
+                </div>
+            `;
+            
+            document.getElementById('results-table').insertAdjacentHTML('afterend', conclusion);
+            
+            // Scroll to results section
+            document.querySelector('.results-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        // Initialize with example data
+        document.getElementById('calculate').addEventListener('click', calculateFractionalSolution);
+        
+        // Initialize the page
+        init();
+        // Calculate solutions on load
+        setTimeout(calculateFractionalSolution, 500);
+    </script>
+</body>
+</html>

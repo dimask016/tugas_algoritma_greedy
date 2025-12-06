@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Algoritma Greedy - Dimas Kurniawan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eaeaea;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
+        .university-logo {
+            max-width: 150px;
+            height: auto;
+            border-radius: 5px;
+        }
+        
+        .student-info {
+            text-align: left;
+            flex-grow: 1;
+            margin-left: 30px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+        
+        h2 {
+            color: #3498db;
+            margin: 25px 0 15px;
+            font-size: 1.8rem;
+        }
+        
+        .info-card {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .info-card p {
+            margin-bottom: 5px;
+        }
+        
+        .demo-section {
+            margin-top: 40px;
+        }
+        
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .demo-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 25px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-top: 4px solid #3498db;
+        }
+        
+        .demo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .demo-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .demo-card p {
+            color: #555;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .algorithm-description {
+            background-color: #f0f7ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .algorithm-description h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        footer {
+            margin-top: 50px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #eaeaea;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .student-info {
+                margin-left: 0;
+                margin-top: 20px;
+            }
+            
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <img src="cakrwala-university.jpeg" alt="Logo Universitas" class="university-logo">
+                <div class="student-info">
+                    <h1>Demo Algoritma Greedy</h1>
+                    <div class="info-card">
+                        <p><strong>Nama:</strong> Dimas Kurniawan</p>
+                        <p><strong>Kelas:</strong> Algorithms Foundations (Agr3)</p>
+                        <p><strong>NIM:</strong> 25120300016</p>
+                        <p><strong>Dosen:</strong> Cantika Nur Previana S.Kom.,M.Kom</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <main>
+            <section class="demo-section">
+                <h2>Demo Algoritma Greedy Berikut Ini:</h2>
+                
+                <div class="demo-grid">
+                    <div class="demo-card">
+                        <h3>1. Activity Selection (Pemilihan Aktivitas Optimal)</h3>
+                        <p>Algoritma greedy untuk memilih jumlah aktivitas maksimum yang dapat dilakukan oleh satu orang atau prosesor dengan asumsi bahwa seseorang hanya dapat mengerjakan satu aktivitas pada satu waktu.</p>
+                        <a href="Activity-SelectionTool.html" target="_blank" class="btn">Lihat Demo Activity Selection</a>
+                    </div>
+                    
+                    <div class="demo-card">
+                        <h3>2. Knapsack 0/1</h3>
+                        <p>Algoritma greedy untuk masalah knapsack 0/1 di mana item harus diambil seutuhnya atau tidak sama sekali. Tujuannya adalah memaksimalkan nilai total tanpa melebihi kapasitas knapsack.</p>
+                        <a href="knapsack.html" target="_blank" class="btn">Lihat Demo Knapsack 0/1</a>
+                    </div>
+                    
+                    <div class="demo-card">
+                        <h3>3. Fractional Knapsack</h3>
+                        <p>Algoritma greedy untuk masalah fractional knapsack di mana item dapat diambil sebagian. Tujuannya adalah memaksimalkan nilai total dengan membagi item jika diperlukan.</p>
+                        <a href="fractional_knapsack.html" target="_blank" class="btn">Lihat Demo Fractional Knapsack</a>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="algorithm-description">
+                <h3>Tentang Algoritma Greedy</h3>
+                <p>Algoritma greedy adalah pendekatan algoritma yang membuat pilihan optimal lokal pada setiap tahap dengan harapan menemukan solusi optimal global. Algoritma greedy bekerja dengan membangun solusi langkah demi langkah, pada setiap langkah memilih pilihan yang terbaik saat ini tanpa mempertimbangkan konsekuensi di masa depan.</p>
+                <p>Algoritma greedy tidak selalu menghasilkan solusi optimal, tetapi dalam banyak kasus tertentu (seperti pada masalah fractional knapsack dan activity selection dengan kondisi tertentu) algoritma greedy dapat memberikan solusi optimal.</p>
+            </section>
+        </main>
+        
+        <footer>
+            <p>&copy; 2023 Dimas Kurniawan - Algorithms Foundations - Universitas Cakrawala</p>
+            <p>Mata Kuliah: Foundations of Algorithms | Dosen: Cantika Nur Previana S.Kom.,M.Kom</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Menambahkan interaksi sederhana untuk kartu demo
+        document.addEventListener('DOMContentLoaded', function() {
+            const demoCards = document.querySelectorAll('.demo-card');
+            
+            demoCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.borderTopColor = '#e74c3c';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.borderTopColor = '#3498db';
+                });
+            });
+            
+            // Menambahkan efek klik pada tombol
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

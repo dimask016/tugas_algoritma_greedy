@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knapsack Greedy Algorithm Simulator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #3a8ffe 0%, #1e5cb3 100%);
+            color: white;
+            padding: 25px 30px;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            padding: 30px;
+        }
+        
+        .input-section {
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            color: #1e5cb3;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f4f8;
+        }
+        
+        .capacity-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: #f9fbfd;
+            border-radius: 8px;
+            border-left: 4px solid #3a8ffe;
+        }
+        
+        .capacity-input label {
+            font-weight: 600;
+            min-width: 180px;
+        }
+        
+        .capacity-input input {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            width: 120px;
+        }
+        
+        .items-container {
+            margin-top: 10px;
+            overflow-x: auto;
+        }
+        
+        .item-row {
+            display: grid;
+            grid-template-columns: 50px 1fr 1fr 1fr 100px;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 12px 15px;
+            background-color: #f9fbfd;
+            border-radius: 8px;
+            border-left: 4px solid #3a8ffe;
+            min-width: 600px;
+        }
+        
+        .item-header {
+            background-color: #e9f2ff;
+            font-weight: 600;
+            border-left: 4px solid #1e5cb3;
+        }
+        
+        .item-row input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 15px;
+            width: 100%;
+        }
+        
+        .item-row div {
+            text-align: center;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: #3a8ffe;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #1e5cb3;
+        }
+        
+        .btn-secondary {
+            background-color: #f0f4f8;
+            color: #555;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e1e8f0;
+        }
+        
+        .btn-danger {
+            background-color: #ff5a5a;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #e04141;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 25px;
+        }
+        
+        .results-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #f0f4f8;
+        }
+        
+        .results-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            min-width: 800px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border: 1px solid #e1e8f0;
+        }
+        
+        th {
+            font-weight: 600;
+        }
+        
+        /* Warna berbeda untuk setiap metode */
+        .profit-header {
+            background-color: #e8f4ff;
+            color: #1a73e8;
+        }
+        
+        .weight-header {
+            background-color: #f3e8ff;
+            color: #8a2be2;
+        }
+        
+        .density-header {
+            background-color: #e8f7f0;
+            color: #0d904f;
+        }
+        
+        .optimal-header {
+            background-color: #fff8e1;
+            color: #ff8f00;
+        }
+        
+        .result-row {
+            background-color: #f9fbfd;
+        }
+        
+        .total-row {
+            font-weight: 600;
+        }
+        
+        /* Warna untuk sel data */
+        .profit-cell {
+            background-color: #e8f4ff;
+        }
+        
+        .profit-cell.highlight {
+            background-color: #bbdefb;
+        }
+        
+        .weight-cell {
+            background-color: #f3e8ff;
+        }
+        
+        .weight-cell.highlight {
+            background-color: #e1bee7;
+        }
+        
+        .density-cell {
+            background-color: #e8f7f0;
+        }
+        
+        .density-cell.highlight {
+            background-color: #c8e6c9;
+        }
+        
+        .optimal-cell {
+            background-color: #fff8e1;
+        }
+        
+        .optimal-cell.highlight {
+            background-color: #ffecb3;
+        }
+        
+        .optimal-cell.empty {
+            background-color: #f9f9f9;
+            color: #999;
+            font-style: italic;
+        }
+        
+        /* Styling untuk angka dengan urutan dalam kurung */
+        .cell-content {
+            display: inline-block;
+            position: relative;
+        }
+        
+        .cell-value {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .order-badge {
+            font-size: 10px;
+            color: #666;
+            position: absolute;
+            top: -5px;
+            right: -15px;
+        }
+        
+        .profit-order {
+            color: #0d47a1;
+        }
+        
+        .weight-order {
+            color: #4a148c;
+        }
+        
+        .density-order {
+            color: #1b5e20;
+        }
+        
+        .optimal-order {
+            color: #e65100;
+        }
+        
+        .solution-bits {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+        
+        .profit-bits {
+            color: #1a73e8;
+        }
+        
+        .weight-bits {
+            color: #8a2be2;
+        }
+        
+        .density-bits {
+            color: #0d904f;
+        }
+        
+        .optimal-bits {
+            color: #ff8f00;
+        }
+        
+        .footer-note {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #f0f7ff;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .legend {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
+        
+        .profit-legend {
+            background-color: #e8f4ff;
+            color: #1a73e8;
+            border-left: 4px solid #1a73e8;
+        }
+        
+        .weight-legend {
+            background-color: #f3e8ff;
+            color: #8a2be2;
+            border-left: 4px solid #8a2be2;
+        }
+        
+        .density-legend {
+            background-color: #e8f7f0;
+            color: #0d904f;
+            border-left: 4px solid #0d904f;
+        }
+        
+        .optimal-legend {
+            background-color: #fff8e1;
+            color: #ff8f00;
+            border-left: 4px solid #ff8f00;
+        }
+        
+        .instructions {
+            background-color: #f9fbfd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3a8ffe;
+        }
+        
+        .instructions ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        
+        .instructions li {
+            margin-bottom: 5px;
+        }
+        
+        .conclusion {
+            margin-top: 25px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .optimal-conclusion {
+            background-color: #e8f7e8;
+            color: #2e7d32;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .not-optimal-conclusion {
+            background-color: #fff3e0;
+            color: #ef6c00;
+            border-left: 4px solid #ff9800;
+        }
+        
+        .object-property {
+            font-size: 14px;
+            text-align: left;
+            padding-left: 20px;
+        }
+        
+        .object-property strong {
+            color: #1e5cb3;
+        }
+        
+        .selection-order {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .order-list {
+            margin-left: 20px;
+            margin-top: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .item-row {
+                grid-template-columns: 40px 1fr 1fr 1fr 80px;
+                padding: 10px;
+                gap: 8px;
+            }
+            
+            .item-row input {
+                padding: 6px 8px;
+                font-size: 14px;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Knapsack Greedy Algorithm Simulator</h1>
+            <p class="subtitle">Bandingkan solusi dari algoritma greedy (profit, weight, density) dengan solusi optimal</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <h2 class="section-title">Input Data</h2>
+                
+                <div class="instructions">
+                    <p><strong>Cara penggunaan:</strong></p>
+                    <ul>
+                        <li>Masukkan kapasitas knapsack (K)</li>
+                        <li>Tambah item dengan mengisi bobot (w) dan profit (p)</li>
+                        <li>Klik "Hitung Solusi" untuk melihat perbandingan algoritma</li>
+                        <li>Gunakan "Muat Contoh" untuk mengisi data dari gambar</li>
+                    </ul>
+                </div>
+                
+                <div class="capacity-input">
+                    <label for="capacity">Kapasitas Knapsack (K):</label>
+                    <input type="number" id="capacity" min="1" value="100">
+                </div>
+                
+                <h3>Daftar Item (Objek)</h3>
+                <p>Masukkan bobot (w) dan profit (p) untuk setiap item:</p>
+                
+                <div class="items-container">
+                    <div class="item-row item-header">
+                        <div>#</div>
+                        <div>Bobot (w)</div>
+                        <div>Profit (p)</div>
+                        <div>p/w (Densitas)</div>
+                        <div>Aksi</div>
+                    </div>
+                    <div id="items-list">
+                        <!-- Items will be added here dynamically -->
+                    </div>
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn btn-primary" id="add-item">+ Tambah Item</button>
+                    <button class="btn btn-secondary" id="load-example">Muat Contoh</button>
+                    <button class="btn btn-secondary" id="clear-all">Hapus Semua</button>
+                    <button class="btn btn-primary" id="calculate">Hitung Solusi</button>
+                </div>
+            </div>
+            
+            <div class="results-section">
+                <h2 class="section-title">Hasil Perbandingan</h2>
+                
+                <div class="legend">
+                    <div class="legend-item profit-legend">
+                        <span>Greedy by Profit</span>
+                    </div>
+                    <div class="legend-item weight-legend">
+                        <span>Greedy by Weight</span>
+                    </div>
+                    <div class="legend-item density-legend">
+                        <span>Greedy by Density</span>
+                    </div>
+                    <div class="legend-item optimal-legend">
+                        <span>Solusi Optimal</span>
+                    </div>
+                </div>
+                
+                <div class="results-container" id="results-container">
+                    <!-- Results will be displayed here -->
+                    <p id="no-results">Klik "Hitung Solusi" untuk melihat hasil perbandingan algoritma.</p>
+                    <div id="results-table" style="display: none;"></div>
+                </div>
+                
+                <div id="selection-orders" style="display: none; margin-top: 20px;">
+                    <!-- Selection orders will be added here -->
+                </div>
+                
+                <div class="footer-note">
+                    <p><strong>Catatan Algoritma:</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 5px;">
+                        <li><strong>Greedy by profit (Biru):</strong> Urutkan berdasarkan profit terbesar lalu ambil selama kapasitas memungkinkan</li>
+                        <li><strong>Greedy by weight (Ungu):</strong> Urutkan berdasarkan bobot terkecil lalu ambil selama kapasitas memungkinkan</li>
+                        <li><strong>Greedy by density (Hijau):</strong> Urutkan berdasarkan densitas (p/w) terbesar lalu ambil selama kapasitas memungkinkan</li>
+                        <li><strong>Solusi optimal (Oranye):</strong> Hanya muncul jika Greedy by Profit dan Greedy by Density memiliki angka 1 di baris yang sama</li>
+                        <li><strong>Angka dalam kurung:</strong> Menunjukkan urutan pemilihan item (1 = item pertama yang dipilih, dst.)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data from the new image
+        const exampleData = [
+            { w: 100, p: 40 },
+            { w: 50, p: 35 },
+            { w: 45, p: 18 },
+            { w: 20, p: 4 },
+            { w: 10, p: 10 },
+            { w: 5, p: 2 }
+        ];
+        
+        let items = [];
+        
+        // Initialize with example data
+        function init() {
+            items = [...exampleData];
+            renderItems();
+        }
+        
+        // Render items list
+        function renderItems() {
+            const itemsList = document.getElementById('items-list');
+            itemsList.innerHTML = '';
+            
+            items.forEach((item, index) => {
+                const density = (item.p / item.w).toFixed(2);
+                
+                const itemRow = document.createElement('div');
+                itemRow.className = 'item-row';
+                itemRow.innerHTML = `
+                    <div>${index + 1}</div>
+                    <input type="number" class="item-w" min="1" value="${item.w}" data-index="${index}">
+                    <input type="number" class="item-p" min="1" value="${item.p}" data-index="${index}">
+                    <div>${density}</div>
+                    <button class="btn btn-danger btn-small remove-item" data-index="${index}">Hapus</button>
+                `;
+                
+                itemsList.appendChild(itemRow);
+            });
+            
+            // Add event listeners to inputs and remove buttons
+            document.querySelectorAll('.item-w').forEach(input => {
+                input.addEventListener('change', updateItem);
+            });
+            
+            document.querySelectorAll('.item-p').forEach(input => {
+                input.addEventListener('change', updateItem);
+            });
+            
+            document.querySelectorAll('.remove-item').forEach(button => {
+                button.addEventListener('click', removeItem);
+            });
+        }
+        
+        // Add new item
+        document.getElementById('add-item').addEventListener('click', function() {
+            items.push({ w: 1, p: 1 });
+            renderItems();
+        });
+        
+        // Load example data
+        document.getElementById('load-example').addEventListener('click', function() {
+            items = [...exampleData];
+            document.getElementById('capacity').value = 100;
+            renderItems();
+            calculateSolutions();
+        });
+        
+        // Clear all items
+        document.getElementById('clear-all').addEventListener('click', function() {
+            items = [];
+            renderItems();
+            document.getElementById('results-table').style.display = 'none';
+            document.getElementById('no-results').style.display = 'block';
+            document.getElementById('selection-orders').style.display = 'none';
+        });
+        
+        // Update item when input changes
+        function updateItem(e) {
+            const index = parseInt(e.target.dataset.index);
+            const value = parseInt(e.target.value) || 1;
+            
+            if (e.target.classList.contains('item-w')) {
+                items[index].w = value;
+            } else if (e.target.classList.contains('item-p')) {
+                items[index].p = value;
+            }
+            
+            renderItems();
+        }
+        
+        // Remove item
+        function removeItem(e) {
+            const index = parseInt(e.target.dataset.index);
+            items.splice(index, 1);
+            renderItems();
+        }
+        
+        // Helper function to create cell content with order badge
+        function createCellContent(value, order, type) {
+            if (value === 0) {
+                return '0';
+            }
+            
+            if (order > 0) {
+                return `
+                    <div class="cell-content">
+                        <span class="cell-value">1</span>
+                        <span class="order-badge ${type}-order">(${order})</span>
+                    </div>
+                `;
+            }
+            
+            return '1';
+        }
+        
+        // Helper function untuk mengosongkan konten optimal
+        function createEmptyOptimalContent() {
+            return '<span style="color: #999; font-style: italic;">-</span>';
+        }
+        
+        // Greedy by profit algorithm with order tracking
+        function greedyByProfit(capacity) {
+            // Create array with indices
+            const itemsWithIndex = items.map((item, index) => ({...item, index}));
+            
+            // Sort by profit descending, jika sama sort by weight ascending
+            itemsWithIndex.sort((a, b) => {
+                if (b.p !== a.p) {
+                    return b.p - a.p;
+                }
+                return a.w - b.w; // Jika profit sama, ambil yang lebih ringan
+            });
+            
+            const solution = new Array(items.length).fill(0);
+            const selectionOrder = new Array(items.length).fill(0);
+            let totalWeight = 0;
+            let totalProfit = 0;
+            let order = 1;
+            
+            for (const item of itemsWithIndex) {
+                if (totalWeight + item.w <= capacity) {
+                    solution[item.index] = 1;
+                    selectionOrder[item.index] = order;
+                    order++;
+                    totalWeight += item.w;
+                    totalProfit += item.p;
+                }
+            }
+            
+            return { solution, selectionOrder, totalWeight, totalProfit };
+        }
+        
+        // Greedy by weight algorithm with order tracking
+        function greedyByWeight(capacity) {
+            // Create array with indices
+            const itemsWithIndex = items.map((item, index) => ({...item, index}));
+            
+            // Sort by weight ascending, jika sama sort by profit descending
+            itemsWithIndex.sort((a, b) => {
+                if (a.w !== b.w) {
+                    return a.w - b.w;
+                }
+                return b.p - a.p; // Jika berat sama, ambil yang profit lebih besar
+            });
+            
+            const solution = new Array(items.length).fill(0);
+            const selectionOrder = new Array(items.length).fill(0);
+            let totalWeight = 0;
+            let totalProfit = 0;
+            let order = 1;
+            
+            for (const item of itemsWithIndex) {
+                if (totalWeight + item.w <= capacity) {
+                    solution[item.index] = 1;
+                    selectionOrder[item.index] = order;
+                    order++;
+                    totalWeight += item.w;
+                    totalProfit += item.p;
+                }
+            }
+            
+            return { solution, selectionOrder, totalWeight, totalProfit };
+        }
+        
+        // Greedy by density algorithm with order tracking - FIXED
+        function greedyByDensity(capacity) {
+            // Create array with indices
+            const itemsWithIndex = items.map((item, index) => ({...item, index}));
+            
+            // Sort by density (p/w) descending, jika sama sort by weight ascending
+            itemsWithIndex.sort((a, b) => {
+                const densityA = a.p / a.w;
+                const densityB = b.p / b.w;
+                if (Math.abs(densityA - densityB) > 0.001) {
+                    return densityB - densityA;
+                }
+                // Jika density sama, ambil yang lebih ringan dulu
+                return a.w - b.w;
+            });
+            
+            const solution = new Array(items.length).fill(0);
+            const selectionOrder = new Array(items.length).fill(0);
+            let totalWeight = 0;
+            let totalProfit = 0;
+            let order = 1;
+            
+            for (const item of itemsWithIndex) {
+                if (totalWeight + item.w <= capacity) {
+                    solution[item.index] = 1;
+                    selectionOrder[item.index] = order;
+                    order++;
+                    totalWeight += item.w;
+                    totalProfit += item.p;
+                }
+            }
+            
+            return { solution, selectionOrder, totalWeight, totalProfit };
+        }
+        
+        // PERBAIKAN UTAMA: Fungsi untuk membuat solusi optimal berdasarkan kesamaan profit dan density
+        function createOptimalSolutionFromProfitAndDensity(profitResult, densityResult) {
+            const n = items.length;
+            const solution = new Array(n).fill(0);
+            const selectionOrder = new Array(n).fill(0);
+            let totalWeight = 0;
+            let totalProfit = 0;
+            let order = 1;
+            
+            // PERBAIKAN: Cek apakah ada kesamaan antara profit dan density di baris yang sama
+            let hasMatchingOnes = false;
+            
+            // Loop melalui semua item
+            for (let i = 0; i < n; i++) {
+                // Jika KEDUA kolom profit DAN density memiliki angka 1 di baris yang sama
+                if (profitResult.solution[i] === 1 && densityResult.solution[i] === 1) {
+                    solution[i] = 1;
+                    selectionOrder[i] = order;
+                    order++;
+                    totalWeight += items[i].w;
+                    totalProfit += items[i].p;
+                    hasMatchingOnes = true;
+                }
+            }
+            
+            return {
+                solution, 
+                selectionOrder, 
+                totalWeight, 
+                totalProfit,
+                hasMatchingOnes // Flag apakah ada kesamaan
+            };
+        }
+        
+        // Calculate and display all solutions
+        function calculateSolutions() {
+            if (items.length === 0) {
+                alert("Tambahkan setidaknya satu item terlebih dahulu.");
+                return;
+            }
+            
+            const capacity = parseInt(document.getElementById('capacity').value) || 100;
+            
+            // Calculate all solutions
+            const profitResult = greedyByProfit(capacity);
+            const weightResult = greedyByWeight(capacity);
+            const densityResult = greedyByDensity(capacity);
+            
+            // PERBAIKAN: Buat solusi optimal berdasarkan kesamaan profit dan density
+            const optimalResult = createOptimalSolutionFromProfitAndDensity(profitResult, densityResult);
+            
+            // Tentukan apakah ada kesamaan antara profit dan density
+            const hasProfitDensityMatch = optimalResult.hasMatchingOnes;
+            
+            // Generate results table
+            let tableHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th rowspan="2">Properti objek</th>
+                            <th colspan="3">Greedy by</th>
+                            <th rowspan="2">Solusi Optimal${hasProfitDensityMatch ? ' (Profit=Density)' : ''}</th>
+                        </tr>
+                        <tr>
+                            <th class="profit-header">Profit</th>
+                            <th class="weight-header">Weight</th>
+                            <th class="density-header">Density</th>
+                            <th class="optimal-header">Optimal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            // Add item rows
+            for (let i = 0; i < items.length; i++) {
+                const density = (items[i].p / items[i].w).toFixed(2);
+                const profitValue = profitResult.solution[i];
+                const weightValue = weightResult.solution[i];
+                const densityValue = densityResult.solution[i];
+                
+                const profitHighlight = profitValue === 1 ? 'highlight' : '';
+                const weightHighlight = weightValue === 1 ? 'highlight' : '';
+                const densityHighlight = densityValue === 1 ? 'highlight' : '';
+                
+                // PERBAIKAN: Tentukan konten untuk kolom optimal
+                let optimalContent;
+                let optimalHighlight = '';
+                
+                if (hasProfitDensityMatch) {
+                    const optimalValue = optimalResult.solution[i];
+                    optimalHighlight = optimalValue === 1 ? 'highlight' : '';
+                    optimalContent = createCellContent(optimalValue, optimalResult.selectionOrder[i], 'optimal');
+                } else {
+                    // Jika tidak ada kesamaan antara profit dan density, kosongkan kolom optimal
+                    optimalContent = createEmptyOptimalContent();
+                    optimalHighlight = 'empty';
+                }
+                
+                // Create cell content dengan order badges
+                const profitContent = createCellContent(profitValue, profitResult.selectionOrder[i], 'profit');
+                const weightContent = createCellContent(weightValue, weightResult.selectionOrder[i], 'weight');
+                const densityContent = createCellContent(densityValue, densityResult.selectionOrder[i], 'density');
+                
+                tableHTML += `
+                    <tr class="result-row">
+                        <td class="object-property"><strong>${i+1}</strong> | w=${items[i].w}, p=${items[i].p}, p/w=${density}</td>
+                        <td class="profit-cell ${profitHighlight}">${profitContent}</td>
+                        <td class="weight-cell ${weightHighlight}">${weightContent}</td>
+                        <td class="density-cell ${densityHighlight}">${densityContent}</td>
+                        <td class="optimal-cell ${optimalHighlight}">${optimalContent}</td>
+                    </tr>
+                `;
+            }
+            
+            // PERBAIKAN: Tampilkan total hanya jika ada solusi optimal
+            const displayOptimalTotal = hasProfitDensityMatch;
+            
+            // Add total rows
+            tableHTML += `
+                    <tr class="total-row">
+                        <td><strong>Total Bobot</strong></td>
+                        <td class="profit-cell">${profitResult.totalWeight}</td>
+                        <td class="weight-cell">${weightResult.totalWeight}</td>
+                        <td class="density-cell">${densityResult.totalWeight}</td>
+                        <td class="optimal-cell ${displayOptimalTotal ? '' : 'empty'}">${displayOptimalTotal ? optimalResult.totalWeight : '-'}</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td><strong>Total Keuntungan</strong></td>
+                        <td class="profit-cell">${profitResult.totalProfit}</td>
+                        <td class="weight-cell">${weightResult.totalProfit}</td>
+                        <td class="density-cell">${densityResult.totalProfit}</td>
+                        <td class="optimal-cell ${displayOptimalTotal ? '' : 'empty'}">${displayOptimalTotal ? optimalResult.totalProfit : '-'}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Solusi (X)</strong></td>
+                        <td><span class="solution-bits profit-bits">(${profitResult.solution.join(',')})</span></td>
+                        <td><span class="solution-bits weight-bits">(${weightResult.solution.join(',')})</span></td>
+                        <td><span class="solution-bits density-bits">(${densityResult.solution.join(',')})</span></td>
+                        <td class="${displayOptimalTotal ? '' : 'empty'}">${displayOptimalTotal ? `<span class="solution-bits optimal-bits">(${optimalResult.solution.join(',')})</span>` : '-'}</td>
+                    </tr>
+                </tbody>
+            </table>
+            `;
+            
+            // Display results
+            document.getElementById('results-table').innerHTML = tableHTML;
+            document.getElementById('results-table').style.display = 'block';
+            document.getElementById('no-results').style.display = 'none';
+            
+            // Generate selection orders explanation
+            let ordersHTML = `
+                <div class="selection-order">
+                    <h3>Urutan Pemilihan Item:</h3>
+            `;
+            
+            // Profit selection order
+            const profitSelectedItems = [];
+            for (let i = 0; i < profitResult.selectionOrder.length; i++) {
+                if (profitResult.selectionOrder[i] > 0) {
+                    profitSelectedItems.push({
+                        item: i + 1,
+                        order: profitResult.selectionOrder[i],
+                        w: items[i].w,
+                        p: items[i].p
+                    });
+                }
+            }
+            profitSelectedItems.sort((a, b) => a.order - b.order);
+            
+            if (profitSelectedItems.length > 0) {
+                ordersHTML += `
+                    <div class="order-list">
+                        <strong>Greedy by Profit:</strong> 
+                        ${profitSelectedItems.map(item => `Item ${item.item} (w=${item.w}, p=${item.p})`).join(' → ')}
+                    </div>
+                `;
+            }
+            
+            // Weight selection order
+            const weightSelectedItems = [];
+            for (let i = 0; i < weightResult.selectionOrder.length; i++) {
+                if (weightResult.selectionOrder[i] > 0) {
+                    weightSelectedItems.push({
+                        item: i + 1,
+                        order: weightResult.selectionOrder[i],
+                        w: items[i].w,
+                        p: items[i].p
+                    });
+                }
+            }
+            weightSelectedItems.sort((a, b) => a.order - b.order);
+            
+            if (weightSelectedItems.length > 0) {
+                ordersHTML += `
+                    <div class="order-list">
+                        <strong>Greedy by Weight:</strong> 
+                        ${weightSelectedItems.map(item => `Item ${item.item} (w=${item.w}, p=${item.p})`).join(' → ')}
+                    </div>
+                `;
+            }
+            
+            // Density selection order
+            const densitySelectedItems = [];
+            for (let i = 0; i < densityResult.selectionOrder.length; i++) {
+                if (densityResult.selectionOrder[i] > 0) {
+                    densitySelectedItems.push({
+                        item: i + 1,
+                        order: densityResult.selectionOrder[i],
+                        w: items[i].w,
+                        p: items[i].p
+                    });
+                }
+            }
+            densitySelectedItems.sort((a, b) => a.order - b.order);
+            
+            if (densitySelectedItems.length > 0) {
+                ordersHTML += `
+                    <div class="order-list">
+                        <strong>Greedy by Density:</strong> 
+                        ${densitySelectedItems.map(item => `Item ${item.item} (w=${item.w}, p=${item.p})`).join(' → ')}
+                    </div>
+                `;
+            }
+            
+            // Optimal selection order (jika ada)
+            if (hasProfitDensityMatch) {
+                const optimalSelectedItems = [];
+                for (let i = 0; i < optimalResult.selectionOrder.length; i++) {
+                    if (optimalResult.selectionOrder[i] > 0) {
+                        optimalSelectedItems.push({
+                            item: i + 1,
+                            order: optimalResult.selectionOrder[i],
+                            w: items[i].w,
+                            p: items[i].p
+                        });
+                    }
+                }
+                optimalSelectedItems.sort((a, b) => a.order - b.order);
+                
+                if (optimalSelectedItems.length > 0) {
+                    ordersHTML += `
+                        <div class="order-list">
+                            <strong>Solusi Optimal:</strong> 
+                            ${optimalSelectedItems.map(item => `Item ${item.item} (w=${item.w}, p=${item.p})`).join(' → ')}
+                        </div>
+                    `;
+                }
+            }
+            
+            ordersHTML += `</div>`;
+            
+            document.getElementById('selection-orders').innerHTML = ordersHTML;
+            document.getElementById('selection-orders').style.display = 'block';
+            
+            // Remove any existing conclusion
+            const existingConclusion = document.querySelector('.conclusion');
+            if (existingConclusion) {
+                existingConclusion.remove();
+            }
+            
+            // Add conclusion note
+            let conclusion = "<div class='conclusion ";
+            let conclusionText = "";
+            
+            // PERBAIKAN: Logika kesimpulan yang lebih sederhana
+            if (hasProfitDensityMatch) {
+                conclusion += "optimal-conclusion'>";
+                conclusionText = "Greedy by profit dan Greedy by density memiliki angka 1 di baris yang sama, memberikan solusi optimal!";
+            } else {
+                conclusion += "not-optimal-conclusion'>";
+                conclusionText = "Tidak ada baris di mana Greedy by profit dan Greedy by density memiliki angka 1 yang sama. Tidak ada solusi optimal dari algoritma greedy.";
+            }
+            
+            conclusion += `<p>${conclusionText}</p></div>`;
+            
+            document.getElementById('results-table').insertAdjacentHTML('afterend', conclusion);
+            
+            // Scroll to results section
+            document.querySelector('.results-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        // Initialize with example data
+        document.getElementById('calculate').addEventListener('click', calculateSolutions);
+        
+        // Initialize the page
+        init();
+        // Calculate solutions on load
+        setTimeout(calculateSolutions, 500);
+    </script>
+</body>
+</html>
