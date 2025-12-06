@@ -1,0 +1,980 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Activity Selection - Greedy Algorithm</title>
+  <style>
+    :root{
+      --bg: linear-gradient(135deg, #f6fbff 0%, #eef6ff 100%);
+      --card: #ffffff;
+      --accent: #0b66ff;
+      --accent-hover: #0052e0;
+      --success: #10b981;
+      --muted: #6b7280;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+    
+    * {
+      box-sizing: border-box;
+      transition: all 0.3s ease;
+    }
+    
+    body{
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      background: var(--bg);
+      margin: 0;
+      padding: 20px;
+      color: #0f172a;
+      min-height: 100vh;
+    }
+    
+    .container{
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(12,24,60,0.08);
+    }
+    
+    h1{
+      margin: 0 0 12px;
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #0b66ff, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .subtitle{
+      font-size: 16px;
+      color: var(--muted);
+      max-width: 800px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    
+    .card{
+      background: var(--card);
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 8px 32px rgba(12,24,60,0.12);
+      margin-bottom: 25px;
+      border: 1px solid rgba(11,102,255,0.08);
+    }
+    
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #f1f5f9;
+    }
+    
+    .card-title h2 {
+      margin: 0;
+      font-size: 20px;
+      color: #1e293b;
+    }
+    
+    .card-title .icon {
+      background: #eef6ff;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-weight: bold;
+    }
+    
+    .controls{
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    
+    .btn{
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border-radius: 10px;
+      background: var(--accent);
+      color: white;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+    
+    .btn:hover{
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(11,102,255,0.25);
+    }
+    
+    .btn:active{
+      transform: translateY(0);
+    }
+    
+    .btn.ghost{
+      background: transparent;
+      color: var(--accent);
+      border: 2px solid rgba(11,102,255,0.15);
+    }
+    
+    .btn.ghost:hover{
+      background: rgba(11,102,255,0.08);
+      border-color: var(--accent);
+    }
+    
+    .btn.success {
+      background: var(--success);
+    }
+    
+    .btn.success:hover {
+      background: #0da271;
+    }
+    
+    .btn.warning {
+      background: var(--warning);
+    }
+    
+    .btn.danger {
+      background: var(--danger);
+    }
+    
+    table{
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-top: 15px;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+    
+    thead {
+      background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    }
+    
+    th{
+      padding: 16px 12px;
+      text-align: left;
+      font-weight: 600;
+      color: #475569;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    
+    td{
+      padding: 14px 12px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    
+    tr:hover td {
+      background: #f8fafc;
+    }
+    
+    .error-row {
+      background: #fef2f2 !important;
+      animation: shake 0.5s ease-in-out;
+    }
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+    
+    input[type=number],
+    input[type=text] {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 2px solid #e2e8f0;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+    
+    input[type=number]:focus,
+    input[type=text]:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(11,102,255,0.15);
+    }
+    
+    .error-input {
+      border-color: var(--danger) !important;
+      background: #fef2f2;
+    }
+    
+    .result-container {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 2px solid #f1f5f9;
+    }
+    
+    .solution-box {
+      background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-left: 4px solid var(--accent);
+    }
+    
+    .solution-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .solution-title h3 {
+      margin: 0;
+      color: #1e40af;
+      font-size: 18px;
+    }
+    
+    .solution-content {
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    
+    .chosen-activities {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .activity-chip {
+      padding: 10px 16px;
+      border-radius: 50px;
+      background: linear-gradient(135deg, #0b66ff, #3b82f6);
+      color: white;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(11,102,255,0.25);
+      animation: popIn 0.3s ease;
+    }
+    
+    @keyframes popIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    
+    .activity-chip .index {
+      background: rgba(255,255,255,0.2);
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+    
+    .stats {
+      display: flex;
+      gap: 20px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .stat-card {
+      flex: 1;
+      min-width: 200px;
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      border-top: 4px solid var(--accent);
+    }
+    
+    .stat-card .value {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 10px 0;
+    }
+    
+    .stat-card .label {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    
+    .timeline-container {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    
+    .bar-container {
+      margin: 20px 0;
+      position: relative;
+      height: 60px;
+      background: #f8fafc;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    
+    .bar {
+      position: absolute;
+      height: 40px;
+      border-radius: 8px;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      padding: 0 15px;
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      cursor: pointer;
+      z-index: 2;
+    }
+    
+    .bar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+      z-index: 3;
+    }
+    
+    .timeline-axis {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      color: var(--muted);
+      font-size: 12px;
+      border-top: 1px solid #e2e8f0;
+    }
+    
+    .legend {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid #e2e8f0;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .legend-color {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+    }
+    
+    .remove-btn {
+      background: #fee2e2;
+      color: #dc2626;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .remove-btn:hover {
+      background: #fecaca;
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      color: #94a3b8;
+      font-size: 14px;
+      padding-top: 20px;
+      border-top: 1px solid #e2e8f0;
+    }
+    
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      border-radius: 10px;
+      color: white;
+      font-weight: 600;
+      z-index: 1000;
+      animation: popIn 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+      }
+      
+      .controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .btn {
+        justify-content: center;
+      }
+      
+      table {
+        display: block;
+        overflow-x: auto;
+      }
+      
+      .stats {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Activity Selection Algorithm</h1>
+      <p class="subtitle">Algoritma Greedy untuk memilih aktivitas sebanyak mungkin tanpa tumpang tindih. Masukkan waktu mulai (sᵢ) dan selesai (fᵢ) aktivitas, lalu klik "Pilih Aktivitas" untuk melihat solusi optimal.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <div class="icon">📋</div>
+        <h2>Daftar Aktivitas</h2>
+      </div>
+      
+      <div class="controls">
+        <button id="addRow" class="btn">
+          <span>+</span> Tambah Aktivitas
+        </button>
+        <button id="sampleBtn" class="btn ghost">
+          <span>📊</span> Data Default
+        </button>
+        <button id="selectBtn" class="btn success">
+          <span>✅</span> Pilih Aktivitas
+        </button>
+        <button id="clearBtn" class="btn danger">
+          <span>🗑️</span> Hapus Semua
+        </button>
+      </div>
+
+      <table id="activityTable">
+        <thead>
+          <tr>
+            <th style="width: 60px">#</th>
+            <th>Nama Aktivitas</th>
+            <th style="width: 150px">Start (sᵢ)</th>
+            <th style="width: 150px">Finish (fᵢ)</th>
+            <th style="width: 100px">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Baris akan ditambahkan oleh JavaScript -->
+        </tbody>
+      </table>
+    </div>
+
+    <div class="result-container">
+      <div class="solution-box">
+        <div class="solution-title">
+          <div class="icon">🎯</div>
+          <h3>Solusi Optimal</h3>
+        </div>
+        
+        <div class="solution-content">
+          <div id="solutionText">
+            <em>Klik "Pilih Aktivitas" untuk melihat solusi...</em>
+          </div>
+          
+          <div id="chosen" class="chosen-activities">
+            <!-- Chip aktivitas akan ditambahkan di sini -->
+          </div>
+          
+          <div class="stats">
+            <div class="stat-card">
+              <div class="value" id="selectedCount">0</div>
+              <div class="label">Aktivitas Terpilih</div>
+            </div>
+            <div class="stat-card">
+              <div class="value" id="totalCount">0</div>
+              <div class="label">Total Aktivitas</div>
+            </div>
+            <div class="stat-card">
+              <div class="value" id="utilization">0%</div>
+              <div class="label">Utilisasi Waktu</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-container">
+        <div class="solution-title">
+          <div class="icon">📈</div>
+          <h3>Visualisasi Timeline</h3>
+        </div>
+        
+        <div class="bar-container" id="bars">
+          <div class="timeline-axis" id="timelineAxis"></div>
+        </div>
+        
+        <div class="legend" id="legend"></div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>Activity Selection Algorithm menggunakan pendekatan Greedy • Algoritma akan mengurutkan aktivitas berdasarkan waktu selesai dan memilih yang tidak bertumpuk</p>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const tBody = document.querySelector('#activityTable tbody');
+  const addRowBtn = document.getElementById('addRow');
+  const sampleBtn = document.getElementById('sampleBtn');
+  const selectBtn = document.getElementById('selectBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const chosenEl = document.getElementById('chosen');
+  const solutionText = document.getElementById('solutionText');
+  const selectedCountEl = document.getElementById('selectedCount');
+  const totalCountEl = document.getElementById('totalCount');
+  const utilizationEl = document.getElementById('utilization');
+  const barsEl = document.getElementById('bars');
+  const legendEl = document.getElementById('legend');
+  const timelineAxisEl = document.getElementById('timelineAxis');
+
+  // Data default dengan A11 finish = 16 (bukan 1)
+  const defaultData = [
+    {name: "A1", s: 1, f: 4},
+    {name: "A2", s: 3, f: 5},
+    {name: "A3", s: 0, f: 6},
+    {name: "A4", s: 5, f: 7},
+    {name: "A5", s: 3, f: 9},
+    {name: "A6", s: 5, f: 9},
+    {name: "A7", s: 6, f: 10},
+    {name: "A8", s: 8, f: 11},
+    {name: "A9", s: 8, f: 12},
+    {name: "A10", s: 2, f: 14},
+    {name: "A11", s: 12, f: 16}  // Diperbaiki: finish = 16 (bukan 1)
+  ];
+
+  function createRow(index, name = "", s = 0, f = 0){
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="idx">${index}</td>
+      <td><input type="text" class="aname" value="${name}" placeholder="Nama aktivitas"/></td>
+      <td><input type="number" class="start" value="${s}" min="0" placeholder="Waktu mulai"/></td>
+      <td><input type="number" class="finish" value="${f}" min="0" placeholder="Waktu selesai"/></td>
+      <td><button class="remove-btn" title="Hapus aktivitas ini">Hapus</button></td>
+    `;
+    tBody.appendChild(tr);
+
+    // Tambahkan event listener untuk tombol hapus
+    tr.querySelector('.remove-btn').addEventListener('click', () => {
+      tr.style.animation = 'popIn 0.3s ease reverse';
+      setTimeout(() => {
+        tr.remove();
+        refreshIndices();
+        updateTotalCount();
+      }, 200);
+    });
+    
+    // Tambahkan event listener untuk validasi real-time
+    const startInput = tr.querySelector('.start');
+    const finishInput = tr.querySelector('.finish');
+    
+    function validateInputs() {
+      const startVal = parseInt(startInput.value) || 0;
+      const finishVal = parseInt(finishInput.value) || 0;
+      
+      if (finishVal < startVal) {
+        finishInput.classList.add('error-input');
+        tr.classList.add('error-row');
+      } else {
+        finishInput.classList.remove('error-input');
+        tr.classList.remove('error-row');
+      }
+    }
+    
+    startInput.addEventListener('input', validateInputs);
+    finishInput.addEventListener('input', validateInputs);
+    
+    // Validasi awal
+    validateInputs();
+    
+    return tr;
+  }
+
+  function refreshIndices(){
+    const rows = [...tBody.querySelectorAll('tr')];
+    rows.forEach((tr, i) => {
+      tr.querySelector('.idx').textContent = i + 1;
+      const nameInput = tr.querySelector('.aname');
+      if (!nameInput.value.trim() && nameInput.placeholder === "Nama aktivitas") {
+        nameInput.value = `A${i + 1}`;
+      }
+    });
+  }
+
+  // Load default data
+  function loadDefaultData() {
+    tBody.innerHTML = '';
+    defaultData.forEach((item, i) => {
+      createRow(i + 1, item.name, item.s, item.f);
+    });
+    updateTotalCount();
+    showNotification("Data default telah dimuat!", "info");
+  }
+
+  // Initialize with default data
+  loadDefaultData();
+
+  addRowBtn.addEventListener('click', () => {
+    const newIndex = tBody.children.length + 1;
+    createRow(newIndex, `A${newIndex}`, 0, 0);
+    updateTotalCount();
+    showNotification(`Aktivitas baru ditambahkan!`, "info");
+  });
+
+  sampleBtn.addEventListener('click', loadDefaultData);
+
+  clearBtn.addEventListener('click', () => {
+    if (tBody.children.length > 0) {
+      if (confirm("Apakah Anda yakin ingin menghapus semua aktivitas?")) {
+        tBody.innerHTML = '';
+        clearResults();
+        showNotification("Semua aktivitas telah dihapus!", "warning");
+      }
+    }
+  });
+
+  function readActivities(){
+    const rows = [...tBody.querySelectorAll('tr')];
+    const arr = [];
+    const invalidRows = [];
+    
+    for(const tr of rows){
+      const name = tr.querySelector('.aname').value.trim();
+      const s = Number(tr.querySelector('.start').value);
+      const f = Number(tr.querySelector('.finish').value);
+      
+      if(Number.isFinite(s) && Number.isFinite(f)) {
+        if (f >= s) {
+          arr.push({name: name || `A${arr.length+1}`, s, f});
+        } else {
+          invalidRows.push(tr.querySelector('.idx').textContent);
+        }
+      }
+    }
+    
+    return { activities: arr, invalidRows };
+  }
+
+  function greedySelect(activities){
+    // Simpan indeks asli untuk ditampilkan
+    const activitiesWithIndex = activities.map((a,i) => ({i:i+1, name:a.name, s:a.s, f:a.f}));
+    
+    // Urutkan berdasarkan waktu selesai (finish time)
+    activitiesWithIndex.sort((a,b) => {
+      if (a.f !== b.f) return a.f - b.f;
+      return a.s - b.s;
+    });
+    
+    const chosen = [];
+    let lastFinish = -Infinity;
+    
+    for(const act of activitiesWithIndex){
+      if(act.s >= lastFinish){
+        chosen.push(act);
+        lastFinish = act.f;
+      }
+    }
+    
+    return {all: activitiesWithIndex, chosen};
+  }
+
+  function clearResults() {
+    chosenEl.innerHTML = '';
+    solutionText.innerHTML = '<em>Klik "Pilih Aktivitas" untuk melihat solusi...</em>';
+    selectedCountEl.textContent = '0';
+    totalCountEl.textContent = '0';
+    utilizationEl.textContent = '0%';
+    barsEl.innerHTML = '<div class="timeline-axis" id="timelineAxis"></div>';
+    legendEl.innerHTML = '';
+  }
+
+  function updateTotalCount() {
+    const result = readActivities();
+    totalCountEl.textContent = result.activities.length;
+  }
+
+  function renderResult(result){
+    clearResults();
+    
+    if(!result || result.chosen.length === 0) {
+      solutionText.innerHTML = '<div style="color: var(--muted); text-align: center; padding: 20px;">Tidak ada aktivitas yang dapat dipilih. Pastikan waktu finish ≥ waktu start.</div>';
+      return;
+    }
+    
+    const chosen = result.chosen;
+    const allActivities = result.all;
+    
+    // Update stats
+    updateTotalCount();
+    selectedCountEl.textContent = chosen.length;
+    
+    // Calculate time utilization
+    const minStart = Math.min(...allActivities.map(a => a.s));
+    const maxFinish = Math.max(...allActivities.map(a => a.f));
+    const totalTimeSpan = Math.max(1, maxFinish - minStart);
+    const chosenTime = chosen.reduce((sum, a) => sum + (a.f - a.s), 0);
+    const utilization = totalTimeSpan > 0 ? Math.round((chosenTime / totalTimeSpan) * 100) : 0;
+    utilizationEl.textContent = `${utilization}%`;
+    
+    // Update solution text
+    const activityNames = chosen.map(a => `<strong>${a.name}</strong>`).join(', ');
+    solutionText.innerHTML = `
+      <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid var(--accent);">
+        <strong>Solusi:</strong> Aktivitas yang dipilih adalah ${activityNames}.
+      </div>
+      <p>Total ada <strong>${chosen.length} aktivitas</strong> yang dapat dijadwalkan tanpa tumpang tindih dari ${allActivities.length} aktivitas yang valid.</p>
+      <p style="color: var(--muted); font-size: 14px;">Algoritma Greedy memilih aktivitas berdasarkan waktu selesai paling awal dan tidak bertumpuk dengan aktivitas sebelumnya.</p>
+    `;
+    
+    // Show chosen activities as chips
+    chosen.forEach(a => {
+      const chip = document.createElement('div');
+      chip.className = 'activity-chip';
+      chip.innerHTML = `
+        <div class="index">${a.i}</div>
+        <div>
+          <strong>${a.name}</strong><br>
+          <small>${a.s} → ${a.f}</small>
+        </div>
+      `;
+      chosenEl.appendChild(chip);
+    });
+    
+    // Create timeline visualization
+    createTimeline(result);
+  }
+
+  function createTimeline(result) {
+    const { all, chosen } = result;
+    
+    if(all.length === 0) return;
+    
+    const minS = Math.min(...all.map(x => x.s));
+    const maxF = Math.max(...all.map(x => x.f));
+    const span = Math.max(1, maxF - minS);
+    
+    // Warna untuk aktivitas terpilih
+    const colors = [
+      '#0b66ff', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444',
+      '#06b6d4', '#84cc16', '#ec4899', '#6366f1', '#f97316'
+    ];
+    
+    // Clear previous bars
+    barsEl.innerHTML = '';
+    
+    // Create axis labels
+    timelineAxisEl.innerHTML = '';
+    const axisSteps = Math.min(10, maxF - minS + 1);
+    for (let i = 0; i <= axisSteps; i++) {
+      const tickValue = minS + Math.round((i / axisSteps) * (maxF - minS));
+      const tick = document.createElement('div');
+      tick.textContent = tickValue;
+      tick.style.flex = '1';
+      tick.style.textAlign = 'center';
+      tick.title = `Waktu: ${tickValue}`;
+      timelineAxisEl.appendChild(tick);
+    }
+    barsEl.appendChild(timelineAxisEl);
+    
+    // Draw chosen activities bars
+    chosen.forEach((a, idx) => {
+      const leftPct = ((a.s - minS) / span) * 100;
+      const widthPct = ((a.f - a.s) / span) * 100;
+      
+      const bar = document.createElement('div');
+      bar.className = 'bar';
+      bar.style.left = leftPct + '%';
+      bar.style.width = Math.max(2, widthPct) + '%';
+      bar.style.background = `linear-gradient(135deg, ${colors[idx % colors.length]}, ${colors[(idx + 3) % colors.length]})`;
+      bar.title = `${a.name}: ${a.s}-${a.f}`;
+      
+      // Add activity label if there's enough space
+      if (widthPct > 15) {
+        bar.innerHTML = `<span>${a.name} (${a.s}-${a.f})</span>`;
+      } else {
+        bar.innerHTML = `<span>${a.name}</span>`;
+      }
+      
+      bar.addEventListener('click', () => {
+        highlightActivity(a.i);
+      });
+      
+      barsEl.appendChild(bar);
+    });
+    
+    // Create legend
+    legendEl.innerHTML = '<strong>Keterangan Warna Aktivitas:</strong>';
+    chosen.forEach((a, idx) => {
+      const legendItem = document.createElement('div');
+      legendItem.className = 'legend-item';
+      
+      const colorBox = document.createElement('div');
+      colorBox.className = 'legend-color';
+      colorBox.style.background = colors[idx % colors.length];
+      
+      legendItem.appendChild(colorBox);
+      legendItem.innerHTML += ` ${a.name}: ${a.s}-${a.f}`;
+      
+      legendEl.appendChild(legendItem);
+    });
+  }
+
+  function highlightActivity(index) {
+    // Highlight the corresponding table row
+    const rows = [...tBody.querySelectorAll('tr')];
+    rows.forEach(row => {
+      const idx = parseInt(row.querySelector('.idx').textContent);
+      if (idx === index) {
+        row.style.background = '#e0f2fe';
+        row.style.boxShadow = 'inset 0 0 0 2px #0b66ff';
+        row.style.borderRadius = '4px';
+        
+        // Scroll to the row
+        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Remove highlight after 3 seconds
+        setTimeout(() => {
+          row.style.background = '';
+          row.style.boxShadow = '';
+          row.style.borderRadius = '';
+        }, 3000);
+      }
+    });
+  }
+
+  function showNotification(message, type = "info") {
+    // Remove existing notifications
+    const existingNotifications = document.querySelectorAll('.notification');
+    existingNotifications.forEach(notif => notif.remove());
+    
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    
+    const bgColors = {
+      success: '#10b981',
+      error: '#ef4444',
+      warning: '#f59e0b',
+      info: '#0b66ff'
+    };
+    
+    notification.style.background = bgColors[type] || bgColors.info;
+    
+    // Add icon based on type
+    const icons = {
+      success: '✅',
+      error: '❌',
+      warning: '⚠️',
+      info: 'ℹ️'
+    };
+    
+    notification.innerHTML = `${icons[type] || ''} ${message}`;
+    
+    document.body.appendChild(notification);
+    
+    // Remove notification after 3 seconds
+    setTimeout(() => {
+      notification.style.animation = 'popIn 0.3s ease reverse';
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 300);
+    }, 3000);
+  }
+
+  selectBtn.addEventListener('click', () => {
+    const result = readActivities();
+    const arr = result.activities;
+    const invalidRows = result.invalidRows;
+    
+    // Validasi input
+    if(arr.length === 0){
+      showNotification("Masukkan minimal 1 aktivitas yang valid!", "error");
+      return;
+    }
+    
+    if(invalidRows.length > 0){
+      showNotification(`Aktivitas #${invalidRows.join(', ')} tidak valid (finish < start). Akan diabaikan.`, "warning");
+    }
+    
+    // Jalankan algoritma greedy
+    const res = greedySelect(arr);
+    
+    // Render hasil
+    renderResult(res);
+    
+    // Show success notification
+    showNotification(`Berhasil memilih ${res.chosen.length} aktivitas dari ${arr.length} aktivitas valid!`, "success");
+    
+    // Tambahkan pesan di console untuk debugging
+    console.log("Data default (semua valid):");
+    defaultData.forEach((act, i) => {
+      console.log(`A${i+1}: ${act.s}-${act.f} (durasi: ${act.f - act.s})`);
+    });
+    console.log("\nAktivitas terpilih:");
+    res.chosen.forEach(act => {
+      console.log(`${act.name}: ${act.s}-${act.f}`);
+    });
+  });
+
+  // Update total count on input changes
+  tBody.addEventListener('input', updateTotalCount);
+  
+  // Jalankan algoritma secara otomatis saat halaman dimuat
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      const result = readActivities();
+      const arr = result.activities;
+      if (arr.length > 0) {
+        const res = greedySelect(arr);
+        renderResult(res);
+        showNotification(`Solusi default: ${res.chosen.length} aktivitas terpilih`, "info");
+      }
+    }, 1000);
+  });
+})();
+</script>
+</body>
+</html>
