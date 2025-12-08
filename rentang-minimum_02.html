@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalkulator Rentang Minimum (Kruskal & Prim)</title>
+    <title>Kalkulator Rentang Minimum (Kruskal & Prim) + Visualisasi Graf</title>
     <style>
         * {
             box-sizing: border-box;
@@ -20,7 +20,7 @@
         }
         
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
             background-color: rgba(255, 255, 255, 0.95);
             border-radius: 15px;
@@ -45,22 +45,35 @@
             opacity: 0.9;
         }
         
-        .content {
-            display: flex;
-            flex-wrap: wrap;
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 20px;
             padding: 20px;
+        }
+        
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
         }
         
         .input-section {
-            flex: 1;
-            min-width: 300px;
             padding: 20px;
-            border-right: 1px solid #eee;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .visualization-section {
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
         }
         
         .output-section {
-            flex: 2;
-            min-width: 600px;
+            grid-column: 1 / -1;
             padding: 20px;
         }
         
@@ -72,6 +85,173 @@
             border-bottom: 2px solid #8e2de2;
         }
         
+        /* Visualisasi Graf Styles */
+        .graph-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background-color: white;
+            overflow: hidden;
+            touch-action: none;
+        }
+        
+        .graph-canvas {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        .graph-edge {
+            position: absolute;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+        
+        .graph-node {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4a00e0, #8e2de2);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: grab;
+            user-select: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 10;
+            touch-action: none;
+        }
+        
+        .graph-node:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .graph-node.dragging {
+            cursor: grabbing;
+            transform: scale(1.15);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            z-index: 100;
+        }
+        
+        .edge-label {
+            position: absolute;
+            background-color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #4a00e0;
+            border: 1px solid #8e2de2;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+        
+        .visualization-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, #4a00e0, #8e2de2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(142, 45, 226, 0.4);
+        }
+        
+        .btn-layout {
+            background: linear-gradient(to right, #00b09b, #96c93d);
+        }
+        
+        .btn-reset-visual {
+            background: linear-gradient(to right, #ff416c, #ff4b2b);
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f0f8ff;
+            border-radius: 8px;
+            border: 1px solid #cce5ff;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+        
+        .legend-node {
+            background: linear-gradient(135deg, #4a00e0, #8e2de2);
+        }
+        
+        .legend-edge {
+            width: 30px;
+            height: 3px;
+            background-color: #4a00e0;
+        }
+        
+        .legend-mst {
+            width: 30px;
+            height: 3px;
+            background-color: #00b09b;
+        }
+        
+        .info-box {
+            background-color: #eef2ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            border-left: 4px solid #4a00e0;
+        }
+        
+        .info-box h4 {
+            color: #4a00e0;
+            margin-bottom: 10px;
+        }
+        
+        .info-box ul {
+            padding-left: 20px;
+        }
+        
+        .info-box li {
+            margin-bottom: 5px;
+        }
+        
+        /* Existing styles remain the same, adding only new classes */
         .form-group {
             margin-bottom: 20px;
         }
@@ -105,26 +285,6 @@
         
         .edge-input input {
             flex: 1;
-        }
-        
-        .btn {
-            background: linear-gradient(to right, #4a00e0, #8e2de2);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(142, 45, 226, 0.4);
         }
         
         .btn-add {
@@ -249,21 +409,6 @@
             border-top: 1px solid #eee;
         }
         
-        @media (max-width: 1024px) {
-            .content {
-                flex-direction: column;
-            }
-            
-            .input-section {
-                border-right: none;
-                border-bottom: 1px solid #eee;
-            }
-            
-            .output-section {
-                min-width: 100%;
-            }
-        }
-        
         .instruction {
             background-color: #eef2ff;
             padding: 15px;
@@ -326,88 +471,19 @@
             font-size: 1.1rem;
         }
         
-        .alternative-path {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin: 10px 0;
+        .mst-edge {
+            stroke: #00b09b !important;
+            stroke-width: 3px !important;
         }
         
-        .path-step {
-            background-color: white;
-            padding: 8px 12px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            font-weight: 500;
+        .regular-edge {
+            stroke: #4a00e0;
+            stroke-width: 2px;
         }
         
-        .path-step.selected {
-            background-color: #00b09b;
-            color: white;
-            border-color: #00b09b;
-        }
-        
-        .toggle-btn {
-            background-color: #6c757d;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            margin: 5px;
-        }
-        
-        .toggle-btn.active {
-            background-color: #4a00e0;
-        }
-        
-        .alternative-comparison {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .alternative-card {
-            background-color: white;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            border: 1px solid #e9ecef;
-        }
-        
-        .alternative-card h4 {
-            color: #4a00e0;
-            margin-bottom: 10px;
-            padding-bottom: 5px;
-            border-bottom: 2px solid #8e2de2;
-        }
-        
-        .highlight {
-            background-color: #fffacd;
-            padding: 2px 5px;
-            border-radius: 3px;
-            font-weight: bold;
-        }
-        
-        .different-edge {
-            color: #ff416c;
-            font-weight: bold;
-        }
-        
-        .same-edge {
-            color: #00b09b;
-            font-weight: bold;
-        }
-        
-        .warning-box {
-            background-color: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 10px 0;
-            color: #856404;
+        .node-mst {
+            background: linear-gradient(135deg, #00b09b, #96c93d) !important;
+            box-shadow: 0 4px 8px rgba(0, 176, 155, 0.3) !important;
         }
         
         .keterangan-cell {
@@ -459,16 +535,31 @@
         .edge-weight-skipped {
             color: #999;
         }
+        
+        .toggle-btn {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin: 5px;
+        }
+        
+        .toggle-btn.active {
+            background-color: #4a00e0;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Kalkulator Rentang Minimum</h1>
-            <p class="subtitle">Hitung rentang minimum dengan algoritma Kruskal dan Prim</p>
+            <h1>Kalkulator Rentang Minimum + Visualisasi Graf</h1>
+            <p class="subtitle">Hitung rentang minimum dengan algoritma Kruskal dan Prim + Visualisasi interaktif dengan Drag & Drop</p>
         </header>
         
-        <div class="content">
+        <div class="main-content">
             <div class="input-section">
                 <h2 class="section-title">Input Graf</h2>
                 
@@ -531,6 +622,48 @@
                 </div>
             </div>
             
+            <div class="visualization-section">
+                <h2 class="section-title">Visualisasi Graf Interaktif</h2>
+                
+                <div class="graph-container" id="graphContainer">
+                    <div class="graph-canvas" id="graphCanvas">
+                        <!-- Node dan edge akan di-generate oleh JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="visualization-controls">
+                    <button class="btn btn-layout" id="autoLayoutBtn">Auto Layout</button>
+                    <button class="btn btn-reset-visual" id="resetVisualBtn">Reset Posisi</button>
+                    <button class="btn" id="toggleMSTBtn">Toggle MST</button>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color legend-node"></div>
+                        <span>Simpul (drag & drop)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-edge"></div>
+                        <span>Edge reguler</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-mst"></div>
+                        <span>Edge MST (Kruskal/Prim)</span>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <h4>🎯 Cara Menggunakan Drag & Drop:</h4>
+                    <ul>
+                        <li><strong>Desktop:</strong> Klik dan tahan simpul, lalu seret ke posisi baru</li>
+                        <li><strong>Mobile/Tablet:</strong> Sentuh dan tahan simpul, lalu geser ke posisi baru</li>
+                        <li>Edge akan menyesuaikan posisi secara otomatis</li>
+                        <li>Simpul tidak bisa ditarik keluar canvas</li>
+                        <li>Hasil algoritma tetap valid saat simpul dipindahkan</li>
+                    </ul>
+                </div>
+            </div>
+            
             <div class="output-section">
                 <h2 class="section-title">Hasil Perhitungan</h2>
                 
@@ -569,7 +702,7 @@
         </div>
         
         <footer>
-            <p>Alat penghitung Rentang Minimum menggunakan algoritma Greedy (Kruskal dan Prim)</p>
+            <p>Alat penghitung Rentang Minimum dengan Visualisasi Graf Interaktif + Drag & Drop</p>
             <p>© 2023 - Kalkulator Graf Interaktif</p>
         </footer>
     </div>
@@ -578,7 +711,13 @@
         // Data graf yang disimpan
         let edges = [];
         let nodes = new Set();
-        let analysisMode = 'single'; // 'single' atau 'alternative'
+        let mstEdges = [];
+        let nodePositions = {};
+        let isDragging = false;
+        let dragNode = null;
+        let dragOffset = { x: 0, y: 0 };
+        let showMST = false;
+        let analysisMode = 'single';
         
         // Element references
         const edgeListElement = document.getElementById('edgeList');
@@ -590,6 +729,11 @@
         const resetBtn = document.getElementById('resetBtn');
         const exampleSelect = document.getElementById('exampleSelect');
         const startNodeInput = document.getElementById('startNode');
+        const graphCanvas = document.getElementById('graphCanvas');
+        const graphContainer = document.getElementById('graphContainer');
+        const autoLayoutBtn = document.getElementById('autoLayoutBtn');
+        const resetVisualBtn = document.getElementById('resetVisualBtn');
+        const toggleMSTBtn = document.getElementById('toggleMSTBtn');
         const modeSingleBtn = document.getElementById('modeSingle');
         const modeAlternativeBtn = document.getElementById('modeAlternative');
         
@@ -682,6 +826,12 @@
             resetBtn.addEventListener('click', resetAll);
             exampleSelect.addEventListener('change', loadExample);
             
+            // Event listeners untuk visualisasi
+            autoLayoutBtn.addEventListener('click', autoLayout);
+            resetVisualBtn.addEventListener('click', resetNodePositions);
+            toggleMSTBtn.addEventListener('click', toggleMSTDisplay);
+            
+            // Mode analysis
             modeSingleBtn.addEventListener('click', () => setAnalysisMode('single'));
             modeAlternativeBtn.addEventListener('click', () => setAnalysisMode('alternative'));
             
@@ -695,6 +845,9 @@
             startNodeInput.addEventListener('input', function() {
                 primStartNodeElement.textContent = startNodeInput.value || "a";
             });
+            
+            // Setup drag & drop events
+            setupDragAndDrop();
             
             // Muat contoh kompleks secara default
             loadExampleGraph('example4');
@@ -718,6 +871,373 @@
             }
         }
         
+        // Setup drag & drop untuk simpul
+        function setupDragAndDrop() {
+            // Mouse events
+            graphCanvas.addEventListener('mousedown', startDrag);
+            graphCanvas.addEventListener('mousemove', drag);
+            graphCanvas.addEventListener('mouseup', endDrag);
+            graphCanvas.addEventListener('mouseleave', endDrag);
+            
+            // Touch events untuk mobile
+            graphCanvas.addEventListener('touchstart', startDragTouch);
+            graphCanvas.addEventListener('touchmove', dragTouch);
+            graphCanvas.addEventListener('touchend', endDrag);
+            graphCanvas.addEventListener('touchcancel', endDrag);
+            
+            // Prevent default touch behavior
+            graphCanvas.addEventListener('touchstart', function(e) {
+                if (e.target.classList.contains('graph-node')) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+        }
+        
+        // Mouse drag functions
+        function startDrag(e) {
+            if (e.button !== 0) return;
+            const node = e.target.closest('.graph-node');
+            if (!node) return;
+            
+            const rect = graphCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            startDragging(node, x, y);
+        }
+        
+        function startDragTouch(e) {
+            if (e.touches.length !== 1) return;
+            const touch = e.touches[0];
+            const node = document.elementFromPoint(touch.clientX, touch.clientY);
+            if (!node || !node.classList.contains('graph-node')) return;
+            
+            const rect = graphCanvas.getBoundingClientRect();
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            
+            startDragging(node, x, y);
+            e.preventDefault();
+        }
+        
+        function startDragging(node, x, y) {
+            isDragging = true;
+            dragNode = node;
+            const nodeId = node.textContent;
+            
+            const nodeRect = node.getBoundingClientRect();
+            const canvasRect = graphCanvas.getBoundingClientRect();
+            dragOffset.x = x - (nodeRect.left - canvasRect.left + 25);
+            dragOffset.y = y - (nodeRect.top - canvasRect.top + 25);
+            
+            node.classList.add('dragging');
+            graphCanvas.style.cursor = 'grabbing';
+        }
+        
+        function drag(e) {
+            if (!isDragging || !dragNode) return;
+            
+            const rect = graphCanvas.getBoundingClientRect();
+            let x, y;
+            
+            if (e.type === 'mousemove') {
+                x = e.clientX - rect.left;
+                y = e.clientY - rect.top;
+            } else {
+                const touch = e.touches[0];
+                x = touch.clientX - rect.left;
+                y = touch.clientY - rect.top;
+            }
+            
+            const containerWidth = graphContainer.clientWidth;
+            const containerHeight = graphContainer.clientHeight;
+            
+            let newX = x - dragOffset.x;
+            let newY = y - dragOffset.y;
+            
+            newX = Math.max(25, Math.min(newX, containerWidth - 75));
+            newY = Math.max(25, Math.min(newY, containerHeight - 75));
+            
+            dragNode.style.left = newX + 'px';
+            dragNode.style.top = newY + 'px';
+            
+            const nodeId = dragNode.textContent;
+            nodePositions[nodeId] = { x: newX, y: newY };
+            
+            updateEdgesPosition();
+            
+            e.preventDefault();
+        }
+        
+        function dragTouch(e) {
+            if (!isDragging || !dragNode || e.touches.length !== 1) return;
+            drag(e);
+        }
+        
+        function endDrag() {
+            if (!isDragging) return;
+            
+            if (dragNode) {
+                dragNode.classList.remove('dragging');
+                dragNode = null;
+            }
+            
+            isDragging = false;
+            graphCanvas.style.cursor = '';
+        }
+        
+        // Update posisi semua edge saat simpul dipindahkan
+        function updateEdgesPosition() {
+            document.querySelectorAll('.graph-edge').forEach(edge => {
+                const edgeId = edge.id;
+                const [node1, node2] = edgeId.split('-');
+                
+                const node1Element = document.querySelector(`.graph-node[data-node="${node1}"]`);
+                const node2Element = document.querySelector(`.graph-node[data-node="${node2}"]`);
+                
+                if (node1Element && node2Element) {
+                    updateEdgeElement(edge, node1Element, node2Element);
+                }
+            });
+        }
+        
+        // Render visualisasi graf
+        function renderGraph() {
+            graphCanvas.innerHTML = '';
+            
+            Array.from(nodes).forEach(node => {
+                createNodeElement(node);
+            });
+            
+            edges.forEach(edge => {
+                createEdgeElement(edge);
+            });
+            
+            if (showMST && mstEdges.length > 0) {
+                highlightMST();
+            }
+            
+            if (Object.keys(nodePositions).length === 0) {
+                autoLayout();
+            }
+        }
+        
+        // Buat element node
+        function createNodeElement(node) {
+            const nodeElement = document.createElement('div');
+            nodeElement.className = 'graph-node';
+            nodeElement.textContent = node;
+            nodeElement.setAttribute('data-node', node);
+            
+            if (nodePositions[node]) {
+                nodeElement.style.left = nodePositions[node].x + 'px';
+                nodeElement.style.top = nodePositions[node].y + 'px';
+            } else {
+                const containerWidth = graphContainer.clientWidth;
+                const containerHeight = graphContainer.clientHeight;
+                const x = 50 + Math.random() * (containerWidth - 100);
+                const y = 50 + Math.random() * (containerHeight - 100);
+                nodeElement.style.left = x + 'px';
+                nodeElement.style.top = y + 'px';
+                nodePositions[node] = { x, y };
+            }
+            
+            graphCanvas.appendChild(nodeElement);
+        }
+        
+        // Buat element edge
+        function createEdgeElement(edge) {
+            const node1Element = document.querySelector(`.graph-node[data-node="${edge.node1}"]`);
+            const node2Element = document.querySelector(`.graph-node[data-node="${edge.node2}"]`);
+            
+            if (!node1Element || !node2Element) return;
+            
+            const edgeElement = document.createElement('div');
+            edgeElement.className = 'graph-edge';
+            edgeElement.id = `${edge.node1}-${edge.node2}`;
+            
+            graphCanvas.appendChild(edgeElement);
+            
+            const labelElement = document.createElement('div');
+            labelElement.className = 'edge-label';
+            labelElement.id = `label-${edge.node1}-${edge.node2}`;
+            labelElement.textContent = edge.weight;
+            
+            graphCanvas.appendChild(labelElement);
+            
+            updateEdgeElement(edgeElement, node1Element, node2Element);
+        }
+        
+        // Update posisi edge dan label
+        function updateEdgeElement(edgeElement, node1Element, node2Element) {
+            const rect1 = node1Element.getBoundingClientRect();
+            const rect2 = node2Element.getBoundingClientRect();
+            const canvasRect = graphCanvas.getBoundingClientRect();
+            
+            const x1 = rect1.left - canvasRect.left + 25;
+            const y1 = rect1.top - canvasRect.top + 25;
+            const x2 = rect2.left - canvasRect.left + 25;
+            const y2 = rect2.top - canvasRect.top + 25;
+            
+            const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+            const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+            
+            edgeElement.style.width = length + 'px';
+            edgeElement.style.left = x1 + 'px';
+            edgeElement.style.top = y1 + 'px';
+            edgeElement.style.transform = `rotate(${angle}deg)`;
+            edgeElement.style.transformOrigin = '0 0';
+            
+            if (showMST && mstEdges.some(e => 
+                (e.node1 === edgeElement.id.split('-')[0] && e.node2 === edgeElement.id.split('-')[1]) ||
+                (e.node1 === edgeElement.id.split('-')[1] && e.node2 === edgeElement.id.split('-')[0])
+            )) {
+                edgeElement.style.borderBottom = '3px solid #00b09b';
+            } else {
+                edgeElement.style.borderBottom = '2px solid #4a00e0';
+            }
+            
+            const labelElement = document.getElementById(`label-${edgeElement.id}`);
+            if (labelElement) {
+                const labelX = (x1 + x2) / 2 - 20;
+                const labelY = (y1 + y2) / 2 - 10;
+                labelElement.style.left = labelX + 'px';
+                labelElement.style.top = labelY + 'px';
+            }
+        }
+        
+        // Auto layout
+        function autoLayout() {
+            const nodeList = Array.from(nodes);
+            const containerWidth = graphContainer.clientWidth;
+            const containerHeight = graphContainer.clientHeight;
+            
+            if (nodeList.length <= 8) {
+                const centerX = containerWidth / 2;
+                const centerY = containerHeight / 2;
+                const radius = Math.min(containerWidth, containerHeight) * 0.35;
+                
+                nodeList.forEach((node, i) => {
+                    const angle = (2 * Math.PI * i) / nodeList.length;
+                    const x = centerX + radius * Math.cos(angle) - 25;
+                    const y = centerY + radius * Math.sin(angle) - 25;
+                    nodePositions[node] = { x, y };
+                });
+            } else {
+                const k = Math.sqrt(containerWidth * containerHeight / nodeList.length);
+                const iterations = 100;
+                
+                nodeList.forEach(node => {
+                    nodePositions[node] = {
+                        x: 50 + Math.random() * (containerWidth - 100),
+                        y: 50 + Math.random() * (containerHeight - 100)
+                    };
+                });
+                
+                for (let iter = 0; iter < iterations; iter++) {
+                    const forces = {};
+                    nodeList.forEach(node => {
+                        forces[node] = { x: 0, y: 0 };
+                    });
+                    
+                    nodeList.forEach((node1, i) => {
+                        nodeList.forEach((node2, j) => {
+                            if (i >= j) return;
+                            
+                            const dx = nodePositions[node1].x - nodePositions[node2].x;
+                            const dy = nodePositions[node1].y - nodePositions[node2].y;
+                            const distance = Math.sqrt(dx * dx + dy * dy) || 1;
+                            const force = (k * k) / distance;
+                            
+                            forces[node1].x += (dx / distance) * force;
+                            forces[node1].y += (dy / distance) * force;
+                            forces[node2].x -= (dx / distance) * force;
+                            forces[node2].y -= (dy / distance) * force;
+                        });
+                    });
+                    
+                    edges.forEach(edge => {
+                        const node1 = edge.node1;
+                        const node2 = edge.node2;
+                        const dx = nodePositions[node1].x - nodePositions[node2].x;
+                        const dy = nodePositions[node1].y - nodePositions[node2].y;
+                        const distance = Math.sqrt(dx * dx + dy * dy) || 1;
+                        const force = (distance * distance) / k;
+                        
+                        forces[node1].x -= (dx / distance) * force;
+                        forces[node1].y -= (dy / distance) * force;
+                        forces[node2].x += (dx / distance) * force;
+                        forces[node2].y += (dy / distance) * force;
+                    });
+                    
+                    const damping = 0.1;
+                    nodeList.forEach(node => {
+                        nodePositions[node].x += forces[node].x * damping;
+                        nodePositions[node].y += forces[node].y * damping;
+                        
+                        nodePositions[node].x = Math.max(25, Math.min(nodePositions[node].x, containerWidth - 75));
+                        nodePositions[node].y = Math.max(25, Math.min(nodePositions[node].y, containerHeight - 75));
+                    });
+                }
+            }
+            
+            renderGraph();
+        }
+        
+        // Reset posisi node
+        function resetNodePositions() {
+            nodePositions = {};
+            renderGraph();
+        }
+        
+        // Toggle tampilan MST
+        function toggleMSTDisplay() {
+            showMST = !showMST;
+            toggleMSTBtn.textContent = showMST ? 'Hide MST' : 'Show MST';
+            
+            document.querySelectorAll('.graph-edge').forEach(edge => {
+                const edgeId = edge.id;
+                const [node1, node2] = edgeId.split('-');
+                
+                if (showMST && mstEdges.some(e => 
+                    (e.node1 === node1 && e.node2 === node2) ||
+                    (e.node1 === node2 && e.node2 === node1)
+                )) {
+                    edge.style.borderBottom = '3px solid #00b09b';
+                    
+                    const node1Element = document.querySelector(`.graph-node[data-node="${node1}"]`);
+                    const node2Element = document.querySelector(`.graph-node[data-node="${node2}"]`);
+                    
+                    if (node1Element) node1Element.classList.add('node-mst');
+                    if (node2Element) node2Element.classList.add('node-mst');
+                } else {
+                    edge.style.borderBottom = '2px solid #4a00e0';
+                    
+                    document.querySelectorAll('.graph-node').forEach(node => {
+                        node.classList.remove('node-mst');
+                    });
+                }
+            });
+        }
+        
+        // Highlight edge MST
+        function highlightMST() {
+            mstEdges.forEach(edge => {
+                const edgeElement = document.getElementById(`${edge.node1}-${edge.node2}`) || 
+                                   document.getElementById(`${edge.node2}-${edge.node1}`);
+                
+                if (edgeElement) {
+                    edgeElement.style.borderBottom = '3px solid #00b09b';
+                    
+                    const node1Element = document.querySelector(`.graph-node[data-node="${edge.node1}"]`);
+                    const node2Element = document.querySelector(`.graph-node[data-node="${edge.node2}"]`);
+                    
+                    if (node1Element) node1Element.classList.add('node-mst');
+                    if (node2Element) node2Element.classList.add('node-mst');
+                }
+            });
+        }
+        
         // Tambah edge baru
         function addEdge() {
             const node1 = node1Input.value.trim();
@@ -739,6 +1259,7 @@
             node1Input.focus();
             
             updateEdgeList();
+            renderGraph();
         }
         
         // Update tampilan daftar edge
@@ -773,6 +1294,7 @@
             edges.splice(index, 1);
             updateNodeSet();
             updateEdgeList();
+            renderGraph();
         }
         
         // Update set nodes berdasarkan edges
@@ -801,6 +1323,14 @@
             updateNodeSet();
             updateEdgeList();
             exampleSelect.value = exampleKey;
+            
+            nodePositions = {};
+            mstEdges = [];
+            showMST = false;
+            toggleMSTBtn.textContent = 'Show MST';
+            
+            renderGraph();
+            clearResults();
         }
         
         // Reset semua input
@@ -813,7 +1343,14 @@
             startNodeInput.value = 'a';
             primStartNodeElement.textContent = 'a';
             exampleSelect.value = '';
+            
+            nodePositions = {};
+            mstEdges = [];
+            showMST = false;
+            toggleMSTBtn.textContent = 'Show MST';
+            
             updateEdgeList();
+            renderGraph();
             clearResults();
         }
         
@@ -842,23 +1379,25 @@
                 return;
             }
             
-            // Jalankan Kruskal
             const kruskalResult = kruskalAlgorithm();
             
-            // Jalankan Prim berdasarkan mode
+            mstEdges = [...kruskalResult.edges];
+            
             let primResult;
             let alternativeGraphs = [];
             
             if (analysisMode === 'single') {
                 primResult = primAlgorithm(startNode, 'default');
             } else {
-                // Mode alternative: cari semua kemungkinan
                 alternativeGraphs = findAllAlternativePrimGraphs(startNode);
                 primResult = alternativeGraphs.length > 0 ? alternativeGraphs[0] : primAlgorithm(startNode, 'default');
             }
             
-            // Tampilkan hasil
             displayResults(kruskalResult, primResult, alternativeGraphs);
+            
+            if (showMST) {
+                highlightMST();
+            }
         }
         
         // Algoritma Kruskal
@@ -932,7 +1471,7 @@
             };
         }
         
-        // Algoritma Prim dengan tie-breaking dan keterangan - VERSI DIPERBAIKI
+        // Algoritma Prim dengan tabel - VERSI DIPERBAIKI
         function primAlgorithm(startNode, tieBreakRule = 'default') {
             const adjacency = {};
             nodes.forEach(node => adjacency[node] = []);
@@ -948,9 +1487,8 @@
             const steps = [];
             
             let candidateEdges = [];
-            let allProcessedEdges = []; // Untuk menyimpan semua edge yang sudah diproses
+            let allProcessedEdges = [];
             
-            // Tambahkan semua edge dari startNode ke candidate
             adjacency[startNode].forEach(neighbor => {
                 const edge = {
                     from: startNode,
@@ -961,7 +1499,6 @@
                 candidateEdges.push(edge);
             });
             
-            // Tie-breaking function
             function tieBreakFunction(a, b) {
                 if (a.weight !== b.weight) return a.weight - b.weight;
                 
@@ -978,10 +1515,9 @@
                 }
             }
             
-            // Urutkan candidate edges
             candidateEdges.sort(tieBreakFunction);
             
-            // Header tabel dengan kolom KETERANGAN
+            // Tabel langkah-langkah Prim
             steps.push(`<strong>Prim mulai dari simpul ${startNode}:</strong>`);
             steps.push(`<table class="prim-table"><thead><tr>
                 <th>Step</th>
@@ -993,14 +1529,11 @@
             
             let stepNumber = 1;
             
-            // Proses sampai semua simpul masuk tree
             while (inTree.size < nodes.size && candidateEdges.length > 0) {
-                // Ambil edge dengan bobot terkecil
                 const currentEdge = candidateEdges.shift();
                 allProcessedEdges.push(currentEdge);
                 
                 if (!inTree.has(currentEdge.to)) {
-                    // Edge DITAMBAHKAN ke MST
                     rentangEdges.push({
                         node1: currentEdge.from,
                         node2: currentEdge.to,
@@ -1008,7 +1541,6 @@
                     });
                     totalWeight += currentEdge.weight;
                     
-                    // Tentukan keterangan
                     let keterangan = "";
                     if (stepNumber === 1) {
                         keterangan = `<span class="simpul-ditambahkan">Simpul ${startNode} ke ${currentEdge.to}</span>`;
@@ -1017,10 +1549,8 @@
                                     <span class="simpul-penghubung">${currentEdge.from}</span>`;
                     }
                     
-                    // Tambahkan simpul baru ke tree
                     inTree.add(currentEdge.to);
                     
-                    // Tampilkan edge yang DITAMBAHKAN
                     steps.push(`<tr>
                         <td class="step-number">${stepNumber}</td>
                         <td><strong class="edge-added">${currentEdge.from}-${currentEdge.to}</strong></td>
@@ -1031,7 +1561,6 @@
                     
                     stepNumber++;
                     
-                    // Tambahkan edge baru dari simpul yang baru ditambahkan ke candidate
                     adjacency[currentEdge.to].forEach(neighbor => {
                         if (!inTree.has(neighbor.node)) {
                             const newEdge = {
@@ -1040,7 +1569,6 @@
                                 weight: neighbor.weight,
                                 processed: false
                             };
-                            // Cek apakah edge sudah ada di candidate
                             const exists = candidateEdges.some(e => 
                                 (e.from === newEdge.from && e.to === newEdge.to) || 
                                 (e.from === newEdge.to && e.to === newEdge.from)
@@ -1051,11 +1579,9 @@
                         }
                     });
                     
-                    // Urutkan ulang candidate edges
                     candidateEdges.sort(tieBreakFunction);
                     
                 } else {
-                    // Edge DILEWATI (simpul tujuan sudah ada di tree)
                     steps.push(`<tr class="skipped-row">
                         <td class="step-number">-</td>
                         <td class="edge-skipped">${currentEdge.from}-${currentEdge.to}</td>
@@ -1066,7 +1592,6 @@
                 }
             }
             
-            // Tampilkan edge-edge yang tersisa di candidate sebagai dilewati
             candidateEdges.forEach(edge => {
                 if (inTree.has(edge.to)) {
                     steps.push(`<tr class="skipped-row">
@@ -1090,7 +1615,6 @@
             steps.push(`</tbody></table>`);
             steps.push(`<strong>Total bobot: ${totalWeight}, Jumlah edge: ${rentangEdges.length}</strong>`);
             
-            // Tambahkan ringkasan keterangan
             steps.push(`<br><strong>Ringkasan Keterangan:</strong>`);
             steps.push(`<ul style="font-size: 0.9em;">`);
             
@@ -1098,11 +1622,9 @@
                 if (idx === 0) {
                     steps.push(`<li>Simpul <span class="simpul-penghubung">${startNode}</span> ke <span class="simpul-ditambahkan">${edge.node2 === startNode ? edge.node1 : edge.node2}</span></li>`);
                 } else {
-                    // Cari simpul baru yang ditambahkan
                     let newNode = '';
                     let connectingNode = '';
                     
-                    // Cek apakah node1 sudah ada di edge sebelumnya
                     const prevNodes = new Set();
                     rentangEdges.slice(0, idx).forEach(e => {
                         prevNodes.add(e.node1);
@@ -1143,17 +1665,14 @@
             
             const allAlternatives = [];
             
-            // Fungsi rekursif untuk mengeksplorasi semua kemungkinan
             function exploreAlternatives(currentTree, currentEdges, candidateEdges, depth, path) {
                 if (currentTree.size === nodes.size) {
-                    // MST lengkap ditemukan
                     const totalWeight = currentEdges.reduce((sum, e) => sum + e.weight, 0);
                     const edgeKey = currentEdges
                         .map(e => `${e.node1}-${e.node2}-${e.weight}`)
                         .sort()
                         .join('|');
                     
-                    // Cek apakah sudah ada
                     const existing = allAlternatives.find(a => a.key === edgeKey);
                     if (!existing) {
                         allAlternatives.push({
@@ -1170,18 +1689,15 @@
                 
                 if (candidateEdges.length === 0 || depth > 100) return;
                 
-                // Kelompokkan candidate edges berdasarkan bobot
                 const weightGroups = {};
                 candidateEdges.forEach(edge => {
                     if (!weightGroups[edge.weight]) weightGroups[edge.weight] = [];
                     weightGroups[edge.weight].push(edge);
                 });
                 
-                // Ambil bobot terkecil
                 const minWeight = Math.min(...Object.keys(weightGroups).map(Number));
                 const minEdges = weightGroups[minWeight];
                 
-                // Untuk setiap edge dengan bobot minimum, coba tambahkan
                 for (const edge of minEdges) {
                     if (!currentTree.has(edge.to)) {
                         const newTree = new Set(currentTree);
@@ -1196,7 +1712,6 @@
                             e !== edge && !currentTree.has(e.to)
                         );
                         
-                        // Tambahkan edge baru dari node yang baru ditambahkan
                         adjacency[edge.to].forEach(neighbor => {
                             if (!newTree.has(neighbor.node)) {
                                 newCandidates.push({
@@ -1211,13 +1726,11 @@
                         
                         exploreAlternatives(newTree, newEdges, newCandidates, depth + 1, newPath);
                         
-                        // Batasi jumlah alternatif untuk performa
                         if (allAlternatives.length >= 10) return;
                     }
                 }
             }
             
-            // Helper function untuk generate keterangan
             function generateKeterangan(edgeList, startNode) {
                 const keterangan = [];
                 const nodesInTree = new Set([startNode]);
@@ -1239,7 +1752,6 @@
                 return keterangan;
             }
             
-            // Inisialisasi
             const initialCandidates = adjacency[startNode].map(neighbor => ({
                 from: startNode,
                 to: neighbor.node,
@@ -1254,7 +1766,6 @@
                 []
             );
             
-            // Urutkan berdasarkan bobot (yang terkecil dulu)
             allAlternatives.sort((a, b) => a.weight - b.weight);
             
             return allAlternatives;
@@ -1273,7 +1784,7 @@
                 kruskalEdgesElement.appendChild(li);
             });
             
-            // Tampilkan Prim
+            // Tampilkan Prim dengan tabel
             primWeightElement.textContent = primResult.weight;
             primStepsElement.innerHTML = primResult.steps.join('');
             
@@ -1282,13 +1793,11 @@
                 primResult.edges.forEach((edge, index) => {
                     const li = document.createElement('li');
                     
-                    // Buat span untuk edge
                     const edgeSpan = document.createElement('span');
                     edgeSpan.textContent = `${edge.node1} - ${edge.node2} (${edge.weight})`;
                     edgeSpan.style.fontWeight = 'bold';
                     edgeSpan.style.color = '#4a00e0';
                     
-                    // Buat span untuk keterangan
                     let keterangan = '';
                     if (index === 0) {
                         keterangan = `Simpul ${primResult.startNode} ke ${edge.node1 === primResult.startNode ? edge.node2 : edge.node1}`;
@@ -1342,7 +1851,6 @@
                     <div class="alternative-title">🔍 ANALISIS ALTERNATIF GRAF MINIMUM DENGAN PRIM (mulai dari: ${currentStartNode})</div>
                     <p>Ditemukan <strong>${alternativeGraphs.length}</strong> alternatif graf dengan bobot minimum sama:</p>`;
                 
-                // Tampilkan semua alternatif
                 alternativeGraphs.forEach((alt, idx) => {
                     const isDifferentFromFirst = idx > 0;
                     const firstAlt = alternativeGraphs[0];
@@ -1365,7 +1873,6 @@
                     
                     analysisHTML += `</div>`;
                     
-                    // Tampilkan keterangan
                     if (alt.keterangan && alt.keterangan.length > 0) {
                         analysisHTML += `<p><strong>Keterangan:</strong></p><ul>`;
                         alt.keterangan.forEach(k => {
@@ -1375,7 +1882,6 @@
                     }
                     
                     if (isDifferentFromFirst) {
-                        // Tampilkan perbedaan dengan alternatif pertama
                         const differentEdges = alt.edgeOrder.filter(edge => 
                             !firstAlt.edgeOrder.includes(edge)
                         );
@@ -1395,7 +1901,6 @@
                     analysisHTML += `</div>`;
                 });
                 
-                // Analisis edge dengan bobot sama
                 const weightGroups = {};
                 edges.forEach(edge => {
                     if (!weightGroups[edge.weight]) weightGroups[edge.weight] = [];
