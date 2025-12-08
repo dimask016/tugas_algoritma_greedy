@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Rentang Minimum (Kruskal & Prim)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(to right, #4a00e0, #8e2de2);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+        }
+        
+        .input-section {
+            flex: 1;
+            min-width: 300px;
+            padding: 20px;
+            border-right: 1px solid #eee;
+        }
+        
+        .output-section {
+            flex: 2;
+            min-width: 600px;
+            padding: 20px;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: #4a00e0;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #8e2de2;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            border-color: #8e2de2;
+            outline: none;
+        }
+        
+        .edge-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .edge-input input {
+            flex: 1;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, #4a00e0, #8e2de2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(142, 45, 226, 0.4);
+        }
+        
+        .btn-add {
+            background: linear-gradient(to right, #00b09b, #96c93d);
+            margin-top: 5px;
+        }
+        
+        .btn-calculate {
+            width: 100%;
+            margin-top: 20px;
+            padding: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .btn-reset {
+            background: linear-gradient(to right, #ff416c, #ff4b2b);
+            margin-left: 10px;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .edge-list {
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        
+        .edge-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            margin-bottom: 8px;
+        }
+        
+        .edge-item span {
+            font-weight: 500;
+        }
+        
+        .btn-remove {
+            background-color: #ff4b2b;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .result-box {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .algorithm-title {
+            font-size: 1.3rem;
+            color: #4a00e0;
+            margin-bottom: 10px;
+        }
+        
+        .rentang-weight {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #00b09b;
+            margin: 10px 0;
+        }
+        
+        .edge-list-result {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+        
+        .edge-list-result li {
+            margin-bottom: 5px;
+            padding: 5px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+        }
+        
+        .comparison {
+            margin-top: 20px;
+            padding: 15px;
+            background: linear-gradient(to right, #ffecd2, #fcb69f);
+            border-radius: 10px;
+        }
+        
+        .step-box {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            border-left: 4px solid #4a00e0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .step-title {
+            font-weight: bold;
+            color: #4a00e0;
+            margin-bottom: 8px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+        }
+        
+        @media (max-width: 1024px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .input-section {
+                border-right: none;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .output-section {
+                min-width: 100%;
+            }
+        }
+        
+        .instruction {
+            background-color: #eef2ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .step-item {
+            margin-bottom: 5px;
+            padding: 3px 0;
+        }
+        
+        .step-added {
+            color: #00b09b;
+        }
+        
+        .step-skipped {
+            color: #ff416c;
+        }
+        
+        .prim-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 0.85em;
+        }
+        
+        .prim-table th {
+            background-color: #4a00e0;
+            color: white;
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #ddd;
+            white-space: nowrap;
+        }
+        
+        .prim-table td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        
+        .prim-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .alternative-graph {
+            background-color: #f0f8ff;
+            border: 1px solid #cce5ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        
+        .alternative-title {
+            color: #0066cc;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .alternative-path {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .path-step {
+            background-color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-weight: 500;
+        }
+        
+        .path-step.selected {
+            background-color: #00b09b;
+            color: white;
+            border-color: #00b09b;
+        }
+        
+        .toggle-btn {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin: 5px;
+        }
+        
+        .toggle-btn.active {
+            background-color: #4a00e0;
+        }
+        
+        .alternative-comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .alternative-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border: 1px solid #e9ecef;
+        }
+        
+        .alternative-card h4 {
+            color: #4a00e0;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #8e2de2;
+        }
+        
+        .highlight {
+            background-color: #fffacd;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        
+        .different-edge {
+            color: #ff416c;
+            font-weight: bold;
+        }
+        
+        .same-edge {
+            color: #00b09b;
+            font-weight: bold;
+        }
+        
+        .warning-box {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            color: #856404;
+        }
+        
+        .keterangan-cell {
+            text-align: left !important;
+            font-size: 0.85em;
+            color: #555;
+            max-width: 200px;
+            word-wrap: break-word;
+        }
+        
+        .step-number {
+            font-weight: bold;
+            color: #4a00e0;
+        }
+        
+        .simpul-ditambahkan {
+            color: #00b09b;
+            font-weight: 500;
+        }
+        
+        .simpul-penghubung {
+            color: #8e2de2;
+            font-weight: 500;
+        }
+        
+        .edge-skipped {
+            color: #ff416c;
+            font-style: italic;
+        }
+        
+        .edge-added {
+            color: #00b09b;
+            font-weight: bold;
+        }
+        
+        .prim-table tr.skipped-row {
+            background-color: #fff5f5;
+        }
+        
+        .prim-table tr.skipped-row td {
+            color: #666;
+        }
+        
+        .edge-weight-added {
+            color: #00b09b;
+            font-weight: bold;
+        }
+        
+        .edge-weight-skipped {
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Kalkulator Rentang Minimum</h1>
+            <p class="subtitle">Hitung rentang minimum dengan algoritma Kruskal dan Prim</p>
+        </header>
+        
+        <div class="content">
+            <div class="input-section">
+                <h2 class="section-title">Input Graf</h2>
+                
+                <div class="instruction">
+                    <p><strong>Petunjuk:</strong></p>
+                    <ul>
+                        <li>Masukkan simpul dan bobot untuk setiap edge</li>
+                        <li>Graf dianggap tidak berarah (a-b sama dengan b-a)</li>
+                        <li>Simpul bisa berupa huruf atau angka</li>
+                        <li>Klik "Hitung Rentang Minimum" untuk menjalankan kedua algoritma</li>
+                    </ul>
+                </div>
+                
+                <div class="form-group">
+                    <label for="startNode">Simpul Awal (untuk algoritma Prim):</label>
+                    <input type="text" id="startNode" value="a" placeholder="Contoh: a">
+                </div>
+                
+                <div class="form-group">
+                    <label>Tambah Edge Baru:</label>
+                    <div class="edge-input">
+                        <input type="text" id="node1" placeholder="Simpul 1 (contoh: a)">
+                        <input type="text" id="node2" placeholder="Simpul 2 (contoh: b)">
+                        <input type="number" id="weight" placeholder="Bobot" min="1">
+                    </div>
+                    <button class="btn btn-add" id="addEdgeBtn">Tambah Edge</button>
+                </div>
+                
+                <div class="form-group">
+                    <label>Edge yang Telah Ditambahkan:</label>
+                    <div class="edge-list" id="edgeList">
+                        <!-- Edge akan muncul di sini -->
+                    </div>
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn btn-calculate" id="calculateBtn">Hitung Rentang Minimum</button>
+                    <button class="btn btn-reset" id="resetBtn">Reset</button>
+                </div>
+                
+                <div class="form-group">
+                    <label>Atau gunakan contoh graf:</label>
+                    <select id="exampleSelect">
+                        <option value="">Pilih contoh...</option>
+                        <option value="example1">Contoh 1 (9 simpul)</option>
+                        <option value="example2">Contoh 2 (graf sederhana)</option>
+                        <option value="example4" selected>Contoh 3 (graf kompleks 12 simpul a-k)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Mode Analisis Prim:</label>
+                    <div>
+                        <button class="toggle-btn active" id="modeSingle">Single Path</button>
+                        <button class="toggle-btn" id="modeAlternative">Alternative Paths</button>
+                    </div>
+                    <p style="font-size: 0.9em; color: #666; margin-top: 5px;">
+                        <em>Alternative Paths: Menampilkan semua kemungkinan MST dengan Prim</em>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="output-section">
+                <h2 class="section-title">Hasil Perhitungan</h2>
+                
+                <div class="result-box">
+                    <h3 class="algorithm-title">Algoritma Kruskal</h3>
+                    <div class="step-box">
+                        <div class="step-title">Langkah-langkah Kruskal (urut dari bobot terkecil):</div>
+                        <div id="kruskalSteps">- Belum dihitung -</div>
+                    </div>
+                    <div class="rentang-weight" id="kruskalWeight">-</div>
+                    <div>Edge dalam Rentang Minimum:</div>
+                    <ul class="edge-list-result" id="kruskalEdges">
+                        <li>-</li>
+                    </ul>
+                </div>
+                
+                <div class="result-box">
+                    <h3 class="algorithm-title" id="primTitle">Algoritma Prim (mulai dari: <span id="primStartNode">a</span>)</h3>
+                    <div class="step-box">
+                        <div class="step-title">Langkah-langkah Prim:</div>
+                        <div id="primSteps">- Belum dihitung -</div>
+                    </div>
+                    <div class="rentang-weight" id="primWeight">-</div>
+                    <div>Edge dalam Rentang Minimum:</div>
+                    <ul class="edge-list-result" id="primEdges">
+                        <li>-</li>
+                    </ul>
+                </div>
+                
+                <div class="comparison">
+                    <h3 class="algorithm-title">Analisis Alternatif Graf Minimum</h3>
+                    <div id="conclusion">Masukkan data graf terlebih dahulu, lalu klik "Hitung Rentang Minimum"</div>
+                    <div id="alternativeAnalysis" style="margin-top: 15px;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Alat penghitung Rentang Minimum menggunakan algoritma Greedy (Kruskal dan Prim)</p>
+            <p>© 2023 - Kalkulator Graf Interaktif</p>
+        </footer>
+    </div>
+
+    <script>
+        // Data graf yang disimpan
+        let edges = [];
+        let nodes = new Set();
+        let analysisMode = 'single'; // 'single' atau 'alternative'
+        
+        // Element references
+        const edgeListElement = document.getElementById('edgeList');
+        const node1Input = document.getElementById('node1');
+        const node2Input = document.getElementById('node2');
+        const weightInput = document.getElementById('weight');
+        const addEdgeBtn = document.getElementById('addEdgeBtn');
+        const calculateBtn = document.getElementById('calculateBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const exampleSelect = document.getElementById('exampleSelect');
+        const startNodeInput = document.getElementById('startNode');
+        const modeSingleBtn = document.getElementById('modeSingle');
+        const modeAlternativeBtn = document.getElementById('modeAlternative');
+        
+        // Output elements
+        const kruskalWeightElement = document.getElementById('kruskalWeight');
+        const kruskalEdgesElement = document.getElementById('kruskalEdges');
+        const kruskalStepsElement = document.getElementById('kruskalSteps');
+        const primWeightElement = document.getElementById('primWeight');
+        const primEdgesElement = document.getElementById('primEdges');
+        const primStepsElement = document.getElementById('primSteps');
+        const primStartNodeElement = document.getElementById('primStartNode');
+        const primTitleElement = document.getElementById('primTitle');
+        const conclusionElement = document.getElementById('conclusion');
+        const alternativeAnalysisElement = document.getElementById('alternativeAnalysis');
+        
+        // Contoh graf
+        const examples = {
+            example1: {
+                name: "Contoh 1 (9 simpul)",
+                startNode: "a",
+                edges: [
+                    {node1: "a", node2: "b", weight: 5},
+                    {node1: "a", node2: "d", weight: 2},
+                    {node1: "b", node2: "c", weight: 4},
+                    {node1: "b", node2: "d", weight: 3},
+                    {node1: "b", node2: "e", weight: 5},
+                    {node1: "b", node2: "f", weight: 6},
+                    {node1: "c", node2: "f", weight: 3},
+                    {node1: "d", node2: "e", weight: 7},
+                    {node1: "d", node2: "h", weight: 8},
+                    {node1: "d", node2: "g", weight: 6},
+                    {node1: "e", node2: "f", weight: 1},
+                    {node1: "e", node2: "h", weight: 3},
+                    {node1: "f", node2: "h", weight: 4},
+                    {node1: "f", node2: "i", weight: 4},
+                    {node1: "g", node2: "h", weight: 4},
+                    {node1: "h", node2: "i", weight: 2}
+                ]
+            },
+            example2: {
+                name: "Contoh 2 (graf sederhana)",
+                startNode: "a",
+                edges: [
+                    {node1: "a", node2: "b", weight: 4},
+                    {node1: "a", node2: "c", weight: 1},
+                    {node1: "b", node2: "c", weight: 2},
+                    {node1: "b", node2: "d", weight: 5},
+                    {node1: "c", node2: "d", weight: 3}
+                ]
+            },
+            example4: {
+                name: "Contoh 3 (graf kompleks 12 simpul a-k)",
+                startNode: "a",
+                edges: [
+                    {node1: "a", node2: "b", weight: 10},
+                    {node1: "a", node2: "e", weight: 4},
+                    {node1: "a", node2: "g", weight: 3},
+                    {node1: "a", node2: "k", weight: 25},
+                    {node1: "b", node2: "e", weight: 5},
+                    {node1: "b", node2: "d", weight: 1},
+                    {node1: "b", node2: "c", weight: 25},
+                    {node1: "c", node2: "d", weight: 10},
+                    {node1: "c", node2: "f", weight: 3},
+                    {node1: "c", node2: "h", weight: 35},
+                    {node1: "d", node2: "e", weight: 4},
+                    {node1: "d", node2: "f", weight: 9},
+                    {node1: "e", node2: "g", weight: 2},
+                    {node1: "f", node2: "h", weight: 7},
+                    {node1: "f", node2: "i", weight: 5},
+                    {node1: "g", node2: "k", weight: 12},
+                    {node1: "g", node2: "j", weight: 8},
+                    {node1: "h", node2: "i", weight: 10},
+                    {node1: "h", node2: "l", weight: 25},
+                    {node1: "i", node2: "j", weight: 4},
+                    {node1: "i", node2: "l", weight: 9},
+                    {node1: "j", node2: "k", weight: 11},
+                    {node1: "j", node2: "l", weight: 6},
+                    {node1: "k", node2: "l", weight: 100}
+                ]
+            }
+        };
+        
+        // Inisialisasi
+        function init() {
+            updateEdgeList();
+            
+            // Event listeners
+            addEdgeBtn.addEventListener('click', addEdge);
+            calculateBtn.addEventListener('click', calculateRentangMinimum);
+            resetBtn.addEventListener('click', resetAll);
+            exampleSelect.addEventListener('change', loadExample);
+            
+            modeSingleBtn.addEventListener('click', () => setAnalysisMode('single'));
+            modeAlternativeBtn.addEventListener('click', () => setAnalysisMode('alternative'));
+            
+            // Enter key untuk input edge
+            [node1Input, node2Input, weightInput].forEach(input => {
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') addEdge();
+                });
+            });
+            
+            startNodeInput.addEventListener('input', function() {
+                primStartNodeElement.textContent = startNodeInput.value || "a";
+            });
+            
+            // Muat contoh kompleks secara default
+            loadExampleGraph('example4');
+        }
+        
+        function setAnalysisMode(mode) {
+            analysisMode = mode;
+            if (mode === 'single') {
+                modeSingleBtn.classList.add('active');
+                modeAlternativeBtn.classList.remove('active');
+                primTitleElement.textContent = `Algoritma Prim (mulai dari: ${startNodeInput.value})`;
+            } else {
+                modeSingleBtn.classList.remove('active');
+                modeAlternativeBtn.classList.add('active');
+                primTitleElement.textContent = `Algoritma Prim - Multiple Alternatives (mulai dari: ${startNodeInput.value})`;
+            }
+            
+            // Recalculate jika sudah ada data
+            if (edges.length > 0) {
+                calculateRentangMinimum();
+            }
+        }
+        
+        // Tambah edge baru
+        function addEdge() {
+            const node1 = node1Input.value.trim();
+            const node2 = node2Input.value.trim();
+            const weight = parseInt(weightInput.value);
+            
+            if (!node1 || !node2 || isNaN(weight) || weight <= 0) {
+                alert("Harap masukkan simpul dan bobot yang valid!");
+                return;
+            }
+            
+            edges.push({node1, node2, weight});
+            nodes.add(node1);
+            nodes.add(node2);
+            
+            node1Input.value = '';
+            node2Input.value = '';
+            weightInput.value = '';
+            node1Input.focus();
+            
+            updateEdgeList();
+        }
+        
+        // Update tampilan daftar edge
+        function updateEdgeList() {
+            edgeListElement.innerHTML = '';
+            
+            if (edges.length === 0) {
+                edgeListElement.innerHTML = '<div style="text-align: center; padding: 20px; color: #777;">Belum ada edge yang ditambahkan</div>';
+                return;
+            }
+            
+            edges.forEach((edge, index) => {
+                const edgeElement = document.createElement('div');
+                edgeElement.className = 'edge-item';
+                edgeElement.innerHTML = `
+                    <span>${edge.node1} - ${edge.node2} (${edge.weight})</span>
+                    <button class="btn-remove" data-index="${index}">×</button>
+                `;
+                edgeListElement.appendChild(edgeElement);
+            });
+            
+            document.querySelectorAll('.btn-remove').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    removeEdge(index);
+                });
+            });
+        }
+        
+        // Hapus edge
+        function removeEdge(index) {
+            edges.splice(index, 1);
+            updateNodeSet();
+            updateEdgeList();
+        }
+        
+        // Update set nodes berdasarkan edges
+        function updateNodeSet() {
+            nodes.clear();
+            edges.forEach(edge => {
+                nodes.add(edge.node1);
+                nodes.add(edge.node2);
+            });
+        }
+        
+        // Load contoh graf
+        function loadExample() {
+            const exampleKey = exampleSelect.value;
+            if (exampleKey && examples[exampleKey]) {
+                loadExampleGraph(exampleKey);
+            }
+        }
+        
+        // Load contoh graf berdasarkan kunci
+        function loadExampleGraph(exampleKey) {
+            const example = examples[exampleKey];
+            edges = [...example.edges];
+            startNodeInput.value = example.startNode;
+            primStartNodeElement.textContent = example.startNode;
+            updateNodeSet();
+            updateEdgeList();
+            exampleSelect.value = exampleKey;
+        }
+        
+        // Reset semua input
+        function resetAll() {
+            edges = [];
+            nodes.clear();
+            node1Input.value = '';
+            node2Input.value = '';
+            weightInput.value = '';
+            startNodeInput.value = 'a';
+            primStartNodeElement.textContent = 'a';
+            exampleSelect.value = '';
+            updateEdgeList();
+            clearResults();
+        }
+        
+        // Hapus hasil perhitungan sebelumnya
+        function clearResults() {
+            kruskalWeightElement.textContent = '-';
+            kruskalEdgesElement.innerHTML = '<li>-</li>';
+            kruskalStepsElement.innerHTML = '- Belum dihitung -';
+            primWeightElement.textContent = '-';
+            primEdgesElement.innerHTML = '<li>-</li>';
+            primStepsElement.innerHTML = '- Belum dihitung -';
+            conclusionElement.textContent = 'Masukkan data graf terlebih dahulu, lalu klik "Hitung Rentang Minimum"';
+            alternativeAnalysisElement.innerHTML = '';
+        }
+        
+        // Hitung Rentang Minimum dengan Kruskal dan Prim
+        function calculateRentangMinimum() {
+            if (edges.length === 0) {
+                alert("Harap tambahkan edge terlebih dahulu!");
+                return;
+            }
+            
+            const startNode = startNodeInput.value.trim();
+            if (!startNode || !nodes.has(startNode)) {
+                alert("Simpul awal tidak valid atau tidak ada dalam graf!");
+                return;
+            }
+            
+            // Jalankan Kruskal
+            const kruskalResult = kruskalAlgorithm();
+            
+            // Jalankan Prim berdasarkan mode
+            let primResult;
+            let alternativeGraphs = [];
+            
+            if (analysisMode === 'single') {
+                primResult = primAlgorithm(startNode, 'default');
+            } else {
+                // Mode alternative: cari semua kemungkinan
+                alternativeGraphs = findAllAlternativePrimGraphs(startNode);
+                primResult = alternativeGraphs.length > 0 ? alternativeGraphs[0] : primAlgorithm(startNode, 'default');
+            }
+            
+            // Tampilkan hasil
+            displayResults(kruskalResult, primResult, alternativeGraphs);
+        }
+        
+        // Algoritma Kruskal
+        function kruskalAlgorithm() {
+            const sortedEdges = [...edges]
+                .map(edge => ({...edge}))
+                .sort((a, b) => a.weight - b.weight);
+            
+            const parent = {};
+            const rank = {};
+            
+            function find(node) {
+                if (parent[node] !== node) {
+                    parent[node] = find(parent[node]);
+                }
+                return parent[node];
+            }
+            
+            function union(node1, node2) {
+                const root1 = find(node1);
+                const root2 = find(node2);
+                
+                if (root1 !== root2) {
+                    if (rank[root1] > rank[root2]) {
+                        parent[root2] = root1;
+                    } else if (rank[root1] < rank[root2]) {
+                        parent[root1] = root2;
+                    } else {
+                        parent[root2] = root1;
+                        rank[root1] = (rank[root1] || 0) + 1;
+                    }
+                    return true;
+                }
+                return false;
+            }
+            
+            nodes.forEach(node => {
+                parent[node] = node;
+            });
+            
+            const rentangEdges = [];
+            let totalWeight = 0;
+            const steps = [];
+            
+            steps.push("<strong>1. Urutkan semua edge dari bobot terkecil:</strong>");
+            sortedEdges.forEach((edge, i) => {
+                steps.push(`${i+1}. ${edge.node1}-${edge.node2} (${edge.weight})`);
+            });
+            
+            steps.push("<br><strong>2. Proses pemilihan edge:</strong>");
+            
+            for (const edge of sortedEdges) {
+                if (union(edge.node1, edge.node2)) {
+                    rentangEdges.push(edge);
+                    totalWeight += edge.weight;
+                    steps.push(`<span style="color: #00b09b;">✓ Ditambahkan: ${edge.node1}-${edge.node2} (${edge.weight}) - Total: ${totalWeight}</span>`);
+                    
+                    if (rentangEdges.length === nodes.size - 1) {
+                        steps.push(`<strong>✓ Selesai: ${nodes.size - 1} edge terpilih</strong>`);
+                        break;
+                    }
+                } else {
+                    steps.push(`<span style="color: #ff416c;">✗ Dilewati: ${edge.node1}-${edge.node2} (${edge.weight}) - Membentuk siklus</span>`);
+                }
+            }
+            
+            return {
+                edges: rentangEdges,
+                weight: totalWeight,
+                steps: steps
+            };
+        }
+        
+        // Algoritma Prim dengan tie-breaking dan keterangan - VERSI DIPERBAIKI
+        function primAlgorithm(startNode, tieBreakRule = 'default') {
+            const adjacency = {};
+            nodes.forEach(node => adjacency[node] = []);
+            
+            edges.forEach(edge => {
+                adjacency[edge.node1].push({node: edge.node2, weight: edge.weight});
+                adjacency[edge.node2].push({node: edge.node1, weight: edge.weight});
+            });
+            
+            const inTree = new Set([startNode]);
+            const rentangEdges = [];
+            let totalWeight = 0;
+            const steps = [];
+            
+            let candidateEdges = [];
+            let allProcessedEdges = []; // Untuk menyimpan semua edge yang sudah diproses
+            
+            // Tambahkan semua edge dari startNode ke candidate
+            adjacency[startNode].forEach(neighbor => {
+                const edge = {
+                    from: startNode,
+                    to: neighbor.node,
+                    weight: neighbor.weight,
+                    processed: false
+                };
+                candidateEdges.push(edge);
+            });
+            
+            // Tie-breaking function
+            function tieBreakFunction(a, b) {
+                if (a.weight !== b.weight) return a.weight - b.weight;
+                
+                switch(tieBreakRule) {
+                    case 'byFromNode':
+                        if (a.from !== b.from) return a.from.localeCompare(b.from);
+                        return a.to.localeCompare(b.to);
+                    case 'byToNode':
+                        if (a.to !== b.to) return a.to.localeCompare(b.to);
+                        return a.from.localeCompare(b.from);
+                    default:
+                        if (a.from !== b.from) return a.from.localeCompare(b.from);
+                        return a.to.localeCompare(b.to);
+                }
+            }
+            
+            // Urutkan candidate edges
+            candidateEdges.sort(tieBreakFunction);
+            
+            // Header tabel dengan kolom KETERANGAN
+            steps.push(`<strong>Prim mulai dari simpul ${startNode}:</strong>`);
+            steps.push(`<table class="prim-table"><thead><tr>
+                <th>Step</th>
+                <th>Edge Dipilih</th>
+                <th>Bobot</th>
+                <th>Simpul di Tree</th>
+                <th>Keterangan</th>
+            </tr></thead><tbody>`);
+            
+            let stepNumber = 1;
+            
+            // Proses sampai semua simpul masuk tree
+            while (inTree.size < nodes.size && candidateEdges.length > 0) {
+                // Ambil edge dengan bobot terkecil
+                const currentEdge = candidateEdges.shift();
+                allProcessedEdges.push(currentEdge);
+                
+                if (!inTree.has(currentEdge.to)) {
+                    // Edge DITAMBAHKAN ke MST
+                    rentangEdges.push({
+                        node1: currentEdge.from,
+                        node2: currentEdge.to,
+                        weight: currentEdge.weight
+                    });
+                    totalWeight += currentEdge.weight;
+                    
+                    // Tentukan keterangan
+                    let keterangan = "";
+                    if (stepNumber === 1) {
+                        keterangan = `<span class="simpul-ditambahkan">Simpul ${startNode} ke ${currentEdge.to}</span>`;
+                    } else {
+                        keterangan = `<span class="simpul-ditambahkan">Simpul ${currentEdge.to}</span> ditambahkan melalui 
+                                    <span class="simpul-penghubung">${currentEdge.from}</span>`;
+                    }
+                    
+                    // Tambahkan simpul baru ke tree
+                    inTree.add(currentEdge.to);
+                    
+                    // Tampilkan edge yang DITAMBAHKAN
+                    steps.push(`<tr>
+                        <td class="step-number">${stepNumber}</td>
+                        <td><strong class="edge-added">${currentEdge.from}-${currentEdge.to}</strong></td>
+                        <td class="edge-weight-added">${currentEdge.weight}</td>
+                        <td>${Array.from(inTree).sort().join(', ')}</td>
+                        <td class="keterangan-cell">${keterangan}</td>
+                    </tr>`);
+                    
+                    stepNumber++;
+                    
+                    // Tambahkan edge baru dari simpul yang baru ditambahkan ke candidate
+                    adjacency[currentEdge.to].forEach(neighbor => {
+                        if (!inTree.has(neighbor.node)) {
+                            const newEdge = {
+                                from: currentEdge.to,
+                                to: neighbor.node,
+                                weight: neighbor.weight,
+                                processed: false
+                            };
+                            // Cek apakah edge sudah ada di candidate
+                            const exists = candidateEdges.some(e => 
+                                (e.from === newEdge.from && e.to === newEdge.to) || 
+                                (e.from === newEdge.to && e.to === newEdge.from)
+                            );
+                            if (!exists) {
+                                candidateEdges.push(newEdge);
+                            }
+                        }
+                    });
+                    
+                    // Urutkan ulang candidate edges
+                    candidateEdges.sort(tieBreakFunction);
+                    
+                } else {
+                    // Edge DILEWATI (simpul tujuan sudah ada di tree)
+                    steps.push(`<tr class="skipped-row">
+                        <td class="step-number">-</td>
+                        <td class="edge-skipped">${currentEdge.from}-${currentEdge.to}</td>
+                        <td class="edge-weight-skipped">${currentEdge.weight}</td>
+                        <td>${Array.from(inTree).sort().join(', ')}</td>
+                        <td class="keterangan-cell"><span style="color: #ff416c;">(Dilewati) Simpul ${currentEdge.to} sudah di pohon</span></td>
+                    </tr>`);
+                }
+            }
+            
+            // Tampilkan edge-edge yang tersisa di candidate sebagai dilewati
+            candidateEdges.forEach(edge => {
+                if (inTree.has(edge.to)) {
+                    steps.push(`<tr class="skipped-row">
+                        <td class="step-number">-</td>
+                        <td class="edge-skipped">${edge.from}-${edge.to}</td>
+                        <td class="edge-weight-skipped">${edge.weight}</td>
+                        <td>${Array.from(inTree).sort().join(', ')}</td>
+                        <td class="keterangan-cell"><span style="color: #ff416c;">(Dilewati) Simpul ${edge.to} sudah di pohon</span></td>
+                    </tr>`);
+                } else {
+                    steps.push(`<tr class="skipped-row">
+                        <td class="step-number">-</td>
+                        <td class="edge-skipped">${edge.from}-${edge.to}</td>
+                        <td class="edge-weight-skipped">${edge.weight}</td>
+                        <td>${Array.from(inTree).sort().join(', ')}</td>
+                        <td class="keterangan-cell"><span style="color: #ff416c;">(Dilewati) Tidak terhubung ke pohon</span></td>
+                    </tr>`);
+                }
+            });
+            
+            steps.push(`</tbody></table>`);
+            steps.push(`<strong>Total bobot: ${totalWeight}, Jumlah edge: ${rentangEdges.length}</strong>`);
+            
+            // Tambahkan ringkasan keterangan
+            steps.push(`<br><strong>Ringkasan Keterangan:</strong>`);
+            steps.push(`<ul style="font-size: 0.9em;">`);
+            
+            rentangEdges.forEach((edge, idx) => {
+                if (idx === 0) {
+                    steps.push(`<li>Simpul <span class="simpul-penghubung">${startNode}</span> ke <span class="simpul-ditambahkan">${edge.node2 === startNode ? edge.node1 : edge.node2}</span></li>`);
+                } else {
+                    // Cari simpul baru yang ditambahkan
+                    let newNode = '';
+                    let connectingNode = '';
+                    
+                    // Cek apakah node1 sudah ada di edge sebelumnya
+                    const prevNodes = new Set();
+                    rentangEdges.slice(0, idx).forEach(e => {
+                        prevNodes.add(e.node1);
+                        prevNodes.add(e.node2);
+                    });
+                    
+                    if (prevNodes.has(edge.node1)) {
+                        newNode = edge.node2;
+                        connectingNode = edge.node1;
+                    } else {
+                        newNode = edge.node1;
+                        connectingNode = edge.node2;
+                    }
+                    
+                    steps.push(`<li>Simpul <span class="simpul-ditambahkan">${newNode}</span> ditambahkan melalui <span class="simpul-penghubung">${connectingNode}</span></li>`);
+                }
+            });
+            
+            steps.push(`</ul>`);
+            
+            return {
+                edges: rentangEdges,
+                weight: totalWeight,
+                steps: steps,
+                startNode: startNode
+            };
+        }
+        
+        // Fungsi untuk menemukan SEMUA alternatif graf minimum dengan Prim
+        function findAllAlternativePrimGraphs(startNode) {
+            const adjacency = {};
+            nodes.forEach(node => adjacency[node] = []);
+            
+            edges.forEach(edge => {
+                adjacency[edge.node1].push({node: edge.node2, weight: edge.weight});
+                adjacency[edge.node2].push({node: edge.node1, weight: edge.weight});
+            });
+            
+            const allAlternatives = [];
+            
+            // Fungsi rekursif untuk mengeksplorasi semua kemungkinan
+            function exploreAlternatives(currentTree, currentEdges, candidateEdges, depth, path) {
+                if (currentTree.size === nodes.size) {
+                    // MST lengkap ditemukan
+                    const totalWeight = currentEdges.reduce((sum, e) => sum + e.weight, 0);
+                    const edgeKey = currentEdges
+                        .map(e => `${e.node1}-${e.node2}-${e.weight}`)
+                        .sort()
+                        .join('|');
+                    
+                    // Cek apakah sudah ada
+                    const existing = allAlternatives.find(a => a.key === edgeKey);
+                    if (!existing) {
+                        allAlternatives.push({
+                            edges: [...currentEdges],
+                            weight: totalWeight,
+                            key: edgeKey,
+                            path: [...path],
+                            edgeOrder: currentEdges.map(e => `${e.node1}-${e.node2}`),
+                            keterangan: generateKeterangan(currentEdges, startNode)
+                        });
+                    }
+                    return;
+                }
+                
+                if (candidateEdges.length === 0 || depth > 100) return;
+                
+                // Kelompokkan candidate edges berdasarkan bobot
+                const weightGroups = {};
+                candidateEdges.forEach(edge => {
+                    if (!weightGroups[edge.weight]) weightGroups[edge.weight] = [];
+                    weightGroups[edge.weight].push(edge);
+                });
+                
+                // Ambil bobot terkecil
+                const minWeight = Math.min(...Object.keys(weightGroups).map(Number));
+                const minEdges = weightGroups[minWeight];
+                
+                // Untuk setiap edge dengan bobot minimum, coba tambahkan
+                for (const edge of minEdges) {
+                    if (!currentTree.has(edge.to)) {
+                        const newTree = new Set(currentTree);
+                        const newEdges = [...currentEdges, {
+                            node1: edge.from,
+                            node2: edge.to,
+                            weight: edge.weight
+                        }];
+                        const newPath = [...path, `${edge.from}-${edge.to}`];
+                        
+                        const newCandidates = candidateEdges.filter(e => 
+                            e !== edge && !currentTree.has(e.to)
+                        );
+                        
+                        // Tambahkan edge baru dari node yang baru ditambahkan
+                        adjacency[edge.to].forEach(neighbor => {
+                            if (!newTree.has(neighbor.node)) {
+                                newCandidates.push({
+                                    from: edge.to,
+                                    to: neighbor.node,
+                                    weight: neighbor.weight
+                                });
+                            }
+                        });
+                        
+                        newTree.add(edge.to);
+                        
+                        exploreAlternatives(newTree, newEdges, newCandidates, depth + 1, newPath);
+                        
+                        // Batasi jumlah alternatif untuk performa
+                        if (allAlternatives.length >= 10) return;
+                    }
+                }
+            }
+            
+            // Helper function untuk generate keterangan
+            function generateKeterangan(edgeList, startNode) {
+                const keterangan = [];
+                const nodesInTree = new Set([startNode]);
+                
+                edgeList.forEach((edge, idx) => {
+                    const newNode = nodesInTree.has(edge.node1) ? edge.node2 : edge.node1;
+                    const connectingNode = newNode === edge.node1 ? edge.node2 : edge.node1;
+                    
+                    if (idx === 0) {
+                        keterangan.push(`Simpul ${startNode} ke ${newNode}`);
+                    } else {
+                        keterangan.push(`Simpul ${newNode} ditambahkan melalui ${connectingNode}`);
+                    }
+                    
+                    nodesInTree.add(edge.node1);
+                    nodesInTree.add(edge.node2);
+                });
+                
+                return keterangan;
+            }
+            
+            // Inisialisasi
+            const initialCandidates = adjacency[startNode].map(neighbor => ({
+                from: startNode,
+                to: neighbor.node,
+                weight: neighbor.weight
+            }));
+            
+            exploreAlternatives(
+                new Set([startNode]),
+                [],
+                initialCandidates,
+                0,
+                []
+            );
+            
+            // Urutkan berdasarkan bobot (yang terkecil dulu)
+            allAlternatives.sort((a, b) => a.weight - b.weight);
+            
+            return allAlternatives;
+        }
+        
+        // Display results dengan analisis alternatif
+        function displayResults(kruskalResult, primResult, alternativeGraphs) {
+            // Tampilkan Kruskal
+            kruskalWeightElement.textContent = kruskalResult.weight;
+            kruskalStepsElement.innerHTML = kruskalResult.steps.join('<br>');
+            
+            kruskalEdgesElement.innerHTML = '';
+            kruskalResult.edges.forEach(edge => {
+                const li = document.createElement('li');
+                li.textContent = `${edge.node1} - ${edge.node2} (${edge.weight})`;
+                kruskalEdgesElement.appendChild(li);
+            });
+            
+            // Tampilkan Prim
+            primWeightElement.textContent = primResult.weight;
+            primStepsElement.innerHTML = primResult.steps.join('');
+            
+            primEdgesElement.innerHTML = '';
+            if (primResult.edges && primResult.edges.length > 0) {
+                primResult.edges.forEach((edge, index) => {
+                    const li = document.createElement('li');
+                    
+                    // Buat span untuk edge
+                    const edgeSpan = document.createElement('span');
+                    edgeSpan.textContent = `${edge.node1} - ${edge.node2} (${edge.weight})`;
+                    edgeSpan.style.fontWeight = 'bold';
+                    edgeSpan.style.color = '#4a00e0';
+                    
+                    // Buat span untuk keterangan
+                    let keterangan = '';
+                    if (index === 0) {
+                        keterangan = `Simpul ${primResult.startNode} ke ${edge.node1 === primResult.startNode ? edge.node2 : edge.node1}`;
+                    } else {
+                        const prevEdge = primResult.edges[index - 1];
+                        let connectingNode = '';
+                        
+                        if (edge.node1 === prevEdge.node1 || edge.node1 === prevEdge.node2) {
+                            connectingNode = edge.node1;
+                        } else if (edge.node2 === prevEdge.node1 || edge.node2 === prevEdge.node2) {
+                            connectingNode = edge.node2;
+                        }
+                        
+                        const newNode = connectingNode === edge.node1 ? edge.node2 : edge.node1;
+                        keterangan = `Simpul ${newNode} ditambahkan melalui ${connectingNode}`;
+                    }
+                    
+                    const explanationSpan = document.createElement('span');
+                    explanationSpan.textContent = ` # ${keterangan}`;
+                    explanationSpan.style.fontSize = '0.85em';
+                    explanationSpan.style.color = '#666';
+                    explanationSpan.style.fontStyle = 'italic';
+                    explanationSpan.style.marginLeft = '10px';
+                    
+                    li.appendChild(edgeSpan);
+                    li.appendChild(explanationSpan);
+                    primEdgesElement.appendChild(li);
+                });
+            } else {
+                primEdgesElement.innerHTML = '<li>-</li>';
+            }
+            
+            // Tampilkan kesimpulan dan analisis alternatif
+            let conclusion = `<strong>Total bobot Minimum Spanning Tree: ${kruskalResult.weight}</strong>`;
+            
+            if (kruskalResult.weight === primResult.weight) {
+                conclusion += `<br>✓ Kedua algoritma menghasilkan bobot yang sama.`;
+            } else {
+                conclusion += `<br>⚠ Bobot berbeda: Kruskal=${kruskalResult.weight}, Prim=${primResult.weight}`;
+            }
+            
+            conclusionElement.innerHTML = conclusion;
+            
+            // Analisis alternatif graf
+            alternativeAnalysisElement.innerHTML = '';
+            
+            if (analysisMode === 'alternative' && alternativeGraphs.length > 0) {
+                const currentStartNode = startNodeInput.value;
+                
+                let analysisHTML = `<div class="alternative-graph">
+                    <div class="alternative-title">🔍 ANALISIS ALTERNATIF GRAF MINIMUM DENGAN PRIM (mulai dari: ${currentStartNode})</div>
+                    <p>Ditemukan <strong>${alternativeGraphs.length}</strong> alternatif graf dengan bobot minimum sama:</p>`;
+                
+                // Tampilkan semua alternatif
+                alternativeGraphs.forEach((alt, idx) => {
+                    const isDifferentFromFirst = idx > 0;
+                    const firstAlt = alternativeGraphs[0];
+                    
+                    analysisHTML += `
+                        <div class="alternative-card">
+                            <h4>Alternatif ${idx + 1} (Bobot: ${alt.weight})</h4>
+                            <div class="alternative-path">
+                    `;
+                    
+                    alt.edgeOrder.forEach((edge, edgeIdx) => {
+                        let edgeClass = "path-step";
+                        if (isDifferentFromFirst) {
+                            if (!firstAlt.edgeOrder.includes(edge)) {
+                                edgeClass += " selected";
+                            }
+                        }
+                        analysisHTML += `<div class="${edgeClass}">${edge}</div>`;
+                    });
+                    
+                    analysisHTML += `</div>`;
+                    
+                    // Tampilkan keterangan
+                    if (alt.keterangan && alt.keterangan.length > 0) {
+                        analysisHTML += `<p><strong>Keterangan:</strong></p><ul>`;
+                        alt.keterangan.forEach(k => {
+                            analysisHTML += `<li>${k}</li>`;
+                        });
+                        analysisHTML += `</ul>`;
+                    }
+                    
+                    if (isDifferentFromFirst) {
+                        // Tampilkan perbedaan dengan alternatif pertama
+                        const differentEdges = alt.edgeOrder.filter(edge => 
+                            !firstAlt.edgeOrder.includes(edge)
+                        );
+                        const sameEdges = alt.edgeOrder.filter(edge => 
+                            firstAlt.edgeOrder.includes(edge)
+                        );
+                        
+                        if (differentEdges.length > 0) {
+                            analysisHTML += `<p><strong>Perbedaan dengan Alternatif 1:</strong><br>`;
+                            analysisHTML += `✓ Edge sama: <span class="same-edge">${sameEdges.length} edge</span><br>`;
+                            analysisHTML += `✗ Edge berbeda: <span class="different-edge">${differentEdges.join(', ')}</span></p>`;
+                        }
+                    }
+                    
+                    analysisHTML += `<p><strong>Urutan pemilihan:</strong> ${alt.edgeOrder.join(' → ')}</p>`;
+                    
+                    analysisHTML += `</div>`;
+                });
+                
+                // Analisis edge dengan bobot sama
+                const weightGroups = {};
+                edges.forEach(edge => {
+                    if (!weightGroups[edge.weight]) weightGroups[edge.weight] = [];
+                    weightGroups[edge.weight].push(`${edge.node1}-${edge.node2}`);
+                });
+                
+                const equalWeightEdges = Object.entries(weightGroups)
+                    .filter(([weight, edges]) => edges.length > 1)
+                    .map(([weight, edges]) => ({ weight: parseInt(weight), edges }));
+                
+                if (equalWeightEdges.length > 0) {
+                    analysisHTML += `<div class="alternative-card">
+                        <h4>Edge dengan Bobot Sama (Penyebab Alternatif)</h4>
+                        <p>Alternatif muncul karena ada edge dengan bobot sama yang bisa dipertukarkan:</p>
+                        <ul>`;
+                    
+                    equalWeightEdges.forEach(group => {
+                        analysisHTML += `<li>Bobot <span class="highlight">${group.weight}</span>: ${group.edges.join(', ')}</li>`;
+                    });
+                    
+                    analysisHTML += `</ul></div>`;
+                }
+                
+                analysisHTML += `<p style="font-size: 0.9em; color: #666; margin-top: 15px;">
+                    <strong>Catatan:</strong> Semua alternatif di atas adalah Minimum Spanning Tree yang valid.
+                    Prim dapat menghasilkan alternatif berbeda tergantung urutan pemrosesan edge dengan bobot sama.
+                </p>`;
+                
+                analysisHTML += `</div>`;
+                alternativeAnalysisElement.innerHTML = analysisHTML;
+            } else if (analysisMode === 'alternative' && alternativeGraphs.length === 0) {
+                alternativeAnalysisElement.innerHTML = `
+                    <div class="warning-box">
+                        <strong>Tidak ditemukan alternatif MST untuk start node ${startNodeInput.value}</strong>
+                        <p>Kemungkinan penyebab:</p>
+                        <ul>
+                            <li>Hanya ada satu MST unik untuk graf ini</li>
+                            <li>Tidak ada edge dengan bobot sama yang dapat dipertukarkan</li>
+                            <li>Start node ${startNodeInput.value} memiliki edge unik yang harus dipilih</li>
+                        </ul>
+                    </div>
+                `;
+            }
+        }
+        
+        // Jalankan inisialisasi saat halaman dimuat
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

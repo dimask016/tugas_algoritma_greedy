@@ -67,6 +67,14 @@
             font-size: 1.8rem;
         }
         
+        h3.section-title {
+            color: #2c3e50;
+            margin: 40px 0 20px;
+            font-size: 1.8rem;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
         .info-card {
             background-color: #f8f9fa;
             padding: 15px;
@@ -176,6 +184,10 @@
             h2 {
                 font-size: 1.5rem;
             }
+            
+            h3.section-title {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
@@ -197,53 +209,78 @@
         </header>
         
         <main>
-            <section class="demo-section">
-                <h2>Demo Algoritma Greedy Berikut Ini:</h2>
-                
-                <div class="demo-grid">
-                    <div class="demo-card">
-                        <h3>1. Activity Selection (Pemilihan Aktivitas Optimal)</h3>
-                        <p>Algoritma greedy untuk memilih jumlah aktivitas maksimum yang dapat dilakukan oleh satu orang atau prosesor dengan asumsi bahwa seseorang hanya dapat mengerjakan satu aktivitas pada satu waktu.</p>
-                        <a href="Activity-SelectionTool.html" target="_blank" class="btn">Lihat Demo Activity Selection</a>
-                    </div>
-                    
-                    <div class="demo-card">
-                        <h3>2. Knapsack 0/1</h3>
-                        <p>Algoritma greedy untuk masalah knapsack 0/1 di mana item harus diambil seutuhnya atau tidak sama sekali. Tujuannya adalah memaksimalkan nilai total tanpa melebihi kapasitas knapsack.</p>
-                        <a href="knapsack.html" target="_blank" class="btn">Lihat Demo Knapsack 0/1</a>
-                    </div>
-                    
-                    <div class="demo-card">
-                        <h3>3. Fractional Knapsack</h3>
-                        <p>Algoritma greedy untuk masalah fractional knapsack di mana item dapat diambil sebagian. Tujuannya adalah memaksimalkan nilai total dengan membagi item jika diperlukan.</p>
-                        <a href="fractional_knapsack.html" target="_blank" class="btn">Lihat Demo Fractional Knapsack</a>
-                    </div>
-                    
-                    <div class="demo-card">
-                        <h3>4. Hitung Lintasan Terpendek Router (Dijkstra)</h3>
-                        <p>Algoritma Dijkstra untuk mencari lintasan terpendek dalam jaringan router. Menghitung rute optimal antara node dalam graf berbobot.</p>
-                        <a href="algoritma_djikstra.html" target="_blank" class="btn">Lihat Demo Dijkstra Router</a>
-                    </div>
-                    
-                    <div class="demo-card">
-                        <h3>5. Task Algoritma Dijkstra</h3>
-                        <p>Implementasi algoritma Dijkstra untuk menyelesaikan masalah pencarian jalur terpendek dalam graf dengan bobot tertentu.</p>
-                        <a href="algoritma_djikstra02.html" target="_blank" class="btn">Lihat Demo Task Dijkstra</a>
-                    </div>
-                    
-                    <div class="demo-card">
-                        <h3>6. Dijkstra dengan Arah Panah</h3>
-                        <p>Visualisasi algoritma Dijkstra dengan representasi graf yang dilengkapi arah panah untuk menunjukkan jalur yang ditemukan.</p>
-                        <a href="algoritma_djikstra_arah_panah.html" target="_blank" class="btn">Lihat Demo Dijkstra dengan Panah</a>
-                    </div>
+            <h3 class="section-title">Tugas Knapsack</h3>
+            
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <h3>1. Knapsack 0/1</h3>
+                    <p>Algoritma greedy untuk masalah knapsack 0/1 di mana item harus diambil seutuhnya atau tidak sama sekali. Tujuannya adalah memaksimalkan nilai total tanpa melebihi kapasitas knapsack.</p>
+                    <a href="knapsack.html" target="_blank" class="btn">Lihat Demo Knapsack 0/1</a>
                 </div>
-            </section>
+                
+                <div class="demo-card">
+                    <h3>2. Fractional Knapsack</h3>
+                    <p>Algoritma greedy untuk masalah fractional knapsack di mana item dapat diambil sebagian. Tujuannya adalah memaksimalkan nilai total dengan membagi item jika diperlukan.</p>
+                    <a href="fractional_knapsack.html" target="_blank" class="btn">Lihat Demo Fractional Knapsack</a>
+                </div>
+            </div>
+            
+            <h3 class="section-title">Tugas Algoritma Djikstra</h3>
+            
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <h3>1. Hitung Lintasan Terpendek Router (Dijkstra)</h3>
+                    <p>Algoritma Dijkstra untuk mencari lintasan terpendek dalam jaringan router. Menghitung rute optimal antara node dalam graf berbobot.</p>
+                    <a href="algoritma_djikstra.html" target="_blank" class="btn">Lihat Demo Dijkstra Router</a>
+                </div>
+                
+                <div class="demo-card">
+                    <h3>2. Task Algoritma Dijkstra</h3>
+                    <p>Implementasi algoritma Dijkstra untuk menyelesaikan masalah pencarian jalur terpendek dalam graf dengan bobot tertentu.</p>
+                    <a href="algoritma_djikstra02.html" target="_blank" class="btn">Lihat Demo Task Dijkstra</a>
+                </div>
+                
+                <div class="demo-card">
+                    <h3>3. Dijkstra dengan Arah Panah</h3>
+                    <p>Visualisasi algoritma Dijkstra dengan representasi graf yang dilengkapi arah panah untuk menunjukkan jalur yang ditemukan.</p>
+                    <a href="algoritma_djikstra_arah_panah.html" target="_blank" class="btn">Lihat Demo Dijkstra dengan Panah</a>
+                </div>
+            </div>
+            
+            <h3 class="section-title">Tugas Algoritma Minimum Spanning Tree</h3>
+            
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <h3>1. Tugas 1 - Kruskal dan Prim</h3>
+                    <p>Implementasi algoritma Kruskal dan Prim untuk mencari Minimum Spanning Tree (MST) dalam graf. Menemukan pohon rentang minimum yang menghubungkan semua simpul dengan total bobot minimum.</p>
+                    <a href="rentang-minimum.html" target="_blank" class="btn">Lihat Demo Tugas 1</a>
+                </div>
+                
+                <div class="demo-card">
+                    <h3>2. Tugas 2 - Kruskal dan Prim</h3>
+                    <p>Implementasi lanjutan algoritma Kruskal dan Prim dengan studi kasus berbeda untuk mencari Minimum Spanning Tree. Perbandingan performa dan hasil kedua algoritma.</p>
+                    <a href="rentang-minimum_02.html" target="_blank" class="btn">Lihat Demo Tugas 2</a>
+                </div>
+                
+                <div class="demo-card">
+                    <h3>3. Activity Selection (Pemilihan Aktivitas Optimal)</h3>
+                    <p>Algoritma greedy untuk memilih jumlah aktivitas maksimum yang dapat dilakukan oleh satu orang atau prosesor dengan asumsi bahwa seseorang hanya dapat mengerjakan satu aktivitas pada satu waktu.</p>
+                    <a href="Activity-SelectionTool.html" target="_blank" class="btn">Lihat Demo Activity Selection</a>
+                </div>
+            </div>
             
             <section class="algorithm-description">
                 <h3>Tentang Algoritma Greedy</h3>
                 <p>Algoritma greedy adalah pendekatan algoritma yang membuat pilihan optimal lokal pada setiap tahap dengan harapan menemukan solusi optimal global. Algoritma greedy bekerja dengan membangun solusi langkah demi langkah, pada setiap langkah memilih pilihan yang terbaik saat ini tanpa mempertimbangkan konsekuensi di masa depan.</p>
                 <p>Algoritma greedy tidak selalu menghasilkan solusi optimal, tetapi dalam banyak kasus tertentu (seperti pada masalah fractional knapsack dan activity selection dengan kondisi tertentu) algoritma greedy dapat memberikan solusi optimal.</p>
-                <p><strong>Catatan:</strong> Algoritma Dijkstra juga termasuk dalam kategori algoritma greedy yang digunakan untuk mencari jalur terpendek dalam graf dengan bobot non-negatif.</p>
+                <p><strong>Catatan:</strong> 
+                    <ul>
+                        <li>Algoritma Knapsack (0/1 dan Fractional) adalah masalah optimasi klasik yang sering diselesaikan dengan pendekatan greedy untuk pengambilan keputusan.</li>
+                        <li>Algoritma Dijkstra termasuk dalam kategori algoritma greedy yang digunakan untuk mencari jalur terpendek dalam graf dengan bobot non-negatif.</li>
+                        <li>Algoritma Kruskal dan Prim juga merupakan algoritma greedy yang digunakan untuk mencari Minimum Spanning Tree (MST) dalam graf.</li>
+                        <li>Activity Selection adalah contoh klasik algoritma greedy untuk penjadwalan aktivitas.</li>
+                    </ul>
+                </p>
             </section>
         </main>
         
