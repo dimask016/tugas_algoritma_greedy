@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalkulator Rentang Minimum (Kruskal & Prim)</title>
+    <title>Kalkulator Rentang Minimum (Kruskal & Prim) dengan Visualisasi Graf</title>
     <style>
         * {
             box-sizing: border-box;
@@ -20,7 +20,7 @@
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             background-color: rgba(255, 255, 255, 0.95);
             border-radius: 15px;
@@ -49,6 +49,7 @@
             display: flex;
             flex-wrap: wrap;
             padding: 20px;
+            gap: 20px;
         }
         
         .input-section {
@@ -58,10 +59,20 @@
             border-right: 1px solid #eee;
         }
         
-        .output-section {
+        .visualization-section {
             flex: 1;
+            min-width: 500px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .output-section {
+            flex: 100%;
             min-width: 300px;
             padding: 20px;
+            margin-top: 20px;
         }
         
         .section-title {
@@ -185,6 +196,106 @@
             justify-content: center;
         }
         
+        /* Visualization Canvas */
+        .visualization-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background-color: white;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        #graphCanvas {
+            width: 100%;
+            height: 100%;
+            cursor: default;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+        
+        .legend-node {
+            background-color: #4a00e0;
+        }
+        
+        .legend-edge {
+            width: 30px;
+            height: 2px;
+            background-color: #666;
+        }
+        
+        .legend-weight {
+            width: 30px;
+            height: 20px;
+            background-color: #00b09b;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            border-radius: 3px;
+        }
+        
+        .legend-selected {
+            background-color: #ff416c;
+        }
+        
+        .instruction-box {
+            background-color: #eef2ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .instruction-box ul {
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+        
+        .instruction-box li {
+            margin-bottom: 8px;
+        }
+        
+        .drag-instruction {
+            background: linear-gradient(to right, #ffecd2, #fcb69f);
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .drag-icon {
+            font-size: 1.2rem;
+        }
+        
         .result-box {
             background-color: #f8f9fa;
             border-radius: 10px;
@@ -249,9 +360,14 @@
             border-top: 1px solid #eee;
         }
         
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .content {
                 flex-direction: column;
+            }
+            
+            .input-section, .visualization-section {
+                flex: 100%;
+                min-width: 100%;
             }
             
             .input-section {
@@ -289,58 +405,139 @@
         .step-skipped {
             color: #ff416c;
         }
-		
-		/* Tambahkan di bagian style */
-.edge-explanation {
-    font-size: 0.85em;
-    color: #666;
-    font-style: italic;
-    margin-left: 10px;
-}
-
-.edge-item-result {
-    margin-bottom: 8px;
-    padding: 8px;
-    background-color: #f8f9fa;
-    border-radius: 5px;
-    border-left: 3px solid #4a00e0;
-}
-/* Tambahkan di bagian style CSS */
-.prim-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 10px 0;
-    font-size: 0.9em;
-}
-
-.prim-table th {
-    background-color: #4a00e0;
-    color: white;
-    padding: 8px;
-    text-align: center;
-    border: 1px solid #ddd;
-}
-
-.prim-table td {
-    padding: 8px;
-    border: 1px solid #ddd;
-    text-align: center;
-}
-
-.prim-table tr:nth-child(even) {
-    background-color: #f8f9fa;
-}
-
-.prim-table tr:hover {
-    background-color: #eef2ff;
-}
+        
+        .edge-explanation {
+            font-size: 0.85em;
+            color: #666;
+            font-style: italic;
+            margin-left: 10px;
+        }
+        
+        .edge-item-result {
+            margin-bottom: 8px;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border-left: 3px solid #4a00e0;
+        }
+        
+        .prim-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 0.9em;
+        }
+        
+        .prim-table th {
+            background-color: #4a00e0;
+            color: white;
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        
+        .prim-table td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        
+        .prim-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .prim-table tr:hover {
+            background-color: #eef2ff;
+        }
+        
+        .visualization-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .control-btn {
+            background: linear-gradient(to right, #4a00e0, #8e2de2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(142, 45, 226, 0.3);
+        }
+        
+        .control-btn-reset {
+            background: linear-gradient(to right, #ff416c, #ff4b2b);
+        }
+        
+        .canvas-node {
+            fill: #4a00e0;
+            stroke: white;
+            stroke-width: 2;
+            cursor: grab;
+            transition: all 0.2s;
+        }
+        
+        .canvas-node:hover {
+            fill: #8e2de2;
+            transform: scale(1.1);
+        }
+        
+        .canvas-node.dragging {
+            fill: #ff416c;
+            cursor: grabbing;
+        }
+        
+        .canvas-node-label {
+            fill: white;
+            font-size: 14px;
+            font-weight: bold;
+            text-anchor: middle;
+            dominant-baseline: central;
+            pointer-events: none;
+        }
+        
+        .weight-background {
+            fill: white;
+            stroke: #00b09b;
+            stroke-width: 1;
+            rx: 4;
+            ry: 4;
+            filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.1));
+        }
+        
+        .weight-text {
+            fill: #00b09b;
+            font-size: 12px;
+            font-weight: bold;
+            text-anchor: middle;
+            dominant-baseline: middle;
+            pointer-events: none;
+        }
+        
+        .mst-edge {
+            stroke: #00b09b;
+            stroke-width: 3;
+            stroke-dasharray: none;
+        }
+        
+        .normal-edge {
+            stroke: #666;
+            stroke-width: 2;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Kalkulator Rentang Minimum</h1>
-            <p class="subtitle">Hitung rentang minimum dengan algoritma Kruskal dan Prim</p>
+            <h1>Kalkulator Rentang Minimum dengan Visualisasi Graf</h1>
+            <p class="subtitle">Hitung rentang minimum dengan algoritma Kruskal dan Prim + Drag & Drop Simpul</p>
         </header>
         
         <div class="content">
@@ -395,6 +592,53 @@
                 </div>
             </div>
             
+            <div class="visualization-section">
+                <h2 class="section-title">Visualisasi Graf Interaktif</h2>
+                
+                <div class="instruction-box">
+                    <p><strong>Fitur Drag & Drop:</strong></p>
+                    <ul>
+                        <li><strong>Klik dan tahan</strong> simpul untuk menyeretnya ke posisi baru</li>
+                        <li><strong>Edge akan menyesuaikan</strong> secara otomatis saat simpul dipindahkan</li>
+                        <li><strong>Layout otomatis</strong> untuk visualisasi yang lebih baik</li>
+                        <li>Works di desktop dan mobile</li>
+                    </ul>
+                </div>
+                
+                <div class="drag-instruction">
+                    <span class="drag-icon">↕️</span>
+                    <span><strong>Drag & Drop:</strong> Klik simpul dan seret ke posisi baru!</span>
+                </div>
+                
+                <div class="visualization-container">
+                    <svg id="graphCanvas" width="100%" height="100%"></svg>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color legend-node"></div>
+                        <span>Simpul (dragable)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div style="width: 30px; height: 2px; background-color: #666;"></div>
+                        <span>Edge Normal</span>
+                    </div>
+                    <div class="legend-item">
+                        <div style="width: 30px; height: 2px; background-color: #00b09b;"></div>
+                        <span>Edge MST</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-weight">12</div>
+                        <span>Bobot Edge</span>
+                    </div>
+                </div>
+                
+                <div class="visualization-controls">
+                    <button class="control-btn" id="layoutBtn">Atur Layout Otomatis</button>
+                    <button class="control-btn control-btn-reset" id="resetLayoutBtn">Reset Posisi Simpul</button>
+                </div>
+            </div>
+            
             <div class="output-section">
                 <h2 class="section-title">Hasil Perhitungan</h2>
                 
@@ -432,7 +676,7 @@
         </div>
         
         <footer>
-            <p>Alat penghitung Rentang Minimum menggunakan algoritma Greedy (Kruskal dan Prim)</p>
+            <p>Alat penghitung Rentang Minimum dengan Visualisasi Graf Interaktif + Drag & Drop</p>
             <p>© 2023 - Kalkulator Graf Interaktif</p>
         </footer>
     </div>
@@ -441,6 +685,12 @@
         // Data graf yang disimpan
         let edges = [];
         let nodes = new Set();
+        let nodePositions = {};
+        let isDragging = false;
+        let draggedNode = null;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let mstEdges = [];
         
         // Element references
         const edgeListElement = document.getElementById('edgeList');
@@ -452,6 +702,9 @@
         const resetBtn = document.getElementById('resetBtn');
         const exampleSelect = document.getElementById('exampleSelect');
         const startNodeInput = document.getElementById('startNode');
+        const graphCanvas = document.getElementById('graphCanvas');
+        const layoutBtn = document.getElementById('layoutBtn');
+        const resetLayoutBtn = document.getElementById('resetLayoutBtn');
         
         // Output elements
         const kruskalWeightElement = document.getElementById('kruskalWeight');
@@ -515,12 +768,16 @@
         // Inisialisasi
         function init() {
             updateEdgeList();
+            generateNodePositions();
+            drawGraph();
             
-            // Event listeners
+            // Event listeners untuk input
             addEdgeBtn.addEventListener('click', addEdge);
             calculateBtn.addEventListener('click', calculateRentangMinimum);
             resetBtn.addEventListener('click', resetAll);
             exampleSelect.addEventListener('change', loadExample);
+            layoutBtn.addEventListener('click', applyForceDirectedLayout);
+            resetLayoutBtn.addEventListener('click', resetNodePositions);
             
             // Enter key untuk input edge
             [node1Input, node2Input, weightInput].forEach(input => {
@@ -533,8 +790,341 @@
                 primStartNodeElement.textContent = startNodeInput.value || "a";
             });
             
+            // Event listeners untuk drag & drop
+            setupDragAndDrop();
+            
             // Muat contoh pertama secara default
             loadExampleGraph('example1');
+        }
+        
+        // Setup drag & drop dengan SVG
+        function setupDragAndDrop() {
+            graphCanvas.addEventListener('mousedown', startDrag);
+            graphCanvas.addEventListener('touchstart', startDragTouch);
+            
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('touchmove', dragTouch);
+            
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('touchend', endDrag);
+            document.addEventListener('touchcancel', endDrag);
+        }
+        
+        // Mulai drag (mouse)
+        function startDrag(e) {
+            if (e.target.classList.contains('canvas-node')) {
+                const nodeId = e.target.getAttribute('data-node');
+                if (nodeId) {
+                    isDragging = true;
+                    draggedNode = nodeId;
+                    
+                    // Update posisi drag start
+                    const rect = graphCanvas.getBoundingClientRect();
+                    dragStartX = e.clientX - rect.left;
+                    dragStartY = e.clientY - rect.top;
+                    
+                    // Update visual
+                    e.target.classList.add('dragging');
+                    
+                    // Prevent default behavior
+                    e.preventDefault();
+                }
+            }
+        }
+        
+        // Mulai drag (touch)
+        function startDragTouch(e) {
+            if (e.target.classList.contains('canvas-node')) {
+                const nodeId = e.target.getAttribute('data-node');
+                if (nodeId && e.touches.length === 1) {
+                    isDragging = true;
+                    draggedNode = nodeId;
+                    
+                    // Update posisi drag start
+                    const rect = graphCanvas.getBoundingClientRect();
+                    const touch = e.touches[0];
+                    dragStartX = touch.clientX - rect.left;
+                    dragStartY = touch.clientY - rect.top;
+                    
+                    // Update visual
+                    e.target.classList.add('dragging');
+                    
+                    // Prevent default behavior
+                    e.preventDefault();
+                }
+            }
+        }
+        
+        // Drag (mouse)
+        function drag(e) {
+            if (!isDragging || !draggedNode) return;
+            
+            const rect = graphCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Update posisi node
+            nodePositions[draggedNode].x = Math.max(30, Math.min(rect.width - 30, x));
+            nodePositions[draggedNode].y = Math.max(30, Math.min(rect.height - 30, y));
+            
+            // Update visualisasi
+            drawGraph();
+            
+            e.preventDefault();
+        }
+        
+        // Drag (touch)
+        function dragTouch(e) {
+            if (!isDragging || !draggedNode || e.touches.length !== 1) return;
+            
+            const rect = graphCanvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            
+            // Update posisi node
+            nodePositions[draggedNode].x = Math.max(30, Math.min(rect.width - 30, x));
+            nodePositions[draggedNode].y = Math.max(30, Math.min(rect.height - 30, y));
+            
+            // Update visualisasi
+            drawGraph();
+            
+            e.preventDefault();
+        }
+        
+        // Akhiri drag
+        function endDrag() {
+            if (isDragging && draggedNode) {
+                // Reset state
+                isDragging = false;
+                
+                // Reset visual
+                const nodeElement = graphCanvas.querySelector(`[data-node="${draggedNode}"]`);
+                if (nodeElement) {
+                    nodeElement.classList.remove('dragging');
+                }
+                
+                draggedNode = null;
+            }
+        }
+        
+        // Generate posisi node secara otomatis
+        function generateNodePositions() {
+            const nodesArray = Array.from(nodes);
+            const rect = graphCanvas.getBoundingClientRect();
+            const width = rect.width || 800;
+            const height = rect.height || 500;
+            
+            // Reset positions
+            nodePositions = {};
+            
+            // Jika sudah ada posisi, pertahankan
+            if (Object.keys(nodePositions).length === 0) {
+                // Generate posisi melingkar
+                const centerX = width / 2;
+                const centerY = height / 2;
+                const radius = Math.min(width, height) * 0.35;
+                
+                nodesArray.forEach((node, index) => {
+                    const angle = (index * 2 * Math.PI) / nodesArray.length;
+                    nodePositions[node] = {
+                        x: centerX + radius * Math.cos(angle),
+                        y: centerY + radius * Math.sin(angle)
+                    };
+                });
+            }
+        }
+        
+        // Reset posisi node
+        function resetNodePositions() {
+            generateNodePositions();
+            drawGraph();
+        }
+        
+        // Terapkan force-directed layout
+        function applyForceDirectedLayout() {
+            const nodesArray = Array.from(nodes);
+            const rect = graphCanvas.getBoundingClientRect();
+            const width = rect.width || 800;
+            const height = rect.height || 500;
+            
+            // Inisialisasi posisi jika belum ada
+            if (Object.keys(nodePositions).length === 0) {
+                generateNodePositions();
+            }
+            
+            // Parameter force-directed
+            const k = Math.sqrt(width * height / nodesArray.length);
+            const temperature = 10;
+            const iterations = 100;
+            const coolingFactor = 0.95;
+            
+            // Simulasi force-directed
+            for (let iter = 0; iter < iterations; iter++) {
+                let currentTemp = temperature * Math.pow(coolingFactor, iter);
+                
+                // Hitung gaya repulsive (semua node tolak-menolak)
+                const forces = {};
+                nodesArray.forEach(node => {
+                    forces[node] = { x: 0, y: 0 };
+                });
+                
+                // Gaya repulsive antara semua pasangan node
+                for (let i = 0; i < nodesArray.length; i++) {
+                    for (let j = i + 1; j < nodesArray.length; j++) {
+                        const node1 = nodesArray[i];
+                        const node2 = nodesArray[j];
+                        
+                        const dx = nodePositions[node2].x - nodePositions[node1].x;
+                        const dy = nodePositions[node2].y - nodePositions[node1].y;
+                        const distance = Math.sqrt(dx * dx + dy * dy) || 1;
+                        
+                        // Hukum Coulomb: F = k²/d
+                        const force = (k * k) / distance;
+                        
+                        forces[node1].x -= (dx / distance) * force;
+                        forces[node1].y -= (dy / distance) * force;
+                        forces[node2].x += (dx / distance) * force;
+                        forces[node2].y += (dy / distance) * force;
+                    }
+                }
+                
+                // Gaya attractive untuk edge
+                edges.forEach(edge => {
+                    const dx = nodePositions[edge.node2].x - nodePositions[edge.node1].x;
+                    const dy = nodePositions[edge.node2].y - nodePositions[edge.node1].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy) || 1;
+                    
+                    // Hukum Hooke: F = d²/k
+                    const force = (distance * distance) / k;
+                    
+                    forces[edge.node1].x += (dx / distance) * force;
+                    forces[edge.node1].y += (dy / distance) * force;
+                    forces[edge.node2].x -= (dx / distance) * force;
+                    forces[edge.node2].y -= (dy / distance) * force;
+                });
+                
+                // Terapkan gaya dengan temperature
+                nodesArray.forEach(node => {
+                    const forceMagnitude = Math.sqrt(forces[node].x * forces[node].x + forces[node].y * forces[node].y);
+                    if (forceMagnitude > 0) {
+                        const limitedForce = Math.min(forceMagnitude, currentTemp);
+                        nodePositions[node].x += (forces[node].x / forceMagnitude) * limitedForce;
+                        nodePositions[node].y += (forces[node].y / forceMagnitude) * limitedForce;
+                        
+                        // Batasi dalam canvas
+                        nodePositions[node].x = Math.max(30, Math.min(width - 30, nodePositions[node].x));
+                        nodePositions[node].y = Math.max(30, Math.min(height - 30, nodePositions[node].y));
+                    }
+                });
+            }
+            
+            drawGraph();
+        }
+        
+        // Gambar graf di canvas
+        function drawGraph() {
+            // Kosongkan canvas
+            graphCanvas.innerHTML = '';
+            
+            // Gambar edge terlebih dahulu (di belakang node)
+            edges.forEach(edge => {
+                const node1Pos = nodePositions[edge.node1];
+                const node2Pos = nodePositions[edge.node2];
+                
+                if (node1Pos && node2Pos) {
+                    // Cek apakah edge ini adalah bagian dari MST
+                    const isMSTEdge = mstEdges.some(mstEdge => 
+                        (mstEdge.node1 === edge.node1 && mstEdge.node2 === edge.node2) ||
+                        (mstEdge.node1 === edge.node2 && mstEdge.node2 === edge.node1)
+                    );
+                    
+                    // Gambar garis edge
+                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    line.setAttribute('x1', node1Pos.x);
+                    line.setAttribute('y1', node1Pos.y);
+                    line.setAttribute('x2', node2Pos.x);
+                    line.setAttribute('y2', node2Pos.y);
+                    line.setAttribute('class', isMSTEdge ? 'mst-edge' : 'normal-edge');
+                    line.setAttribute('stroke-width', isMSTEdge ? '3' : '2');
+                    line.setAttribute('stroke', isMSTEdge ? '#00b09b' : '#666');
+                    
+                    graphCanvas.appendChild(line);
+                    
+                    // Hitung posisi tengah untuk label bobot
+                    const midX = (node1Pos.x + node2Pos.x) / 2;
+                    const midY = (node1Pos.y + node2Pos.y) / 2;
+                    
+                    // Hitung offset untuk menghindari overlap dengan garis
+                    const dx = node2Pos.x - node1Pos.x;
+                    const dy = node2Pos.y - node1Pos.y;
+                    const length = Math.sqrt(dx * dx + dy * dy);
+                    const offsetX = (dy / length) * 15;
+                    const offsetY = (-dx / length) * 15;
+                    
+                    // Gambar background untuk label bobot
+                    const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                    bg.setAttribute('x', midX + offsetX - 15);
+                    bg.setAttribute('y', midY + offsetY - 10);
+                    bg.setAttribute('width', '30');
+                    bg.setAttribute('height', '20');
+                    bg.setAttribute('class', 'weight-background');
+                    bg.setAttribute('fill', 'white');
+                    bg.setAttribute('stroke', isMSTEdge ? '#00b09b' : '#666');
+                    bg.setAttribute('stroke-width', '1');
+                    bg.setAttribute('rx', '4');
+                    bg.setAttribute('ry', '4');
+                    
+                    // Gambar label bobot
+                    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    text.setAttribute('x', midX + offsetX);
+                    text.setAttribute('y', midY + offsetY);
+                    text.setAttribute('class', 'weight-text');
+                    text.setAttribute('text-anchor', 'middle');
+                    text.setAttribute('dominant-baseline', 'middle');
+                    text.setAttribute('font-size', '11');
+                    text.setAttribute('font-weight', 'bold');
+                    text.setAttribute('fill', isMSTEdge ? '#00b09b' : '#666');
+                    text.textContent = edge.weight;
+                    
+                    graphCanvas.appendChild(bg);
+                    graphCanvas.appendChild(text);
+                }
+            });
+            
+            // Gambar node
+            Array.from(nodes).forEach(node => {
+                const pos = nodePositions[node];
+                if (pos) {
+                    // Gambar lingkaran node
+                    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    circle.setAttribute('cx', pos.x);
+                    circle.setAttribute('cy', pos.y);
+                    circle.setAttribute('r', '25');
+                    circle.setAttribute('class', 'canvas-node');
+                    circle.setAttribute('data-node', node);
+                    circle.setAttribute('cursor', 'grab');
+                    
+                    // Tambahkan event listeners untuk circle
+                    circle.addEventListener('mousedown', startDrag);
+                    circle.addEventListener('touchstart', startDragTouch);
+                    
+                    graphCanvas.appendChild(circle);
+                    
+                    // Gambar label node
+                    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    text.setAttribute('x', pos.x);
+                    text.setAttribute('y', pos.y);
+                    text.setAttribute('class', 'canvas-node-label');
+                    text.setAttribute('text-anchor', 'middle');
+                    text.setAttribute('dominant-baseline', 'middle');
+                    text.setAttribute('font-size', '14');
+                    text.setAttribute('font-weight', 'bold');
+                    text.textContent = node;
+                    
+                    graphCanvas.appendChild(text);
+                }
+            });
         }
         
         // Tambah edge baru
@@ -548,12 +1138,28 @@
                 return;
             }
             
+            // Cek apakah edge sudah ada
+            const edgeExists = edges.some(edge => 
+                (edge.node1 === node1 && edge.node2 === node2) || 
+                (edge.node1 === node2 && edge.node2 === node1)
+            );
+            
+            if (edgeExists) {
+                alert("Edge ini sudah ada!");
+                return;
+            }
+            
             // Tambah ke array edges
             edges.push({node1, node2, weight});
             
             // Tambah ke set nodes
             nodes.add(node1);
             nodes.add(node2);
+            
+            // Generate posisi untuk node baru jika belum ada
+            if (!nodePositions[node1]) {
+                generateNodePositions();
+            }
             
             // Reset input
             node1Input.value = '';
@@ -562,6 +1168,7 @@
             node1Input.focus();
             
             updateEdgeList();
+            drawGraph();
         }
         
         // Update tampilan daftar edge
@@ -573,7 +1180,15 @@
                 return;
             }
             
-            edges.forEach((edge, index) => {
+            // Urutkan edges untuk tampilan yang lebih rapi
+            const sortedEdges = [...edges].sort((a, b) => {
+                if (a.node1 === b.node1) {
+                    return a.node2.localeCompare(b.node2);
+                }
+                return a.node1.localeCompare(b.node1);
+            });
+            
+            sortedEdges.forEach((edge, index) => {
                 const edgeElement = document.createElement('div');
                 edgeElement.className = 'edge-item';
                 edgeElement.innerHTML = `
@@ -597,6 +1212,7 @@
             edges.splice(index, 1);
             updateNodeSet();
             updateEdgeList();
+            drawGraph();
         }
         
         // Update set nodes berdasarkan edges
@@ -625,12 +1241,18 @@
             updateNodeSet();
             updateEdgeList();
             exampleSelect.value = exampleKey;
+            
+            // Generate posisi node
+            generateNodePositions();
+            drawGraph();
         }
         
         // Reset semua input
         function resetAll() {
             edges = [];
             nodes.clear();
+            nodePositions = {};
+            mstEdges = [];
             node1Input.value = '';
             node2Input.value = '';
             weightInput.value = '';
@@ -639,6 +1261,7 @@
             exampleSelect.value = '';
             updateEdgeList();
             clearResults();
+            drawGraph();
         }
         
         // Hapus hasil perhitungan sebelumnya
@@ -671,11 +1294,17 @@
             // Jalankan Prim
             const primResult = primAlgorithm(startNode);
             
+            // Simpan edge MST untuk visualisasi
+            mstEdges = kruskalResult.edges;
+            
             // Tampilkan hasil
             displayResults(kruskalResult, primResult);
+            
+            // Update visualisasi
+            drawGraph();
         }
         
-        // Algoritma Kruskal (FIXED - sesuai konsep sebenarnya)
+        // Algoritma Kruskal
         function kruskalAlgorithm() {
             // Salin dan urutkan edges berdasarkan bobot
             const sortedEdges = [...edges]
@@ -722,13 +1351,13 @@
             let totalWeight = 0;
             const steps = [];
             
-            // Proses Kruskal - SELALU mulai dari edge terkecil
+            // Proses Kruskal
             steps.push("Kruskal mengurutkan semua edge dari bobot terkecil ke terbesar:");
             sortedEdges.forEach((edge, i) => {
                 steps.push(`${i+1}. ${edge.node1}-${edge.node2} (${edge.weight})`);
             });
             
-            steps.push(""); // Baris kosong untuk pemisah
+            steps.push("");
             steps.push("Proses pemilihan edge:");
             
             for (const edge of sortedEdges) {
@@ -762,675 +1391,428 @@
             };
         }
         
-     // Algoritma Prim (DIMODIFIKASI - dengan tampilan tabel)
-function primAlgorithm(startNode) {
-    // Struktur data adjacency list
-    const adjacency = {};
-    nodes.forEach(node => adjacency[node] = []);
-    
-    edges.forEach(edge => {
-        adjacency[edge.node1].push({node: edge.node2, weight: edge.weight});
-        adjacency[edge.node2].push({node: edge.node1, weight: edge.weight});
-    });
-    
-    const inRentang = new Set();
-    const rentangEdges = [];
-    let totalWeight = 0;
-    const steps = [];
-    const tableSteps = []; // Untuk menyimpan data tabel
-    
-    // Priority queue sederhana (array di-sort)
-    let candidateEdges = [];
-    
-    // Mulai dari startNode
-    inRentang.add(startNode);
-    
-    // Header untuk langkah-langkah
-    steps.push(`<strong>Algoritma Prim dimulai dari simpul: ${startNode}</strong>`);
-    steps.push(`Prim tidak mencari edge terkecil secara global, tapi edge terkecil yang terhubung dengan simpul-simpul yang sudah terpilih.`);
-    steps.push(``);
-    steps.push(`<strong>Langkah-langkah:</strong>`);
-    
-    // Tambahkan header tabel
-    steps.push(`
-        <div style="margin-top: 10px; overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse; font-size: 0.9em;">
-                <thead>
-                    <tr style="background-color: #4a00e0; color: white;">
-                        <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Langkah</th>
-                        <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Sisi</th>
-                        <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Bobot</th>
-                        <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Pohon-Rentang</th>
-                        <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Keterangan</th>
-                    </tr>
-                </thead>
-                <tbody id="primTableBody">
-    `);
-    
-    // Tambahkan semua edge dari startNode ke candidateEdges
-    adjacency[startNode].forEach(neighbor => {
-        candidateEdges.push({
-            from: startNode,
-            to: neighbor.node,
-            weight: neighbor.weight
-        });
-    });
-    
-    // Urutkan candidate edges berdasarkan bobot
-    candidateEdges.sort((a, b) => a.weight - b.weight);
-    
-    // Lakukan algoritma Prim
-    let stepNumber = 1;
-    while (inRentang.size < nodes.size && candidateEdges.length > 0) {
-        // Ambil edge dengan bobot terkecil
-        const minEdge = candidateEdges.shift();
-        
-        // Jika node tujuan belum di Rentang Minimum
-        if (!inRentang.has(minEdge.to)) {
-            // Tambahkan edge ke Rentang Minimum
-            rentangEdges.push({
-                node1: minEdge.from,
-                node2: minEdge.to,
-                weight: minEdge.weight
-            });
-            totalWeight += minEdge.weight;
-            inRentang.add(minEdge.to);
+        // Algoritma Prim
+        function primAlgorithm(startNode) {
+            // Struktur data adjacency list
+            const adjacency = {};
+            nodes.forEach(node => adjacency[node] = []);
             
-            // Tentukan keterangan
-            let keterangan = `Menghubungkan ${minEdge.from} ke ${minEdge.to}`;
-            if (stepNumber === 1) {
-                keterangan = `Simpul ${minEdge.from} ke ${minEdge.to}`;
-            } else {
-                keterangan = `Simpul ${minEdge.to} ditambahkan melalui ${minEdge.from}`;
-            }
-            
-            // Simpan langkah untuk tabel
-            tableSteps.push({
-                langkah: stepNumber,
-                sisi: `${minEdge.from} - ${minEdge.to}`,
-                bobot: minEdge.weight,
-                pohon: `Simpul terhubung: ${Array.from(inRentang).sort().join(', ')}`,
-                keterangan: keterangan
+            edges.forEach(edge => {
+                adjacency[edge.node1].push({node: edge.node2, weight: edge.weight});
+                adjacency[edge.node2].push({node: edge.node1, weight: edge.weight});
             });
             
-            // Tambahkan baris ke tabel
+            const inRentang = new Set();
+            const rentangEdges = [];
+            let totalWeight = 0;
+            const steps = [];
+            const tableSteps = [];
+            
+            // Priority queue sederhana (array di-sort)
+            let candidateEdges = [];
+            
+            // Mulai dari startNode
+            inRentang.add(startNode);
+            
+            // Header untuk langkah-langkah
+            steps.push(`<strong>Algoritma Prim dimulai dari simpul: ${startNode}</strong>`);
+            steps.push(`Prim tidak mencari edge terkecil secara global, tapi edge terkecil yang terhubung dengan simpul-simpul yang sudah terpilih.`);
+            steps.push(``);
+            steps.push(`<strong>Langkah-langkah:</strong>`);
+            
+            // Tambahkan header tabel
             steps.push(`
-                <tr style="${stepNumber % 2 === 0 ? 'background-color: #f8f9fa;' : 'background-color: white;'}">
-                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: bold;">${stepNumber}</td>
-                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center; color: #4a00e0; font-weight: bold;">${minEdge.from} - ${minEdge.to}</td>
-                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center; color: #00b09b; font-weight: bold;">${minEdge.weight}</td>
-                    <td style="padding: 8px; border: 1px solid #ddd;">Simpul terhubung: ${Array.from(inRentang).sort().join(', ')}</td>
-                    <td style="padding: 8px; border: 1px solid #ddd; color: #666;">${keterangan}</td>
-                </tr>
+                <div style="margin-top: 10px; overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.9em;">
+                        <thead>
+                            <tr style="background-color: #4a00e0; color: white;">
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Langkah</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Sisi</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Bobot</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Pohon-Rentang</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Keterangan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="primTableBody">
             `);
             
-            // Tambahkan edge baru dari node yang baru ditambahkan
-            adjacency[minEdge.to].forEach(neighbor => {
-                if (!inRentang.has(neighbor.node)) {
-                    candidateEdges.push({
-                        from: minEdge.to,
-                        to: neighbor.node,
-                        weight: neighbor.weight
-                    });
-                }
+            // Tambahkan semua edge dari startNode ke candidateEdges
+            adjacency[startNode].forEach(neighbor => {
+                candidateEdges.push({
+                    from: startNode,
+                    to: neighbor.node,
+                    weight: neighbor.weight
+                });
             });
             
-            // Urutkan ulang candidate edges
+            // Urutkan candidate edges berdasarkan bobot
             candidateEdges.sort((a, b) => a.weight - b.weight);
             
-            stepNumber++;
-        } else {
-            // Skip edge yang sudah terhubung (untuk debugging)
-            steps.push(`
-                <tr style="background-color: #fff5f5;">
-                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">-</td>
-                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center; color: #999;">${minEdge.from} - ${minEdge.to}</td>
-                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center; color: #999;">${minEdge.weight}</td>
-                    <td style="padding: 8px; border: 1px solid #ddd; color: #999;">(Dilewati)</td>
-                    <td style="padding: 8px; border: 1px solid #ddd; color: #ff416c;">Simpul ${minEdge.to} sudah di pohon</td>
-                </tr>
-            `);
-        }
-    }
-    
-    // Tutup tabel
-    steps.push(`
-                </tbody>
-            </table>
-        </div>
-    `);
-    
-    // Tambahkan ringkasan
-    steps.push(`<br><strong>Ringkasan:</strong>`);
-    steps.push(`• Total bobot Rentang Minimum: <strong style="color: #00b09b;">${totalWeight}</strong>`);
-    steps.push(`• Jumlah edge yang dipilih: <strong>${rentangEdges.length}</strong>`);
-    steps.push(`• Jumlah simpul terhubung: <strong>${inRentang.size} dari ${nodes.size}</strong>`);
-    
-    // Jika tidak semua node terhubung
-    if (inRentang.size < nodes.size) {
-        steps.push(`<br><strong style="color: #ff416c;">⚠ Peringatan:</strong> Graf tidak terhubung lengkap.`);
-        steps.push(`Rentang Minimum hanya mencakup ${inRentang.size} dari ${nodes.size} simpul.`);
-        
-        const unconnectedNodes = Array.from(nodes).filter(node => !inRentang.has(node));
-        steps.push(`Simpul yang tidak terhubung: ${unconnectedNodes.join(', ')}`);
-    } else {
-        steps.push(`<br><strong style="color: #00b09b;">✓ Semua simpul terhubung dalam satu pohon rentang</strong>`);
-    }
-    
-    return {
-        edges: rentangEdges,
-        weight: totalWeight,
-        steps: steps,
-        tableSteps: tableSteps // Tambahkan data tabel
-    };
-}
-        
-		
-// Fungsi untuk mengurutkan edge berdasarkan simpul terhubung (dengan pengelompokan simpul penghubung)
-function sortEdgesByConnectedNodes(edges) {
-    if (edges.length === 0) return [];
-    
-    const result = [];
-    const addedEdges = new Set();
-    const nodeConnections = {}; // Menyimpan simpul dan edge yang terhubung
-    
-    // Inisialisasi koneksi simpul
-    edges.forEach(edge => {
-        if (!nodeConnections[edge.node1]) nodeConnections[edge.node1] = [];
-        if (!nodeConnections[edge.node2]) nodeConnections[edge.node2] = [];
-        
-        const edgeKey = `${edge.node1}-${edge.node2}-${edge.weight}`;
-        nodeConnections[edge.node1].push({edge: edge, key: edgeKey});
-        nodeConnections[edge.node2].push({edge: edge, key: edgeKey});
-    });
-    
-    // Ambil edge pertama (biasanya bobot terkecil)
-    const firstEdge = edges[0];
-    result.push(firstEdge);
-    addedEdges.add(`${firstEdge.node1}-${firstEdge.node2}-${firstEdge.weight}`);
-    
-    // Fungsi untuk mencari edge berikutnya yang terhubung
-    function findConnectedEdge(currentEdges) {
-        // Cari edge yang terhubung dengan simpul yang sudah ada di result
-        for (const resultEdge of result) {
-            const nodesToCheck = [resultEdge.node1, resultEdge.node2];
-            
-            for (const node of nodesToCheck) {
-                if (nodeConnections[node]) {
-                    for (const connection of nodeConnections[node]) {
-                        const edgeKey = connection.key;
-                        if (!addedEdges.has(edgeKey)) {
-                            // Cek apakah edge ini terhubung dengan simpul yang sudah ada
-                            const edge = connection.edge;
-                            const connectedNodes = new Set();
-                            result.forEach(e => {
-                                connectedNodes.add(e.node1);
-                                connectedNodes.add(e.node2);
-                            });
-                            
-                            if (connectedNodes.has(edge.node1) || connectedNodes.has(edge.node2)) {
-                                return edge;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return null;
-    }
-    
-    // Tambahkan edge yang terhubung secara berurutan
-    while (result.length < edges.length) {
-        const nextEdge = findConnectedEdge(result);
-        
-        if (!nextEdge) {
-            // Jika tidak ada edge yang terhubung, ambil edge yang belum ditambahkan
-            for (const edge of edges) {
-                const edgeKey = `${edge.node1}-${edge.node2}-${edge.weight}`;
-                if (!addedEdges.has(edgeKey)) {
-                    result.push(edge);
-                    addedEdges.add(edgeKey);
-                    break;
-                }
-            }
-        } else {
-            const edgeKey = `${nextEdge.node1}-${nextEdge.node2}-${nextEdge.weight}`;
-            result.push(nextEdge);
-            addedEdges.add(edgeKey);
-        }
-    }
-    
-    return result;
-}
-
-// Fungsi alternatif yang lebih sederhana untuk pengelompokan berdasarkan simpul penghubung
-function sortEdgesByConnectingNodes(edges) {
-    if (edges.length === 0) return [];
-    
-    const result = [];
-    const usedEdges = new Set();
-    const nodeMap = new Map(); // Menyimpan simpul dan edge yang terhubung
-    
-    // Bangun adjacency list
-    edges.forEach((edge, index) => {
-        const edgeKey = `${edge.node1}-${edge.node2}-${edge.weight}`;
-        
-        if (!nodeMap.has(edge.node1)) nodeMap.set(edge.node1, []);
-        if (!nodeMap.has(edge.node2)) nodeMap.set(edge.node2, []);
-        
-        nodeMap.get(edge.node1).push({edge, index, key: edgeKey});
-        nodeMap.get(edge.node2).push({edge, index, key: edgeKey});
-    });
-    
-    // Mulai dari edge pertama
-    result.push(edges[0]);
-    usedEdges.add(`${edges[0].node1}-${edges[0].node2}-${edges[0].weight}`);
-    
-    // Priority queue untuk edge yang terhubung
-    const connectedQueue = [];
-    
-    // Tambahkan edge yang terhubung dengan edge pertama
-    [edges[0].node1, edges[0].node2].forEach(node => {
-        if (nodeMap.has(node)) {
-            nodeMap.get(node).forEach(conn => {
-                if (!usedEdges.has(conn.key)) {
-                    connectedQueue.push(conn.edge);
-                }
-            });
-        }
-    });
-    
-    // Proses edge yang terhubung
-    while (result.length < edges.length) {
-        if (connectedQueue.length > 0) {
-            // Ambil edge dari queue
-            const nextEdge = connectedQueue.shift();
-            const edgeKey = `${nextEdge.node1}-${nextEdge.node2}-${nextEdge.weight}`;
-            
-            if (!usedEdges.has(edgeKey)) {
-                result.push(nextEdge);
-                usedEdges.add(edgeKey);
+            // Lakukan algoritma Prim
+            let stepNumber = 1;
+            while (inRentang.size < nodes.size && candidateEdges.length > 0) {
+                // Ambil edge dengan bobot terkecil
+                const minEdge = candidateEdges.shift();
                 
-                // Tambahkan edge yang terhubung dengan edge ini ke queue
-                [nextEdge.node1, nextEdge.node2].forEach(node => {
-                    if (nodeMap.has(node)) {
-                        nodeMap.get(node).forEach(conn => {
-                            if (!usedEdges.has(conn.key)) {
-                                // Cek apakah edge ini belum ada di queue
-                                const existing = connectedQueue.some(e => 
-                                    `${e.node1}-${e.node2}-${e.weight}` === conn.key);
-                                if (!existing) {
-                                    connectedQueue.push(conn.edge);
-                                }
-                            }
-                        });
-                    }
-                });
-            }
-        } else {
-            // Jika queue kosong, cari edge yang belum digunakan
-            for (const edge of edges) {
-                const edgeKey = `${edge.node1}-${edge.node2}-${edge.weight}`;
-                if (!usedEdges.has(edgeKey)) {
-                    result.push(edge);
-                    usedEdges.add(edgeKey);
+                // Jika node tujuan belum di Rentang Minimum
+                if (!inRentang.has(minEdge.to)) {
+                    // Tambahkan edge ke Rentang Minimum
+                    rentangEdges.push({
+                        node1: minEdge.from,
+                        node2: minEdge.to,
+                        weight: minEdge.weight
+                    });
+                    totalWeight += minEdge.weight;
+                    inRentang.add(minEdge.to);
                     
-                    // Tambahkan edge yang terhubung ke queue
-                    [edge.node1, edge.node2].forEach(node => {
-                        if (nodeMap.has(node)) {
-                            nodeMap.get(node).forEach(conn => {
-                                if (!usedEdges.has(conn.key)) {
-                                    connectedQueue.push(conn.edge);
-                                }
+                    // Tentukan keterangan
+                    let keterangan = `Menghubungkan ${minEdge.from} ke ${minEdge.to}`;
+                    if (stepNumber === 1) {
+                        keterangan = `Simpul ${minEdge.from} ke ${minEdge.to}`;
+                    } else {
+                        keterangan = `Simpul ${minEdge.to} ditambahkan melalui ${minEdge.from}`;
+                    }
+                    
+                    // Simpan langkah untuk tabel
+                    tableSteps.push({
+                        langkah: stepNumber,
+                        sisi: `${minEdge.from} - ${minEdge.to}`,
+                        bobot: minEdge.weight,
+                        pohon: `Simpul terhubung: ${Array.from(inRentang).sort().join(', ')}`,
+                        keterangan: keterangan
+                    });
+                    
+                    // Tambahkan baris ke tabel
+                    steps.push(`
+                        <tr style="${stepNumber % 2 === 0 ? 'background-color: #f8f9fa;' : 'background-color: white;'}">
+                            <td style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: bold;">${stepNumber}</td>
+                            <td style="padding: 8px; border: 1px solid #ddd; text-align: center; color: #4a00e0; font-weight: bold;">${minEdge.from} - ${minEdge.to}</td>
+                            <td style="padding: 8px; border: 1px solid #ddd; text-align: center; color: #00b09b; font-weight: bold;">${minEdge.weight}</td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">Simpul terhubung: ${Array.from(inRentang).sort().join(', ')}</td>
+                            <td style="padding: 8px; border: 1px solid #ddd; color: #666;">${keterangan}</td>
+                        </tr>
+                    `);
+                    
+                    // Tambahkan edge baru dari node yang baru ditambahkan
+                    adjacency[minEdge.to].forEach(neighbor => {
+                        if (!inRentang.has(neighbor.node)) {
+                            candidateEdges.push({
+                                from: minEdge.to,
+                                to: neighbor.node,
+                                weight: neighbor.weight
                             });
                         }
                     });
-                    break;
+                    
+                    // Urutkan ulang candidate edges
+                    candidateEdges.sort((a, b) => a.weight - b.weight);
+                    
+                    stepNumber++;
+                } else {
+                    // Skip edge yang sudah terhubung
+                    steps.push(`
+                        <tr style="background-color: #fff5f5;">
+                            <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">-</td>
+                            <td style="padding: 8px; border: 1px solid #ddd; text-align: center; color: #999;">${minEdge.from} - ${minEdge.to}</td>
+                            <td style="padding: 8px; border: 1px solid #ddd; text-align: center; color: #999;">${minEdge.weight}</td>
+                            <td style="padding: 8px; border: 1px solid #ddd; color: #999;">(Dilewati)</td>
+                            <td style="padding: 8px; border: 1px solid #ddd; color: #ff416c;">Simpul ${minEdge.to} sudah di pohon</td>
+                        </tr>
+                    `);
                 }
             }
-        }
-    }
-    
-    return result;
-}
-
-// Fungsi untuk mengelompokkan edge berdasarkan simpul penghubung (versi terakhir)
-function groupEdgesByConnectingNode(edges) {
-    if (edges.length === 0) return [];
-    
-    const result = [];
-    const usedEdges = new Set();
-    
-    // Ambil edge pertama
-    result.push(edges[0]);
-    usedEdges.add(`${edges[0].node1}-${edges[0].node2}`);
-    
-    // Fungsi untuk mencari edge yang terhubung dengan simpul tertentu
-    function findEdgesConnectedToNode(node, currentEdges) {
-        const connected = [];
-        
-        for (const edge of edges) {
-            const edgeKey = `${edge.node1}-${edge.node2}`;
-            if (!usedEdges.has(edgeKey)) {
-                if (edge.node1 === node || edge.node2 === node) {
-                    connected.push(edge);
-                }
-            }
-        }
-        
-        // Urutkan berdasarkan bobot
-        connected.sort((a, b) => a.weight - b.weight);
-        return connected;
-    }
-    
-    // Proses pengelompokan
-    let processing = true;
-    
-    while (processing && result.length < edges.length) {
-        let added = false;
-        
-        // Coba hubungkan dengan setiap edge di result
-        for (let i = 0; i < result.length; i++) {
-            const currentEdge = result[i];
-            const nodes = [currentEdge.node1, currentEdge.node2];
             
-            for (const node of nodes) {
-                const connectedEdges = findEdgesConnectedToNode(node, edges);
+            // Tutup tabel
+            steps.push(`
+                        </tbody>
+                    </table>
+                </div>
+            `);
+            
+            // Tambahkan ringkasan
+            steps.push(`<br><strong>Ringkasan:</strong>`);
+            steps.push(`• Total bobot Rentang Minimum: <strong style="color: #00b09b;">${totalWeight}</strong>`);
+            steps.push(`• Jumlah edge yang dipilih: <strong>${rentangEdges.length}</strong>`);
+            steps.push(`• Jumlah simpul terhubung: <strong>${inRentang.size} dari ${nodes.size}</strong>`);
+            
+            // Jika tidak semua node terhubung
+            if (inRentang.size < nodes.size) {
+                steps.push(`<br><strong style="color: #ff416c;">⚠ Peringatan:</strong> Graf tidak terhubung lengkap.`);
+                steps.push(`Rentang Minimum hanya mencakup ${inRentang.size} dari ${nodes.size} simpul.`);
                 
-                if (connectedEdges.length > 0) {
-                    // Tambahkan semua edge yang terhubung dengan simpul ini
-                    for (const edge of connectedEdges) {
-                        const edgeKey = `${edge.node1}-${edge.node2}`;
-                        if (!usedEdges.has(edgeKey)) {
-                            result.push(edge);
-                            usedEdges.add(edgeKey);
-                            added = true;
+                const unconnectedNodes = Array.from(nodes).filter(node => !inRentang.has(node));
+                steps.push(`Simpul yang tidak terhubung: ${unconnectedNodes.join(', ')}`);
+            } else {
+                steps.push(`<br><strong style="color: #00b09b;">✓ Semua simpul terhubung dalam satu pohon rentang</strong>`);
+            }
+            
+            return {
+                edges: rentangEdges,
+                weight: totalWeight,
+                steps: steps,
+                tableSteps: tableSteps
+            };
+        }
+        
+        // Fungsi untuk mengelompokkan edge dengan keterangan
+        function groupEdgesWithExplanation(edges) {
+            if (edges.length === 0) return { edges: [], explanations: [] };
+            
+            const result = [];
+            const explanations = [];
+            const usedEdges = new Set();
+            const usedNodes = new Set();
+            
+            // Ambil edge pertama (biasanya bobot terkecil)
+            result.push(edges[0]);
+            explanations.push("edge pertama (bobot terkecil)");
+            usedEdges.add(`${edges[0].node1}-${edges[0].node2}`);
+            usedNodes.add(edges[0].node1);
+            usedNodes.add(edges[0].node2);
+            
+            // Fungsi untuk mencari edge yang terhubung
+            function findConnectedEdge() {
+                // Cari edge yang terhubung dengan simpul yang sudah ada
+                for (const edge of edges) {
+                    const edgeKey = `${edge.node1}-${edge.node2}`;
+                    
+                    if (!usedEdges.has(edgeKey)) {
+                        const connectsToNode1 = usedNodes.has(edge.node1);
+                        const connectsToNode2 = usedNodes.has(edge.node2);
+                        
+                        if (connectsToNode1 || connectsToNode2) {
+                            // Tentukan simpul penghubung
+                            let connectingNode = '';
+                            if (connectsToNode1 && connectsToNode2) {
+                                connectingNode = `${edge.node1} atau ${edge.node2}`;
+                            } else if (connectsToNode1) {
+                                connectingNode = edge.node1;
+                            } else {
+                                connectingNode = edge.node2;
+                            }
+                            
+                            return { edge, connectingNode };
                         }
                     }
                 }
+                return null;
             }
             
-            if (added) break;
-        }
-        
-        if (!added) {
-            // Jika tidak ada yang terhubung, tambahkan edge yang belum digunakan
-            for (const edge of edges) {
-                const edgeKey = `${edge.node1}-${edge.node2}`;
-                if (!usedEdges.has(edgeKey)) {
-                    result.push(edge);
-                    usedEdges.add(edgeKey);
-                    added = true;
-                    break;
-                }
-            }
-        }
-        
-        processing = added;
-    }
-    
-    return result;
-}
-		
-// Fungsi untuk mengelompokkan edge dengan keterangan
-function groupEdgesWithExplanation(edges) {
-    if (edges.length === 0) return { edges: [], explanations: [] };
-    
-    const result = [];
-    const explanations = [];
-    const usedEdges = new Set();
-    const usedNodes = new Set();
-    
-    // Ambil edge pertama (biasanya bobot terkecil)
-    result.push(edges[0]);
-    explanations.push("edge pertama (bobot terkecil)");
-    usedEdges.add(`${edges[0].node1}-${edges[0].node2}`);
-    usedNodes.add(edges[0].node1);
-    usedNodes.add(edges[0].node2);
-    
-    // Fungsi untuk mencari edge yang terhubung
-    function findConnectedEdge() {
-        // Cari edge yang terhubung dengan simpul yang sudah ada
-        for (const edge of edges) {
-            const edgeKey = `${edge.node1}-${edge.node2}`;
-            
-            if (!usedEdges.has(edgeKey)) {
-                const connectsToNode1 = usedNodes.has(edge.node1);
-                const connectsToNode2 = usedNodes.has(edge.node2);
+            // Proses semua edge
+            while (result.length < edges.length) {
+                const connected = findConnectedEdge();
                 
-                if (connectsToNode1 || connectsToNode2) {
-                    // Tentukan simpul penghubung
-                    let connectingNode = '';
-                    if (connectsToNode1 && connectsToNode2) {
-                        connectingNode = `${edge.node1} atau ${edge.node2}`;
-                    } else if (connectsToNode1) {
-                        connectingNode = edge.node1;
-                    } else {
-                        connectingNode = edge.node2;
-                    }
+                if (connected) {
+                    const { edge, connectingNode } = connected;
+                    const edgeKey = `${edge.node1}-${edge.node2}`;
                     
-                    return { edge, connectingNode };
-                }
-            }
-        }
-        return null;
-    }
-    
-    // Proses semua edge
-    while (result.length < edges.length) {
-        const connected = findConnectedEdge();
-        
-        if (connected) {
-            const { edge, connectingNode } = connected;
-            const edgeKey = `${edge.node1}-${edge.node2}`;
-            
-            result.push(edge);
-            usedEdges.add(edgeKey);
-            usedNodes.add(edge.node1);
-            usedNodes.add(edge.node2);
-            
-            explanations.push(`terhubung melalui ${connectingNode}`);
-        } else {
-            // Jika tidak ada yang terhubung langsung, ambil edge berikutnya
-            for (const edge of edges) {
-                const edgeKey = `${edge.node1}-${edge.node2}`;
-                if (!usedEdges.has(edgeKey)) {
                     result.push(edge);
-                    explanations.push("edge berikutnya yang tidak terhubung langsung");
                     usedEdges.add(edgeKey);
                     usedNodes.add(edge.node1);
                     usedNodes.add(edge.node2);
-                    break;
-                }
-            }
-        }
-    }
-    
-    return { edges: result, explanations };
-}		
-
-// Fungsi untuk menampilkan edge Prim dengan penjelasan seperti Kruskal
-function explainPrimEdges(edges, startNode) {
-    if (edges.length === 0) return { edges: [], explanations: [] };
-    
-    const result = [];
-    const explanations = [];
-    
-    edges.forEach((edge, index) => {
-        result.push(edge);
-        
-        if (index === 0) {
-            explanations.push(`simpul ${startNode} ke ${edge.node1 === startNode ? edge.node2 : edge.node1}`);
-        } else {
-            // Cari edge sebelumnya yang terhubung
-            const prevEdge = edges[index - 1];
-            let connection = '';
-            
-            if (edge.node1 === prevEdge.node1 || edge.node1 === prevEdge.node2) {
-                connection = edge.node1;
-            } else if (edge.node2 === prevEdge.node1 || edge.node2 === prevEdge.node2) {
-                connection = edge.node2;
-            } else {
-                // Cari koneksi tidak langsung
-                for (let i = 0; i < index; i++) {
-                    const prev = edges[i];
-                    if (edge.node1 === prev.node1 || edge.node1 === prev.node2 || 
-                        edge.node2 === prev.node1 || edge.node2 === prev.node2) {
-                        connection = (edge.node1 === prev.node1 || edge.node1 === prev.node2) ? edge.node1 : edge.node2;
-                        break;
+                    
+                    explanations.push(`terhubung melalui ${connectingNode}`);
+                } else {
+                    // Jika tidak ada yang terhubung langsung, ambil edge berikutnya
+                    for (const edge of edges) {
+                        const edgeKey = `${edge.node1}-${edge.node2}`;
+                        if (!usedEdges.has(edgeKey)) {
+                            result.push(edge);
+                            explanations.push("edge berikutnya yang tidak terhubung langsung");
+                            usedEdges.add(edgeKey);
+                            usedNodes.add(edge.node1);
+                            usedNodes.add(edge.node2);
+                            break;
+                        }
                     }
                 }
             }
             
-            if (connection) {
-                explanations.push(`terhubung melalui ${connection}`);
+            return { edges: result, explanations };
+        }
+        
+        // Fungsi untuk menampilkan edge Prim dengan penjelasan
+        function explainPrimEdges(edges, startNode) {
+            if (edges.length === 0) return { edges: [], explanations: [] };
+            
+            const result = [];
+            const explanations = [];
+            
+            edges.forEach((edge, index) => {
+                result.push(edge);
+                
+                if (index === 0) {
+                    explanations.push(`simpul ${startNode} ke ${edge.node1 === startNode ? edge.node2 : edge.node1}`);
+                } else {
+                    // Cari edge sebelumnya yang terhubung
+                    const prevEdge = edges[index - 1];
+                    let connection = '';
+                    
+                    if (edge.node1 === prevEdge.node1 || edge.node1 === prevEdge.node2) {
+                        connection = edge.node1;
+                    } else if (edge.node2 === prevEdge.node1 || edge.node2 === prevEdge.node2) {
+                        connection = edge.node2;
+                    } else {
+                        // Cari koneksi tidak langsung
+                        for (let i = 0; i < index; i++) {
+                            const prev = edges[i];
+                            if (edge.node1 === prev.node1 || edge.node1 === prev.node2 || 
+                                edge.node2 === prev.node1 || edge.node2 === prev.node2) {
+                                connection = (edge.node1 === prev.node1 || edge.node1 === prev.node2) ? edge.node1 : edge.node2;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if (connection) {
+                        explanations.push(`terhubung melalui ${connection}`);
+                    } else {
+                        explanations.push(`menghubungkan komponen baru`);
+                    }
+                }
+            });
+            
+            return { edges: result, explanations };
+        }
+        
+        // Tampilkan hasil
+        function displayResults(kruskalResult, primResult) {
+            // Tampilkan hasil Kruskal
+            kruskalWeightElement.textContent = kruskalResult.weight;
+            
+            // Format steps Kruskal dengan lebih baik
+            const kruskalStepsHTML = kruskalResult.steps.map(step => {
+                if (step.startsWith('✓')) {
+                    return `<div class="step-item step-added">${step}</div>`;
+                } else if (step.startsWith('✗') || step.startsWith('⚠')) {
+                    return `<div class="step-item step-skipped">${step}</div>`;
+                } else if (step === '') {
+                    return `<div style="height: 10px;"></div>`;
+                } else {
+                    return `<div class="step-item">${step}</div>`;
+                }
+            }).join('');
+            
+            kruskalStepsElement.innerHTML = kruskalStepsHTML;
+            
+            // Urutkan edge dengan penjelasan untuk Kruskal
+            const groupedResult = groupEdgesWithExplanation(kruskalResult.edges);
+            const sortedEdges = groupedResult.edges;
+            const explanations = groupedResult.explanations;
+            
+            kruskalEdgesElement.innerHTML = '';
+            if (sortedEdges.length > 0) {
+                sortedEdges.forEach((edge, index) => {
+                    const li = document.createElement('li');
+                    
+                    // Buat span untuk edge
+                    const edgeSpan = document.createElement('span');
+                    edgeSpan.textContent = `${edge.node1} - ${edge.node2} (${edge.weight})`;
+                    edgeSpan.style.fontWeight = 'bold';
+                    edgeSpan.style.color = '#4a00e0';
+                    
+                    // Buat span untuk penjelasan
+                    const explanationSpan = document.createElement('span');
+                    explanationSpan.textContent = ` # ${explanations[index]}`;
+                    explanationSpan.style.fontSize = '0.85em';
+                    explanationSpan.style.color = '#666';
+                    explanationSpan.style.fontStyle = 'italic';
+                    explanationSpan.style.marginLeft = '10px';
+                    
+                    li.appendChild(edgeSpan);
+                    li.appendChild(explanationSpan);
+                    kruskalEdgesElement.appendChild(li);
+                });
             } else {
-                explanations.push(`menghubungkan komponen baru`);
+                kruskalEdgesElement.innerHTML = '<li>-</li>';
             }
+            
+            // Tampilkan hasil Prim
+            primWeightElement.textContent = primResult.weight;
+            
+            // Format steps Prim dengan tabel
+            primStepsElement.innerHTML = primResult.steps.join('');
+            
+            // Tampilkan edge Prim dengan penjelasan
+            const primExplained = explainPrimEdges(primResult.edges, startNodeInput.value);
+            
+            primEdgesElement.innerHTML = '';
+            if (primExplained.edges.length > 0) {
+                primExplained.edges.forEach((edge, index) => {
+                    const li = document.createElement('li');
+                    
+                    // Buat span untuk edge
+                    const edgeSpan = document.createElement('span');
+                    edgeSpan.textContent = `${edge.node1} - ${edge.node2} (${edge.weight})`;
+                    edgeSpan.style.fontWeight = 'bold';
+                    edgeSpan.style.color = '#8e2de2';
+                    
+                    // Buat span untuk penjelasan
+                    const explanationSpan = document.createElement('span');
+                    explanationSpan.textContent = ` # ${primExplained.explanations[index]}`;
+                    explanationSpan.style.fontSize = '0.85em';
+                    explanationSpan.style.color = '#666';
+                    explanationSpan.style.fontStyle = 'italic';
+                    explanationSpan.style.marginLeft = '10px';
+                    
+                    li.appendChild(edgeSpan);
+                    li.appendChild(explanationSpan);
+                    primEdgesElement.appendChild(li);
+                });
+            } else {
+                primEdgesElement.innerHTML = '<li>-</li>';
+            }
+            
+            // Tampilkan kesimpulan dengan penjelasan perbedaan algoritma
+            let conclusion = `<strong>Total bobot Rentang Minimum: ${kruskalResult.weight}</strong>`;
+            
+            if (kruskalResult.weight === primResult.weight) {
+                conclusion += `<br>✓ Kedua algoritma menghasilkan bobot yang sama: <strong style="color: #00b09b;">${kruskalResult.weight}</strong>`;
+                
+                // Cek apakah edge-nya sama (dalam urutan berbeda)
+                const kruskalEdgeSet = new Set(kruskalResult.edges.map(e => 
+                    `${e.node1}-${e.node2}-${e.weight}`));
+                const primEdgeSet = new Set(primResult.edges.map(e => 
+                    `${e.node1}-${e.node2}-${e.weight}`));
+                
+                if (kruskalEdgeSet.size === primEdgeSet.size && 
+                    [...kruskalEdgeSet].every(e => primEdgeSet.has(e))) {
+                    conclusion += `<br>✓ Edge yang dihasilkan juga identik (hanya urutan berbeda).`;
+                } else {
+                    conclusion += `<br>• Edge yang dihasilkan berbeda tetapi membentuk Rentang Minimum yang sama.`;
+                }
+            } else {
+                conclusion += `<br>⚠ Algoritma Kruskal dan Prim menghasilkan bobot berbeda.`;
+                conclusion += `<br>• Kruskal: ${kruskalResult.weight}, Prim: ${primResult.weight}`;
+                conclusion += `<br>• Mungkin ada beberapa Rentang Minimum dengan bobot berbeda.`;
+            }
+            
+            // Tambahkan perbedaan strategi
+            conclusion += `<br><br><strong>Perbedaan Strategi:</strong>`;
+            conclusion += `<table style="width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.9em;">
+                <thead>
+                    <tr style="background-color: #f0f0f0;">
+                        <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Algoritma</th>
+                        <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Strategi</th>
+                        <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Mulai dari</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold; color: #4a00e0;">Kruskal</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">Pilih edge terkecil secara global tanpa membentuk siklus</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">Edge dengan bobot terkecil</td>
+                    </tr>
+                    <tr style="background-color: #f8f9fa;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold; color: #8e2de2;">Prim</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">Bangun pohon dari simpul awal, pilih edge terkecil yang terhubung</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">Simpul awal (${startNodeInput.value})</td>
+                    </tr>
+                </tbody>
+            </table>`;
+            
+            conclusionElement.innerHTML = conclusion;
         }
-    });
-    
-    return { edges: result, explanations };
-}
-		
-// Modifikasi displayResults untuk Prim
-function displayResults(kruskalResult, primResult) {
-    // Tampilkan hasil Kruskal (tetap sama)
-    kruskalWeightElement.textContent = kruskalResult.weight;
-    
-    // Format steps Kruskal dengan lebih baik
-    const kruskalStepsHTML = kruskalResult.steps.map(step => {
-        if (step.startsWith('✓')) {
-            return `<div class="step-item step-added">${step}</div>`;
-        } else if (step.startsWith('✗') || step.startsWith('⚠')) {
-            return `<div class="step-item step-skipped">${step}</div>`;
-        } else if (step === '') {
-            return `<div style="height: 10px;"></div>`;
-        } else {
-            return `<div class="step-item">${step}</div>`;
-        }
-    }).join('');
-    
-    kruskalStepsElement.innerHTML = kruskalStepsHTML;
-    
-    // Urutkan edge dengan penjelasan untuk Kruskal
-    const groupedResult = groupEdgesWithExplanation(kruskalResult.edges);
-    const sortedEdges = groupedResult.edges;
-    const explanations = groupedResult.explanations;
-    
-    kruskalEdgesElement.innerHTML = '';
-    if (sortedEdges.length > 0) {
-        sortedEdges.forEach((edge, index) => {
-            const li = document.createElement('li');
-            
-            // Buat span untuk edge
-            const edgeSpan = document.createElement('span');
-            edgeSpan.textContent = `${edge.node1} - ${edge.node2} (${edge.weight})`;
-            edgeSpan.style.fontWeight = 'bold';
-            edgeSpan.style.color = '#4a00e0';
-            
-            // Buat span untuk penjelasan
-            const explanationSpan = document.createElement('span');
-            explanationSpan.textContent = ` # ${explanations[index]}`;
-            explanationSpan.style.fontSize = '0.85em';
-            explanationSpan.style.color = '#666';
-            explanationSpan.style.fontStyle = 'italic';
-            explanationSpan.style.marginLeft = '10px';
-            
-            li.appendChild(edgeSpan);
-            li.appendChild(explanationSpan);
-            kruskalEdgesElement.appendChild(li);
-        });
-    } else {
-        kruskalEdgesElement.innerHTML = '<li>-</li>';
-    }
-    
-    // Tampilkan hasil Prim
-    primWeightElement.textContent = primResult.weight;
-    
-    // Format steps Prim dengan tabel
-    primStepsElement.innerHTML = primResult.steps.join('');
-    
-    // Tampilkan edge Prim dengan penjelasan
-    const primExplained = explainPrimEdges(primResult.edges, startNodeInput.value);
-    
-    primEdgesElement.innerHTML = '';
-    if (primExplained.edges.length > 0) {
-        primExplained.edges.forEach((edge, index) => {
-            const li = document.createElement('li');
-            
-            // Buat span untuk edge
-            const edgeSpan = document.createElement('span');
-            edgeSpan.textContent = `${edge.node1} - ${edge.node2} (${edge.weight})`;
-            edgeSpan.style.fontWeight = 'bold';
-            edgeSpan.style.color = '#8e2de2';
-            
-            // Buat span untuk penjelasan
-            const explanationSpan = document.createElement('span');
-            explanationSpan.textContent = ` # ${primExplained.explanations[index]}`;
-            explanationSpan.style.fontSize = '0.85em';
-            explanationSpan.style.color = '#666';
-            explanationSpan.style.fontStyle = 'italic';
-            explanationSpan.style.marginLeft = '10px';
-            
-            li.appendChild(edgeSpan);
-            li.appendChild(explanationSpan);
-            primEdgesElement.appendChild(li);
-        });
-    } else {
-        primEdgesElement.innerHTML = '<li>-</li>';
-    }
-    
-    // Tampilkan kesimpulan dengan penjelasan perbedaan algoritma
-    let conclusion = `<strong>Total bobot Rentang Minimum: ${kruskalResult.weight}</strong>`;
-    
-    if (kruskalResult.weight === primResult.weight) {
-        conclusion += `<br>✓ Kedua algoritma menghasilkan bobot yang sama: <strong style="color: #00b09b;">${kruskalResult.weight}</strong>`;
-        
-        // Cek apakah edge-nya sama (dalam urutan berbeda)
-        const kruskalEdgeSet = new Set(kruskalResult.edges.map(e => 
-            `${e.node1}-${e.node2}-${e.weight}`));
-        const primEdgeSet = new Set(primResult.edges.map(e => 
-            `${e.node1}-${e.node2}-${e.weight}`));
-        
-        if (kruskalEdgeSet.size === primEdgeSet.size && 
-            [...kruskalEdgeSet].every(e => primEdgeSet.has(e))) {
-            conclusion += `<br>✓ Edge yang dihasilkan juga identik (hanya urutan berbeda).`;
-        } else {
-            conclusion += `<br>• Edge yang dihasilkan berbeda tetapi membentuk Rentang Minimum yang sama.`;
-        }
-    } else {
-        conclusion += `<br>⚠ Algoritma Kruskal dan Prim menghasilkan bobot berbeda.`;
-        conclusion += `<br>• Kruskal: ${kruskalResult.weight}, Prim: ${primResult.weight}`;
-        conclusion += `<br>• Mungkin ada beberapa Rentang Minimum dengan bobot berbeda.`;
-    }
-    
-    // Tambahkan perbedaan strategi
-    conclusion += `<br><br><strong>Perbedaan Strategi:</strong>`;
-    conclusion += `<table style="width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.9em;">
-        <thead>
-            <tr style="background-color: #f0f0f0;">
-                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Algoritma</th>
-                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Strategi</th>
-                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Mulai dari</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold; color: #4a00e0;">Kruskal</td>
-                <td style="padding: 8px; border: 1px solid #ddd;">Pilih edge terkecil secara global tanpa membentuk siklus</td>
-                <td style="padding: 8px; border: 1px solid #ddd;">Edge dengan bobot terkecil</td>
-            </tr>
-            <tr style="background-color: #f8f9fa;">
-                <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold; color: #8e2de2;">Prim</td>
-                <td style="padding: 8px; border: 1px solid #ddd;">Bangun pohon dari simpul awal, pilih edge terkecil yang terhubung</td>
-                <td style="padding: 8px; border: 1px solid #ddd;">Simpul awal (${startNodeInput.value})</td>
-            </tr>
-        </tbody>
-    </table>`;
-    
-    conclusionElement.innerHTML = conclusion;
-}
         
         // Jalankan inisialisasi saat halaman dimuat
         window.addEventListener('DOMContentLoaded', init);
