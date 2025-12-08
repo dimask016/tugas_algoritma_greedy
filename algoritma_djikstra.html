@@ -1,0 +1,2216 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algoritma Dijkstra - Visualisasi dengan Drag & Drop</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a73e8, #0d47a1);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            flex: 1;
+            min-width: 300px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .panel h2 {
+            margin-bottom: 20px;
+            color: #1a73e8;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eaeaea;
+        }
+
+        .input-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+        }
+
+        label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        input, select {
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            width: 100%;
+        }
+
+        input:focus, select:focus {
+            border-color: #1a73e8;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+        }
+
+        .btn {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background-color: #0d62d9;
+        }
+
+        .btn-run {
+            background-color: #34a853;
+        }
+
+        .btn-run:hover {
+            background-color: #2d9449;
+        }
+
+        .btn-reset {
+            background-color: #ea4335;
+        }
+
+        .btn-reset:hover {
+            background-color: #d33426;
+        }
+
+        .btn-delete {
+            background-color: #ff6b6b;
+            padding: 6px 12px;
+            font-size: 0.9rem;
+            width: auto;
+        }
+
+        .btn-delete:hover {
+            background-color: #ff5252;
+        }
+
+        .btn-reset-edge {
+            background-color: #ff9800;
+        }
+
+        .btn-reset-edge:hover {
+            background-color: #f57c00;
+        }
+
+        .btn-calculate {
+            background-color: #9c27b0;
+        }
+
+        .btn-calculate:hover {
+            background-color: #7b1fa2;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .buttons-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .graph-container {
+            flex: 2;
+            min-height: 500px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #graph-canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            touch-action: none; /* Penting untuk touch events */
+        }
+
+        .edges-list {
+            margin-top: 20px;
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .edge-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s;
+        }
+
+        .edge-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .edge-item:last-child {
+            border-bottom: none;
+        }
+
+        .edge-info {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-right: 10px;
+        }
+
+        .info-section {
+            background-color: #e8f0fe;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .info-section h3 {
+            color: #1a73e8;
+            margin-bottom: 15px;
+        }
+
+        .steps-list {
+            list-style-type: none;
+            padding-left: 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .steps-list li {
+            padding: 8px 0;
+            border-bottom: 1px dashed #ccc;
+        }
+
+        .steps-list li:last-child {
+            border-bottom: none;
+        }
+
+        .step-active {
+            background-color: #e6f4ea;
+            padding: 5px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .algorithm-info {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .algorithm-info h3 {
+            color: #1a73e8;
+            margin-bottom: 10px;
+        }
+
+        .algorithm-info ul {
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+
+        .algorithm-info li {
+            margin-bottom: 8px;
+        }
+
+        /* Node styles with drag support */
+        .node {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: grab;
+            user-select: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+            z-index: 10;
+            touch-action: none; /* Penting untuk touch drag */
+        }
+
+        .node:hover {
+            transform: scale(1.1);
+            cursor: grab;
+        }
+
+        .node:active, .node.dragging {
+            cursor: grabbing !important;
+            transform: scale(1.15);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            z-index: 1000; /* Node yang didrag di atas yang lain */
+        }
+
+        .node-start {
+            background-color: #34a853;
+        }
+
+        .node-end {
+            background-color: #ea4335;
+        }
+
+        .node-visited {
+            background-color: #1a73e8;
+        }
+
+        .node-unvisited {
+            background-color: #5f6368;
+        }
+
+        .node-current {
+            background-color: #fbbc05;
+            color: #333;
+        }
+
+        .node-path {
+            background-color: #9c27b0;
+        }
+
+        /* Edge styles with smooth transitions */
+        .edge-line {
+            position: absolute;
+            transform-origin: 0 0;
+            height: 3px;
+            background-color: #333;
+            z-index: 1;
+            transition: all 0.3s ease; /* Smooth transition untuk perubahan posisi */
+        }
+
+        .edge-weight {
+            position: absolute;
+            background-color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            z-index: 5;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+            border: 2px solid #1a73e8;
+            min-width: 35px;
+            text-align: center;
+            pointer-events: none;
+            color: #1a73e8;
+            white-space: nowrap;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease; /* Smooth transition */
+        }
+
+        .shortest-path {
+            background-color: #9c27b0 !important;
+            height: 5px !important;
+        }
+
+        .results {
+            background-color: #f1f8e9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .results h4 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            padding: 5px 0;
+            border-bottom: 1px dashed #ddd;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .path-result {
+            background-color: #f3e5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .path-result h4 {
+            color: #7b1fa2;
+            margin-bottom: 10px;
+        }
+
+        .path-details {
+            padding: 10px;
+            background-color: white;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .no-edges-message {
+            text-align: center;
+            color: #888;
+            padding: 20px;
+            font-style: italic;
+        }
+
+        .node-selectors {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .node-selector-group {
+            flex: 1;
+        }
+
+        .node-input-container {
+            position: relative;
+        }
+
+        .suggestions-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            max-height: 150px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .suggestion-item {
+            padding: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .suggestion-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .suggestion-item.active {
+            background-color: #e3f2fd;
+        }
+
+        /* Drag & Drop Legend */
+        .drag-legend {
+            background-color: #e8f0fe;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #1a73e8;
+        }
+
+        .drag-legend h4 {
+            color: #1a73e8;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .drag-legend ul {
+            padding-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        .drag-legend li {
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .drag-icon {
+            font-size: 1.2rem;
+        }
+
+        /* Canvas boundary indicator */
+        .canvas-boundary {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            z-index: 20;
+            display: none;
+        }
+
+        .node.dragging ~ .canvas-boundary {
+            display: block;
+        }
+
+        /* Custom scrollbar */
+        .panel::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .panel::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .panel::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+
+        .panel::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        .edges-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .edges-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .edges-list::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+        /* Perbaikan khusus untuk input bobot */
+        .weight-input-container {
+            position: relative;
+            z-index: 10;
+        }
+
+        #weight {
+            font-size: 1rem;
+            height: 46px;
+            padding-right: 40px;
+        }
+
+        .weight-input-container::after {
+            content: "🔢";
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .clear-weight-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+        }
+
+        .clear-weight-btn:hover {
+            color: #333;
+        }
+
+        @media (max-width: 1100px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .graph-container {
+                min-height: 400px;
+            }
+            
+            .input-row {
+                flex-direction: column;
+            }
+            
+            .node-selectors {
+                flex-direction: column;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            .buttons-row {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .panel {
+                padding: 15px;
+            }
+            
+            .input-row {
+                gap: 10px;
+            }
+            
+            .buttons {
+                gap: 8px;
+            }
+            
+            .drag-legend {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Visualisasi Algoritma Dijkstra dengan Drag & Drop</h1>
+            <p class="subtitle">Algoritma optimal untuk menentukan lintasan terpendek dengan fitur drag & drop untuk mengatur ulang layout graph.</p>
+        </header>
+
+        <div class="content">
+            <div class="panel">
+                <h2>Tambah Edge Baru</h2>
+                <div class="input-section">
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label for="node1">Simpul 1</label>
+                            <div class="node-input-container">
+                                <input type="text" id="node1" placeholder="Masukkan nama simpul" value="a" autocomplete="off">
+                                <div class="suggestions-list" id="suggestions1"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="node2">Simpul 2</label>
+                            <div class="node-input-container">
+                                <input type="text" id="node2" placeholder="Masukkan nama simpul" value="b" autocomplete="off">
+                                <div class="suggestions-list" id="suggestions2"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="weight">Bobot (dapat desimal)</label>
+                            <div class="weight-input-container">
+                                <input type="number" id="weight" min="0.1" max="1000" step="0.1" value="10.0" placeholder="Contoh: 2.5, 7.8">
+                                <button class="clear-weight-btn" id="clear-weight" title="Clear">×</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button id="add-edge-btn" class="btn">
+                        <span>+</span> Tambah Edge
+                    </button>
+                </div>
+
+                <div class="edges-list">
+                    <h3>Edge yang Telah Ditambahkan:</h3>
+                    <div id="edges-container">
+                        <!-- Edge items will be added here dynamically -->
+                    </div>
+                    <div class="buttons-row">
+                        <button id="reset-edges-btn" class="btn btn-reset-edge">
+                            ↻ Reset Semua Edge
+                        </button>
+                    </div>
+                </div>
+
+                <div class="input-section" style="margin-top: 25px;">
+                    <h3>Hitung Lintasan Terpendek</h3>
+                    
+                    <div class="node-selectors">
+                        <div class="node-selector-group">
+                            <div class="input-group">
+                                <label for="start-node-input">Simpul Awal</label>
+                                <div class="node-input-container">
+                                    <input type="text" id="start-node-input" placeholder="Masukkan simpul awal" value="b" autocomplete="off">
+                                    <div class="suggestions-list" id="start-suggestions"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="node-selector-group">
+                            <div class="input-group">
+                                <label for="end-node-input">Simpul Akhir (Opsional)</label>
+                                <div class="node-input-container">
+                                    <input type="text" id="end-node-input" placeholder="Kosongkan untuk semua simpul" autocomplete="off">
+                                    <div class="suggestions-list" id="end-suggestions"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="buttons">
+                        <button id="run-algorithm-btn" class="btn btn-run">
+                            ▶ Hitung Rentang Minimum
+                        </button>
+                        <button id="calculate-path-btn" class="btn btn-calculate">
+                            🔍 Cari Lintasan Terpendek
+                        </button>
+                        <button id="reset-btn" class="btn btn-reset">
+                            ↻ Reset Graph Lengkap
+                        </button>
+                    </div>
+                </div>
+
+                <div class="drag-legend">
+                    <h4><span class="drag-icon">↔️</span> Drag & Drop Simpul</h4>
+                    <ul>
+                        <li><strong>Klik dan tahan</strong> simpul mana pun untuk menyeretnya</li>
+                        <li><strong>Cursor:</strong> <span style="cursor: grab">grab</span> saat hover, <span style="cursor: grabbing">grabbing</span> saat drag</li>
+                        <li><strong>Efek visual:</strong> Shadow dan transform saat drag</li>
+                        <li><strong>Batas area:</strong> Simpul tidak bisa ditarik keluar canvas</li>
+                        <li><strong>Edge akan menyesuaikan</strong> posisinya secara otomatis</li>
+                    </ul>
+                    <p><em>Drag simpul untuk mengatur ulang layout graph sesuai kebutuhan Anda!</em></p>
+                </div>
+
+                <div class="results" id="results-container" style="display: none;">
+                    <h4>Hasil Jarak Terpendek dari <span id="start-node-result">b</span>:</h4>
+                    <div id="distances-result">
+                        <!-- Results will be displayed here -->
+                    </div>
+                </div>
+                
+                <div class="path-result" id="path-container" style="display: none;">
+                    <h4>Lintasan Terpendek ke <span id="end-node-result">b</span>:</h4>
+                    <div id="path-details">
+                        <!-- Path details will be displayed here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel graph-container">
+                <h2>Visualisasi Graph</h2>
+                <div id="graph-canvas">
+                    <!-- Graph will be drawn here -->
+                    <div class="canvas-boundary">Batas Canvas</div>
+                </div>
+                
+                <div class="info-section">
+                    <h3>Langkah-langkah Algoritma</h3>
+                    <ol id="algorithm-steps" class="steps-list">
+                        <!-- Algorithm steps will be displayed here -->
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="algorithm-info">
+            <h3>Informasi Algoritma Dijkstra</h3>
+            <p>Algoritma Dijkstra adalah algoritma optimal untuk menentukan lintasan terpendek dari satu simpul ke semua simpul lain dalam graph berbobot non-negatif.</p>
+            <p><strong>Strategi Greedy yang digunakan:</strong></p>
+            <ul>
+                <li>Pada setiap langkah, pilih lintasan berbobot minimum yang menghubungkan simpul yang sudah terpilih dengan sebuah simpul lain yang belum terpilih.</li>
+                <li>Lintasan dari simpul asal ke simpul yang baru haruslah merupakan lintasan yang terpendek diantara semua lintasannya ke simpul-simpul yang belum terpilih.</li>
+                <li>Lintasan terpendek dibangun langkah per langkah. Pada langkah pertama bangun lintasan terpendek pertama, pada langkah kedua bangun lintasan terpendek kedua, demikian seterusnya.</li>
+            </ul>
+            <p><strong>Fitur Drag & Drop:</strong> Anda dapat mengklik dan menyeret simpul mana pun untuk mengatur ulang layout graph. Edge akan menyesuaikan posisinya secara otomatis.</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inisialisasi graph dengan edge contoh yang Anda berikan
+            let graph = {
+                nodes: ['a', 'b', 'c', 'd', 'e', 'f'],
+                edges: [
+                    { from: 'a', to: 'b', weight: 104 },
+                    { from: 'a', to: 'd', weight: 35 },
+                    { from: 'a', to: 'c', weight: 91 },
+                    { from: 'b', to: 'e', weight: 89 },
+                    { from: 'b', to: 'd', weight: 10 },
+                    { from: 'c', to: 'e', weight: 70 },
+                    { from: 'c', to: 'f', weight: 17 },
+                    { from: 'd', to: 'f', weight: 15 },
+                    { from: 'e', to: 'f', weight: 110 }
+                ]
+            };
+
+            // Data untuk visualisasi
+            let nodePositions = {};
+            let edgesElements = [];
+            let nodesElements = [];
+            let algorithmSteps = [];
+            let currentStep = 0;
+            let distances = {};
+            let previousNodes = {};
+            let unvisitedNodes = [];
+            let visitedNodes = [];
+            let currentNode = null;
+            let isAlgorithmRunning = false;
+            let startNode = 'b';
+            let endNode = '';
+            
+            // Variabel untuk drag & drop
+            let draggedNode = null;
+            let dragOffsetX = 0;
+            let dragOffsetY = 0;
+            let isDragging = false;
+            let canvasRect = null;
+
+            // Inisialisasi posisi node dengan layout yang optimal
+            function initializeNodePositions() {
+                const canvas = document.getElementById('graph-canvas');
+                const width = canvas.clientWidth;
+                const height = canvas.clientHeight;
+                
+                // Reset node positions
+                nodePositions = {};
+                
+                // Posisi node dalam pola segi enam yang teratur
+                const centerX = width / 2;
+                const centerY = height / 2;
+                const radius = Math.min(width, height) * 0.25; // Radius lebih kecil untuk ruang lebih
+                
+                // Posisi spesifik untuk setiap node dengan jarak yang cukup
+                // Layout segi enam dengan node e di tengah bawah
+                const positions = {
+                    'a': { x: centerX - radius * 1.5, y: centerY - radius },          // Kiri atas
+                    'b': { x: centerX, y: centerY - radius * 1.2 },                  // Tengah atas
+                    'c': { x: centerX + radius * 1.5, y: centerY - radius },         // Kanan atas
+                    'd': { x: centerX - radius * 0.8, y: centerY + radius * 0.5 },   // Kiri bawah
+                    'e': { x: centerX + radius * 0.8, y: centerY + radius * 0.5 },   // Kanan bawah
+                    'f': { x: centerX, y: centerY + radius * 1.2 }                   // Tengah bawah
+                };
+                
+                // Tambahkan node yang belum ada dalam graph.nodes
+                const allNodes = [...graph.nodes];
+                graph.edges.forEach(edge => {
+                    if (!allNodes.includes(edge.from)) allNodes.push(edge.from);
+                    if (!allNodes.includes(edge.to)) allNodes.push(edge.to);
+                });
+                
+                // Pastikan tidak ada duplikat
+                const uniqueNodes = [...new Set(allNodes)];
+                graph.nodes = uniqueNodes;
+                
+                // Jika ada node baru yang tidak ada di positions, tambahkan dengan posisi melingkar
+                let angle = 0;
+                const angleStep = (2 * Math.PI) / uniqueNodes.length;
+                
+                uniqueNodes.forEach(node => {
+                    if (!positions[node]) {
+                        // Posisi untuk node tambahan (jika ada)
+                        const x = centerX + radius * 1.5 * Math.cos(angle);
+                        const y = centerY + radius * 1.5 * Math.sin(angle);
+                        nodePositions[node] = { x, y };
+                        angle += angleStep;
+                    } else {
+                        // Gunakan posisi yang sudah ditentukan
+                        nodePositions[node] = positions[node];
+                    }
+                });
+            }
+
+            // Render graph dengan posisi bobot yang optimal
+            function renderGraph() {
+                const canvas = document.getElementById('graph-canvas');
+                canvas.innerHTML = '';
+                edgesElements = [];
+                nodesElements = [];
+                
+                // Tambahkan boundary indicator
+                const boundaryIndicator = document.createElement('div');
+                boundaryIndicator.className = 'canvas-boundary';
+                boundaryIndicator.textContent = 'Batas Canvas';
+                canvas.appendChild(boundaryIndicator);
+                
+                // Render edges terlebih dahulu
+                graph.edges.forEach((edge, edgeIndex) => {
+                    // Pastikan node ada dalam posisi
+                    if (!nodePositions[edge.from] || !nodePositions[edge.to]) {
+                        // Jika node belum ada, inisialisasi ulang posisi
+                        initializeNodePositions();
+                    }
+                    
+                    const fromPos = nodePositions[edge.from];
+                    const toPos = nodePositions[edge.to];
+                    
+                    // Hitung jarak dan sudut antara dua node
+                    const dx = toPos.x - fromPos.x;
+                    const dy = toPos.y - fromPos.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                    
+                    // Buat elemen edge (garis)
+                    const edgeElement = document.createElement('div');
+                    edgeElement.className = 'edge-line';
+                    edgeElement.style.width = `${distance}px`;
+                    edgeElement.style.left = `${fromPos.x}px`;
+                    edgeElement.style.top = `${fromPos.y}px`;
+                    edgeElement.style.transform = `rotate(${angle}deg)`;
+                    
+                    // Tandai jika edge adalah bagian dari jalur terpendek
+                    if (edge.isShortestPath) {
+                        edgeElement.classList.add('shortest-path');
+                    }
+                    
+                    canvas.appendChild(edgeElement);
+                    edgesElements.push(edgeElement);
+                    
+                    // Tentukan posisi bobot berdasarkan edge tertentu
+                    let positionRatio = 0.5; // Default: tengah garis
+                    let offsetX = 0; // Offset horizontal
+                    let offsetY = 0; // Offset vertikal
+                    
+                    // Penyesuaian khusus untuk setiap edge berdasarkan gambar
+                    const edgeKey = `${edge.from}-${edge.to}`;
+                    const reverseEdgeKey = `${edge.to}-${edge.from}`;
+                    
+                    // Default offset untuk edge yang tidak ditentukan
+                    const defaultOffset = 25;
+                    
+                    if (edgeKey === 'a-b' || reverseEdgeKey === 'a-b') {
+                        positionRatio = 1.5;
+                        offsetX = -defaultOffset * 6.8;
+                        offsetY = defaultOffset;
+                    } else if (edgeKey === 'a-d' || reverseEdgeKey === 'a-d') {
+                        positionRatio = 0.4;
+                        offsetX = defaultOffset * 0.8;
+                        offsetY = -defaultOffset * 0.5;
+                    } else if (edgeKey === 'a-c' || reverseEdgeKey === 'a-c') {
+                        positionRatio = 0.5;
+                        offsetX = -defaultOffset * 2.8;
+                        offsetY = defaultOffset * 0.8;
+                    } else if (edgeKey === 'b-e' || reverseEdgeKey === 'b-e') {
+                        positionRatio = 0.5;
+                        offsetX = -defaultOffset;
+                        offsetY = 0;
+                    } else if (edgeKey === 'b-d' || reverseEdgeKey === 'b-d') {
+                        positionRatio = 0.5;
+                        offsetX = 0;
+                        offsetY = -defaultOffset;
+                    } else if (edgeKey === 'c-e' || reverseEdgeKey === 'c-e') {
+                        positionRatio = 0.4;
+                        offsetX = 0;
+                        offsetY = defaultOffset;
+                    } else if (edgeKey === 'c-f' || reverseEdgeKey === 'c-f') {
+                        positionRatio = 0.5;
+                        offsetX = defaultOffset * 0.5;
+                        offsetY = defaultOffset * 0.5;
+                    } else if (edgeKey === 'd-f' || reverseEdgeKey === 'd-f') {
+                        positionRatio = 0.5;
+                        offsetX = -defaultOffset;
+                        offsetY = 0;
+                    } else if (edgeKey === 'e-f' || reverseEdgeKey === 'e-f') {
+                        positionRatio = 0.5;
+                        offsetX = 0;
+                        offsetY = defaultOffset;
+                    } else {
+                        positionRatio = 0.5;
+                        offsetX = edgeIndex % 2 === 0 ? defaultOffset : -defaultOffset;
+                        offsetY = edgeIndex % 4 < 2 ? defaultOffset : -defaultOffset;
+                    }
+                    
+                    // Hitung posisi dasar di sepanjang garis
+                    const baseX = fromPos.x + dx * positionRatio;
+                    const baseY = fromPos.y + dy * positionRatio;
+                    
+                    // Terapkan offset
+                    const finalX = baseX + offsetX;
+                    const finalY = baseY + offsetY;
+                    
+                    // Buat elemen untuk menampilkan bobot
+                    const weightElement = document.createElement('div');
+                    weightElement.className = 'edge-weight';
+                    weightElement.textContent = formatWeight(edge.weight);
+                    
+                    // Beri warna berbeda berdasarkan bobot untuk kemudahan identifikasi
+                    if (edge.weight < 20) {
+                        weightElement.style.backgroundColor = '#e8f5e8';
+                        weightElement.style.borderColor = '#34a853';
+                        weightElement.style.color = '#0d652d';
+                    } else if (edge.weight < 50) {
+                        weightElement.style.backgroundColor = '#e8f0fe';
+                        weightElement.style.borderColor = '#1a73e8';
+                        weightElement.style.color = '#0d47a1';
+                    } else {
+                        weightElement.style.backgroundColor = '#fce4ec';
+                        weightElement.style.borderColor = '#9c27b0';
+                        weightElement.style.color = '#7b1fa2';
+                    }
+                    
+                    // Set posisi bobot
+                    weightElement.style.left = `${finalX}px`;
+                    weightElement.style.top = `${finalY}px`;
+                    
+                    // Atur transform untuk memusatkan bobot
+                    weightElement.style.transform = 'translate(-50%, -50%)';
+                    
+                    // Tambahkan tooltip untuk edge identification
+                    weightElement.title = `Edge: ${edge.from} - ${edge.to} (${edge.weight})`;
+                    
+                    canvas.appendChild(weightElement);
+                });
+                
+                // Render nodes setelah edges
+                graph.nodes.forEach(node => {
+                    const pos = nodePositions[node];
+                    
+                    const nodeElement = document.createElement('div');
+                    nodeElement.className = 'node';
+                    nodeElement.textContent = node;
+                    nodeElement.style.left = `${pos.x - 25}px`;
+                    nodeElement.style.top = `${pos.y - 25}px`;
+                    nodeElement.style.zIndex = '10'; // Node di atas edge
+                    
+                    // Tambahkan atribut data untuk identifikasi
+                    nodeElement.dataset.nodeName = node;
+                    
+                    // Tentukan kelas CSS berdasarkan status node
+                    if (node === startNode) {
+                        nodeElement.classList.add('node-start');
+                    } else if (node === endNode && endNode !== '') {
+                        nodeElement.classList.add('node-end');
+                    } else if (visitedNodes.includes(node)) {
+                        nodeElement.classList.add('node-visited');
+                    } else if (node === currentNode) {
+                        nodeElement.classList.add('node-current');
+                    } else {
+                        nodeElement.classList.add('node-unvisited');
+                    }
+                    
+                    // Tandai node yang berada di jalur terpendek (jika ada)
+                    if (endNode !== '' && isNodeInShortestPath(node)) {
+                        nodeElement.classList.add('node-path');
+                    }
+                    
+                    // Tambahkan event listener untuk drag & drop
+                    addDragAndDropListeners(nodeElement);
+                    
+                    canvas.appendChild(nodeElement);
+                    nodesElements.push(nodeElement);
+                });
+                
+                // Update canvas rect untuk boundary checking
+                updateCanvasRect();
+            }
+            
+            // Tambahkan event listeners untuk drag & drop
+            function addDragAndDropListeners(nodeElement) {
+                const nodeName = nodeElement.dataset.nodeName;
+                
+                // Mouse events
+                nodeElement.addEventListener('mousedown', startDrag);
+                nodeElement.addEventListener('touchstart', startDragTouch, { passive: false });
+                
+                // Fungsi untuk memulai drag dengan mouse
+                function startDrag(e) {
+                    e.preventDefault();
+                    isDragging = true;
+                    draggedNode = nodeName;
+                    
+                    // Hitung offset antara mouse dan pusat node
+                    const rect = nodeElement.getBoundingClientRect();
+                    const nodeCenterX = rect.left + rect.width / 2;
+                    const nodeCenterY = rect.top + rect.height / 2;
+                    
+                    dragOffsetX = e.clientX - nodeCenterX;
+                    dragOffsetY = e.clientY - nodeCenterY;
+                    
+                    // Tambahkan kelas dragging
+                    nodeElement.classList.add('dragging');
+                    
+                    // Tambahkan event listeners untuk drag dan drop
+                    document.addEventListener('mousemove', dragNode);
+                    document.addEventListener('mouseup', stopDrag);
+                    
+                    // Update boundary indicator
+                    updateBoundaryIndicator(true);
+                }
+                
+                // Fungsi untuk memulai drag dengan touch
+                function startDragTouch(e) {
+                    e.preventDefault();
+                    if (e.touches.length !== 1) return;
+                    
+                    isDragging = true;
+                    draggedNode = nodeName;
+                    
+                    const touch = e.touches[0];
+                    const rect = nodeElement.getBoundingClientRect();
+                    const nodeCenterX = rect.left + rect.width / 2;
+                    const nodeCenterY = rect.top + rect.height / 2;
+                    
+                    dragOffsetX = touch.clientX - nodeCenterX;
+                    dragOffsetY = touch.clientY - nodeCenterY;
+                    
+                    // Tambahkan kelas dragging
+                    nodeElement.classList.add('dragging');
+                    
+                    // Tambahkan event listeners untuk drag dan drop
+                    document.addEventListener('touchmove', dragNodeTouch, { passive: false });
+                    document.addEventListener('touchend', stopDragTouch);
+                    
+                    // Update boundary indicator
+                    updateBoundaryIndicator(true);
+                }
+                
+                // Fungsi untuk menggerakkan node dengan mouse
+                function dragNode(e) {
+                    if (!isDragging || draggedNode !== nodeName) return;
+                    
+                    e.preventDefault();
+                    
+                    // Dapatkan posisi baru
+                    let newX = e.clientX - dragOffsetX;
+                    let newY = e.clientY - dragOffsetY;
+                    
+                    // Batasi node dalam canvas
+                    newX = Math.max(25, Math.min(canvasRect.width - 25, newX));
+                    newY = Math.max(25, Math.min(canvasRect.height - 25, newY));
+                    
+                    // Update posisi node
+                    nodePositions[nodeName].x = newX;
+                    nodePositions[nodeName].y = newY;
+                    
+                    // Update tampilan node
+                    nodeElement.style.left = `${newX - 25}px`;
+                    nodeElement.style.top = `${newY - 25}px`;
+                    
+                    // Update semua edge yang terhubung dengan node ini
+                    updateConnectedEdges(nodeName);
+                }
+                
+                // Fungsi untuk menggerakkan node dengan touch
+                function dragNodeTouch(e) {
+                    if (!isDragging || draggedNode !== nodeName || e.touches.length !== 1) return;
+                    
+                    e.preventDefault();
+                    
+                    const touch = e.touches[0];
+                    
+                    // Dapatkan posisi baru
+                    let newX = touch.clientX - dragOffsetX;
+                    let newY = touch.clientY - dragOffsetY;
+                    
+                    // Batasi node dalam canvas
+                    newX = Math.max(25, Math.min(canvasRect.width - 25, newX));
+                    newY = Math.max(25, Math.min(canvasRect.height - 25, newY));
+                    
+                    // Update posisi node
+                    nodePositions[nodeName].x = newX;
+                    nodePositions[nodeName].y = newY;
+                    
+                    // Update tampilan node
+                    nodeElement.style.left = `${newX - 25}px`;
+                    nodeElement.style.top = `${newY - 25}px`;
+                    
+                    // Update semua edge yang terhubung dengan node ini
+                    updateConnectedEdges(nodeName);
+                }
+                
+                // Fungsi untuk menghentikan drag dengan mouse
+                function stopDrag() {
+                    if (!isDragging || draggedNode !== nodeName) return;
+                    
+                    isDragging = false;
+                    draggedNode = null;
+                    
+                    // Hapus kelas dragging
+                    nodeElement.classList.remove('dragging');
+                    
+                    // Hapus event listeners
+                    document.removeEventListener('mousemove', dragNode);
+                    document.removeEventListener('mouseup', stopDrag);
+                    
+                    // Update boundary indicator
+                    updateBoundaryIndicator(false);
+                }
+                
+                // Fungsi untuk menghentikan drag dengan touch
+                function stopDragTouch() {
+                    if (!isDragging || draggedNode !== nodeName) return;
+                    
+                    isDragging = false;
+                    draggedNode = null;
+                    
+                    // Hapus kelas dragging
+                    nodeElement.classList.remove('dragging');
+                    
+                    // Hapus event listeners
+                    document.removeEventListener('touchmove', dragNodeTouch);
+                    document.removeEventListener('touchend', stopDragTouch);
+                    
+                    // Update boundary indicator
+                    updateBoundaryIndicator(false);
+                }
+            }
+            
+            // Update semua edge yang terhubung dengan node tertentu
+            function updateConnectedEdges(nodeName) {
+                // Cari semua edge yang terhubung dengan node ini
+                const connectedEdges = graph.edges.filter(edge => 
+                    edge.from === nodeName || edge.to === nodeName
+                );
+                
+                // Update visualisasi untuk setiap edge yang terhubung
+                connectedEdges.forEach(edge => {
+                    updateEdgeVisualization(edge);
+                });
+            }
+            
+            // Update visualisasi untuk edge tertentu
+            function updateEdgeVisualization(edge) {
+                // Cari semua elemen edge dan bobot yang perlu diupdate
+                const canvas = document.getElementById('graph-canvas');
+                const edgeElements = canvas.querySelectorAll('.edge-line');
+                const weightElements = canvas.querySelectorAll('.edge-weight');
+                
+                // Temukan edge yang sesuai (berdasarkan from dan to)
+                edgeElements.forEach((edgeElement, index) => {
+                    // Asumsi: edgeElements dan graph.edges memiliki urutan yang sama
+                    if (index < graph.edges.length) {
+                        const currentEdge = graph.edges[index];
+                        
+                        if ((currentEdge.from === edge.from && currentEdge.to === edge.to) ||
+                            (currentEdge.from === edge.to && currentEdge.to === edge.from)) {
+                            
+                            // Update garis edge
+                            const fromPos = nodePositions[edge.from];
+                            const toPos = nodePositions[edge.to];
+                            
+                            const dx = toPos.x - fromPos.x;
+                            const dy = toPos.y - fromPos.y;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                            
+                            edgeElement.style.width = `${distance}px`;
+                            edgeElement.style.left = `${fromPos.x}px`;
+                            edgeElement.style.top = `${fromPos.y}px`;
+                            edgeElement.style.transform = `rotate(${angle}deg)`;
+                            
+                            // Update bobot edge
+                            if (weightElements[index]) {
+                                // Hitung posisi bobot (gunakan logika yang sama dengan renderGraph)
+                                let positionRatio = 0.5;
+                                let offsetX = 0;
+                                let offsetY = 0;
+                                
+                                const edgeKey = `${edge.from}-${edge.to}`;
+                                const reverseEdgeKey = `${edge.to}-${edge.from}`;
+                                const defaultOffset = 25;
+                                
+                                // Logika penempatan bobot (sama dengan di renderGraph)
+                                if (edgeKey === 'a-b' || reverseEdgeKey === 'a-b') {
+                                    positionRatio = 1.5;
+                                    offsetX = -defaultOffset * 6.8;
+                                    offsetY = defaultOffset;
+                                } else if (edgeKey === 'a-d' || reverseEdgeKey === 'a-d') {
+                                    positionRatio = 0.4;
+                                    offsetX = defaultOffset * 0.8;
+                                    offsetY = -defaultOffset * 0.5;
+                                } else if (edgeKey === 'a-c' || reverseEdgeKey === 'a-c') {
+                                    positionRatio = 0.5;
+                                    offsetX = -defaultOffset * 2.8;
+                                    offsetY = defaultOffset * 0.8;
+                                } else if (edgeKey === 'b-e' || reverseEdgeKey === 'b-e') {
+                                    positionRatio = 0.5;
+                                    offsetX = -defaultOffset;
+                                    offsetY = 0;
+                                } else if (edgeKey === 'b-d' || reverseEdgeKey === 'b-d') {
+                                    positionRatio = 0.5;
+                                    offsetX = 0;
+                                    offsetY = -defaultOffset;
+                                } else if (edgeKey === 'c-e' || reverseEdgeKey === 'c-e') {
+                                    positionRatio = 0.4;
+                                    offsetX = 0;
+                                    offsetY = defaultOffset;
+                                } else if (edgeKey === 'c-f' || reverseEdgeKey === 'c-f') {
+                                    positionRatio = 0.5;
+                                    offsetX = defaultOffset * 0.5;
+                                    offsetY = defaultOffset * 0.5;
+                                } else if (edgeKey === 'd-f' || reverseEdgeKey === 'd-f') {
+                                    positionRatio = 0.5;
+                                    offsetX = -defaultOffset;
+                                    offsetY = 0;
+                                } else if (edgeKey === 'e-f' || reverseEdgeKey === 'e-f') {
+                                    positionRatio = 0.5;
+                                    offsetX = 0;
+                                    offsetY = defaultOffset;
+                                } else {
+                                    positionRatio = 0.5;
+                                    offsetX = index % 2 === 0 ? defaultOffset : -defaultOffset;
+                                    offsetY = index % 4 < 2 ? defaultOffset : -defaultOffset;
+                                }
+                                
+                                const baseX = fromPos.x + dx * positionRatio;
+                                const baseY = fromPos.y + dy * positionRatio;
+                                const finalX = baseX + offsetX;
+                                const finalY = baseY + offsetY;
+                                
+                                weightElements[index].style.left = `${finalX}px`;
+                                weightElements[index].style.top = `${finalY}px`;
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Update canvas rect untuk boundary checking
+            function updateCanvasRect() {
+                const canvas = document.getElementById('graph-canvas');
+                canvasRect = canvas.getBoundingClientRect();
+            }
+            
+            // Update boundary indicator visibility
+            function updateBoundaryIndicator(show) {
+                const boundaryIndicator = document.querySelector('.canvas-boundary');
+                if (boundaryIndicator) {
+                    boundaryIndicator.style.display = show ? 'block' : 'none';
+                }
+            }
+
+            // Format bobot untuk ditampilkan
+            function formatWeight(weight) {
+                return weight.toString();
+            }
+            
+            // Cek apakah node berada di jalur terpendek
+            function isNodeInShortestPath(node) {
+                if (endNode === '' || distances[node] === Infinity) return false;
+                
+                if (node === startNode || node === endNode) return true;
+                
+                // Cek apakah node berada di jalur dari startNode ke endNode
+                let currentNode = endNode;
+                while (previousNodes[currentNode] !== null) {
+                    if (previousNodes[currentNode] === node) {
+                        return true;
+                    }
+                    currentNode = previousNodes[currentNode];
+                }
+                
+                return false;
+            }
+
+            // Update tampilan edges yang telah ditambahkan
+            function updateEdgesList() {
+                const edgesContainer = document.getElementById('edges-container');
+                edgesContainer.innerHTML = '';
+                
+                if (graph.edges.length === 0) {
+                    const noEdgesMessage = document.createElement('div');
+                    noEdgesMessage.className = 'no-edges-message';
+                    noEdgesMessage.textContent = 'Belum ada edge yang ditambahkan. Tambah edge baru menggunakan form di atas.';
+                    edgesContainer.appendChild(noEdgesMessage);
+                    return;
+                }
+                
+                graph.edges.forEach((edge, index) => {
+                    const edgeItem = document.createElement('div');
+                    edgeItem.className = 'edge-item';
+                    
+                    const edgeInfo = document.createElement('div');
+                    edgeInfo.className = 'edge-info';
+                    edgeInfo.innerHTML = `
+                        <span>${edge.from} - ${edge.to}</span>
+                        <span>(${formatWeight(edge.weight)})</span>
+                    `;
+                    
+                    const deleteButton = document.createElement('button');
+                    deleteButton.className = 'btn btn-delete';
+                    deleteButton.innerHTML = '✕ Hapus';
+                    deleteButton.dataset.index = index;
+                    
+                    deleteButton.addEventListener('click', function() {
+                        deleteEdge(index);
+                    });
+                    
+                    edgeItem.appendChild(edgeInfo);
+                    edgeItem.appendChild(deleteButton);
+                    edgesContainer.appendChild(edgeItem);
+                });
+            }
+
+            // Tambah edge baru
+            function addEdge() {
+                const node1 = document.getElementById('node1').value.trim();
+                const node2 = document.getElementById('node2').value.trim();
+                const weightInput = document.getElementById('weight').value;
+                const weight = parseFloat(weightInput);
+                
+                // Validasi input
+                if (node1 === '' || node2 === '') {
+                    alert('Nama simpul tidak boleh kosong!');
+                    return;
+                }
+                
+                if (node1 === node2) {
+                    alert('Simpul 1 dan Simpul 2 tidak boleh sama!');
+                    return;
+                }
+                
+                if (isNaN(weight) || weight <= 0) {
+                    alert('Bobot harus angka positif (dapat desimal)!');
+                    return;
+                }
+                
+                // Tambahkan node baru ke daftar jika belum ada
+                if (!graph.nodes.includes(node1)) {
+                    graph.nodes.push(node1);
+                    // Beri posisi acak untuk node baru
+                    const canvas = document.getElementById('graph-canvas');
+                    const width = canvas.clientWidth;
+                    const height = canvas.clientHeight;
+                    nodePositions[node1] = {
+                        x: Math.random() * (width - 100) + 50,
+                        y: Math.random() * (height - 100) + 50
+                    };
+                }
+                if (!graph.nodes.includes(node2)) {
+                    graph.nodes.push(node2);
+                    // Beri posisi acak untuk node baru
+                    const canvas = document.getElementById('graph-canvas');
+                    const width = canvas.clientWidth;
+                    const height = canvas.clientHeight;
+                    nodePositions[node2] = {
+                        x: Math.random() * (width - 100) + 50,
+                        y: Math.random() * (height - 100) + 50
+                    };
+                }
+                
+                // Cek apakah edge sudah ada
+                const edgeExists = graph.edges.some(edge => 
+                    (edge.from === node1 && edge.to === node2) || 
+                    (edge.from === node2 && edge.to === node1)
+                );
+                
+                if (edgeExists) {
+                    alert('Edge sudah ada!');
+                    return;
+                }
+                
+                // Tambah edge baru
+                graph.edges.push({ from: node1, to: node2, weight: weight });
+                
+                // Update tampilan
+                updateEdgesList();
+                renderGraph();
+                
+                // Reset input bobot
+                document.getElementById('weight').value = '';
+                
+                // Reset hasil jika ada
+                document.getElementById('results-container').style.display = 'none';
+                document.getElementById('path-container').style.display = 'none';
+                resetAlgorithmVisualization();
+                
+                // Update suggestions
+                updateSuggestions();
+            }
+
+            // Hapus edge berdasarkan indeks
+            function deleteEdge(index) {
+                if (index >= 0 && index < graph.edges.length) {
+                    graph.edges.splice(index, 1);
+                    
+                    // Perbarui daftar node (hapus node yang tidak terhubung)
+                    updateNodeList();
+                    
+                    updateEdgesList();
+                    renderGraph();
+                    
+                    // Reset hasil jika ada
+                    document.getElementById('results-container').style.display = 'none';
+                    document.getElementById('path-container').style.display = 'none';
+                    resetAlgorithmVisualization();
+                    
+                    // Update suggestions
+                    updateSuggestions();
+                }
+            }
+            
+            // Perbarui daftar node berdasarkan edge yang ada
+            function updateNodeList() {
+                const allNodes = new Set();
+                
+                // Kumpulkan semua node dari edges
+                graph.edges.forEach(edge => {
+                    allNodes.add(edge.from);
+                    allNodes.add(edge.to);
+                });
+                
+                // Tambahkan node yang sudah ada sebelumnya (jika ada)
+                graph.nodes.forEach(node => allNodes.add(node));
+                
+                // Konversi kembali ke array
+                graph.nodes = Array.from(allNodes);
+            }
+
+            // Reset semua edge
+            function resetEdges() {
+                if (graph.edges.length === 0) {
+                    alert('Tidak ada edge untuk di-reset!');
+                    return;
+                }
+                
+                if (confirm('Apakah Anda yakin ingin menghapus semua edge?')) {
+                    graph.edges = [];
+                    graph.nodes = ['a', 'b', 'c', 'd', 'e', 'f']; // Reset ke node default
+                    initializeNodePositions();
+                    updateEdgesList();
+                    renderGraph();
+                    
+                    // Reset input simpul
+                    document.getElementById('node1').value = 'a';
+                    document.getElementById('node2').value = 'b';
+                    document.getElementById('start-node-input').value = 'b';
+                    document.getElementById('end-node-input').value = '';
+                    
+                    // Reset hasil jika ada
+                    document.getElementById('results-container').style.display = 'none';
+                    document.getElementById('path-container').style.display = 'none';
+                    resetAlgorithmVisualization();
+                    
+                    // Update suggestions
+                    updateSuggestions();
+                }
+            }
+
+            // Reset visualisasi algoritma (tanpa mengubah graph)
+            function resetAlgorithmVisualization() {
+                isAlgorithmRunning = false;
+                visitedNodes = [];
+                currentNode = null;
+                algorithmSteps = [];
+                currentStep = 0;
+                
+                // Hapus status jalur terpendek dari semua edge
+                graph.edges.forEach(edge => {
+                    edge.isShortestPath = false;
+                });
+                
+                // Reset tampilan langkah algoritma
+                displayAlgorithmSteps();
+                renderGraph();
+            }
+
+            // Inisialisasi algoritma Dijkstra
+            function initializeDijkstra() {
+                // Reset data algoritma
+                distances = {};
+                previousNodes = {};
+                unvisitedNodes = [...graph.nodes];
+                visitedNodes = [];
+                currentNode = null;
+                algorithmSteps = [];
+                currentStep = 0;
+                
+                // Hapus status jalur terpendek dari semua edge
+                graph.edges.forEach(edge => {
+                    edge.isShortestPath = false;
+                });
+                
+                // Setel jarak awal
+                graph.nodes.forEach(node => {
+                    distances[node] = node === startNode ? 0 : Infinity;
+                    previousNodes[node] = null;
+                });
+                
+                // Tambah langkah awal
+                algorithmSteps.push(`Inisialisasi: Set semua jarak ke Infinity, kecuali simpul awal ${startNode} = 0`);
+            }
+
+            // Fungsi untuk menemukan semua tetangga dari sebuah node
+            function getNeighbors(node) {
+                const neighbors = [];
+                graph.edges.forEach(edge => {
+                    if (edge.from === node) {
+                        neighbors.push({ node: edge.to, weight: edge.weight });
+                    }
+                    if (edge.to === node) {
+                        neighbors.push({ node: edge.from, weight: edge.weight });
+                    }
+                });
+                return neighbors;
+            }
+
+            // Jalankan algoritma Dijkstra lengkap (tanpa animasi)
+            function runDijkstraComplete() {
+                // Inisialisasi
+                initializeDijkstra();
+                
+                // Jalankan algoritma sampai semua node dikunjungi
+                while (unvisitedNodes.length > 0) {
+                    // Cari node dengan jarak terkecil yang belum dikunjungi
+                    let minDistance = Infinity;
+                    let minNode = null;
+                    
+                    unvisitedNodes.forEach(node => {
+                        if (distances[node] < minDistance) {
+                            minDistance = distances[node];
+                            minNode = node;
+                        }
+                    });
+                    
+                    // Jika tidak ada node yang terjangkau, keluar dari loop
+                    if (minNode === null || distances[minNode] === Infinity) {
+                        break;
+                    }
+                    
+                    // Tandai node saat ini sebagai dikunjungi
+                    currentNode = minNode;
+                    const currentIndex = unvisitedNodes.indexOf(currentNode);
+                    unvisitedNodes.splice(currentIndex, 1);
+                    visitedNodes.push(currentNode);
+                    
+                    // Dapatkan semua tetangga dari node saat ini
+                    const neighbors = getNeighbors(currentNode);
+                    
+                    // Perbarui jarak ke semua tetangga
+                    neighbors.forEach(neighbor => {
+                        // Cek apakah tetangga masih di unvisitedNodes
+                        if (unvisitedNodes.includes(neighbor.node)) {
+                            const newDistance = distances[currentNode] + neighbor.weight;
+                            
+                            if (newDistance < distances[neighbor.node]) {
+                                distances[neighbor.node] = newDistance;
+                                previousNodes[neighbor.node] = currentNode;
+                            }
+                        }
+                    });
+                }
+                
+                // Tandai jalur terpendek jika ada simpul akhir
+                if (endNode !== '') {
+                    markShortestPathToEndNode();
+                }
+            }
+
+            // Jalankan satu langkah algoritma Dijkstra (untuk animasi)
+            function runDijkstraStep() {
+                if (unvisitedNodes.length === 0) {
+                    algorithmSteps.push("Algoritma selesai. Semua simpul telah dikunjungi.");
+                    return false;
+                }
+                
+                // Cari node dengan jarak terkecil yang belum dikunjungi
+                let minDistance = Infinity;
+                let minNode = null;
+                
+                unvisitedNodes.forEach(node => {
+                    if (distances[node] < minDistance) {
+                        minDistance = distances[node];
+                        minNode = node;
+                    }
+                });
+                
+                // Jika tidak ada node yang terjangkau
+                if (minNode === null || distances[minNode] === Infinity) {
+                    algorithmSteps.push(`Tidak ada jalur ke simpul-simpul yang belum dikunjungi. Algoritma berhenti.`);
+                    unvisitedNodes.length = 0;
+                    return false;
+                }
+                
+                // Tandai node saat ini sebagai dikunjungi
+                currentNode = minNode;
+                const currentIndex = unvisitedNodes.indexOf(currentNode);
+                unvisitedNodes.splice(currentIndex, 1);
+                visitedNodes.push(currentNode);
+                
+                algorithmSteps.push(`Pilih simpul ${currentNode} dengan jarak ${formatWeight(distances[currentNode])} (simpul terdekat yang belum dikunjungi)`);
+                
+                // Dapatkan semua tetangga dari node saat ini
+                const neighbors = getNeighbors(currentNode);
+                
+                // Perbarui jarak ke semua tetangga
+                neighbors.forEach(neighbor => {
+                    // Cek apakah tetangga masih di unvisitedNodes
+                    if (unvisitedNodes.includes(neighbor.node)) {
+                        const newDistance = distances[currentNode] + neighbor.weight;
+                        
+                        if (newDistance < distances[neighbor.node]) {
+                            distances[neighbor.node] = newDistance;
+                            previousNodes[neighbor.node] = currentNode;
+                            algorithmSteps.push(`Perbarui jarak ke simpul ${neighbor.node}: ${formatWeight(newDistance)} (via ${currentNode})`);
+                        }
+                    }
+                });
+                
+                return true;
+            }
+
+            // Tampilkan langkah-langkah algoritma
+            function displayAlgorithmSteps() {
+                const stepsContainer = document.getElementById('algorithm-steps');
+                stepsContainer.innerHTML = '';
+                
+                if (algorithmSteps.length === 0) {
+                    const noStepsMessage = document.createElement('li');
+                    noStepsMessage.textContent = 'Klik "Hitung Rentang Minimum" atau "Cari Lintasan Terpendek" untuk memulai algoritma Dijkstra.';
+                    noStepsMessage.style.color = '#888';
+                    noStepsMessage.style.fontStyle = 'italic';
+                    stepsContainer.appendChild(noStepsMessage);
+                    return;
+                }
+                
+                algorithmSteps.forEach((step, index) => {
+                    const stepItem = document.createElement('li');
+                    stepItem.textContent = step;
+                    
+                    if (index === currentStep - 1) {
+                        stepItem.classList.add('step-active');
+                    }
+                    
+                    stepsContainer.appendChild(stepItem);
+                });
+                
+                // Scroll ke langkah terakhir
+                stepsContainer.scrollTop = stepsContainer.scrollHeight;
+            }
+
+            // Tampilkan hasil untuk semua simpul
+            function displayResults() {
+                const resultsContainer = document.getElementById('results-container');
+                const startNodeResult = document.getElementById('start-node-result');
+                const distancesResult = document.getElementById('distances-result');
+                
+                startNodeResult.textContent = startNode;
+                distancesResult.innerHTML = '';
+                
+                // Urutkan node untuk tampilan yang lebih baik
+                const sortedNodes = [...graph.nodes].sort();
+                
+                sortedNodes.forEach(node => {
+                    const distance = distances[node];
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'result-item';
+                    
+                    let distanceText = distance === Infinity ? "∞ (tidak terjangkau)" : formatWeight(distance);
+                    let pathText = "";
+                    
+                    // Bangun jalur jika ada
+                    if (distance !== Infinity && node !== startNode) {
+                        const path = [];
+                        let currentNode = node;
+                        
+                        while (currentNode !== null) {
+                            path.unshift(currentNode);
+                            currentNode = previousNodes[currentNode];
+                        }
+                        
+                        pathText = `Jalur: ${path.join(' → ')}`;
+                    } else if (node === startNode) {
+                        pathText = "Simpul awal";
+                    } else {
+                        pathText = "Tidak ada jalur";
+                    }
+                    
+                    resultItem.innerHTML = `
+                        <span><strong>${node}:</strong> ${distanceText}</span>
+                        <span>${pathText}</span>
+                    `;
+                    
+                    distancesResult.appendChild(resultItem);
+                });
+                
+                resultsContainer.style.display = 'block';
+            }
+            
+            // Tampilkan lintasan terpendek ke simpul akhir
+            function displayShortestPath() {
+                const pathContainer = document.getElementById('path-container');
+                const endNodeResult = document.getElementById('end-node-result');
+                const pathDetails = document.getElementById('path-details');
+                
+                endNodeResult.textContent = endNode;
+                pathDetails.innerHTML = '';
+                
+                if (distances[endNode] === Infinity) {
+                    pathDetails.innerHTML = `
+                        <div class="path-details">
+                            <p><strong>Tidak ada jalur</strong> dari simpul ${startNode} ke simpul ${endNode}.</p>
+                            <p>Simpul ${endNode} tidak terjangkau dari simpul ${startNode}.</p>
+                        </div>
+                    `;
+                } else {
+                    // Bangun jalur dari simpul akhir ke simpul awal
+                    const path = [];
+                    let currentNode = endNode;
+                    
+                    while (currentNode !== null) {
+                        path.unshift(currentNode);
+                        currentNode = previousNodes[currentNode];
+                    }
+                    
+                    // Hitung total jarak
+                    const totalDistance = distances[endNode];
+                    
+                    // Tampilkan detail jalur
+                    pathDetails.innerHTML = `
+                        <div class="path-details">
+                            <p><strong>Jarak total:</strong> ${formatWeight(totalDistance)}</p>
+                            <p><strong>Jalur terpendek:</strong> ${path.join(' → ')}</p>
+                            <p><strong>Jumlah langkah:</strong> ${path.length - 1} edge(s)</p>
+                        </div>
+                    `;
+                }
+                
+                pathContainer.style.display = 'block';
+            }
+
+            // Jalankan algoritma secara visual (langkah demi langkah)
+            function runAlgorithm() {
+                if (isAlgorithmRunning) return;
+                
+                if (graph.edges.length === 0) {
+                    alert('Tambahkan setidaknya satu edge untuk menjalankan algoritma!');
+                    return;
+                }
+                
+                startNode = document.getElementById('start-node-input').value.trim();
+                endNode = document.getElementById('end-node-input').value.trim();
+                
+                // Validasi simpul awal
+                if (startNode === '') {
+                    alert('Masukkan simpul awal!');
+                    return;
+                }
+                
+                if (!graph.nodes.includes(startNode)) {
+                    alert(`Simpul awal "${startNode}" tidak ditemukan dalam graph!`);
+                    return;
+                }
+                
+                // Validasi simpul akhir (jika diisi)
+                if (endNode !== '' && !graph.nodes.includes(endNode)) {
+                    alert(`Simpul akhir "${endNode}" tidak ditemukan dalam graph!`);
+                    return;
+                }
+                
+                isAlgorithmRunning = true;
+                
+                // Sembunyikan hasil sebelumnya
+                document.getElementById('results-container').style.display = 'none';
+                document.getElementById('path-container').style.display = 'none';
+                
+                // Reset tampilan
+                visitedNodes = [];
+                currentNode = null;
+                
+                // Inisialisasi algoritma
+                initializeDijkstra();
+                
+                // Jalankan algoritma hingga selesai
+                const interval = setInterval(() => {
+                    const hasNextStep = runDijkstraStep();
+                    currentStep++;
+                    
+                    // Update visualisasi
+                    renderGraph();
+                    displayAlgorithmSteps();
+                    
+                    if (!hasNextStep) {
+                        clearInterval(interval);
+                        isAlgorithmRunning = false;
+                        
+                        // Tampilkan hasil
+                        displayResults();
+                        
+                        // Tandai jalur terpendek jika ada simpul akhir
+                        if (endNode !== '') {
+                            markShortestPathToEndNode();
+                            renderGraph();
+                            displayShortestPath();
+                        }
+                    }
+                }, 1500);
+            }
+            
+            // Cari lintasan terpendek ke simpul akhir
+            function calculateShortestPath() {
+                if (graph.edges.length === 0) {
+                    alert('Tambahkan setidaknya satu edge untuk menjalankan algoritma!');
+                    return;
+                }
+                
+                startNode = document.getElementById('start-node-input').value.trim();
+                endNode = document.getElementById('end-node-input').value.trim();
+                
+                // Validasi input
+                if (startNode === '') {
+                    alert('Masukkan simpul awal!');
+                    return;
+                }
+                
+                if (endNode === '') {
+                    alert('Masukkan simpul akhir untuk mencari lintasan terpendek!');
+                    return;
+                }
+                
+                if (startNode === endNode) {
+                    alert('Simpul awal dan simpul akhir tidak boleh sama!');
+                    return;
+                }
+                
+                if (!graph.nodes.includes(startNode)) {
+                    alert(`Simpul awal "${startNode}" tidak ditemukan dalam graph!`);
+                    return;
+                }
+                
+                if (!graph.nodes.includes(endNode)) {
+                    alert(`Simpul akhir "${endNode}" tidak ditemukan dalam graph!`);
+                    return;
+                }
+                
+                // Sembunyikan hasil sebelumnya
+                document.getElementById('results-container').style.display = 'none';
+                
+                // Jalankan algoritma Dijkstra lengkap
+                runDijkstraComplete();
+                
+                // Tampilkan langkah-langkah
+                algorithmSteps = [
+                    `Mencari lintasan terpendek dari ${startNode} ke ${endNode}`,
+                    `Algoritma Dijkstra dijalankan...`,
+                    `Jarak terpendek ditemukan: ${distances[endNode] === Infinity ? 'Tidak terjangkau' : formatWeight(distances[endNode])}`
+                ];
+                
+                displayAlgorithmSteps();
+                
+                // Tampilkan hasil
+                displayShortestPath();
+                
+                // Update visualisasi
+                renderGraph();
+            }
+
+            // Tandai jalur terpendek ke simpul akhir
+            function markShortestPathToEndNode() {
+                if (endNode === '' || distances[endNode] === Infinity) return;
+                
+                // Reset semua edge
+                graph.edges.forEach(edge => {
+                    edge.isShortestPath = false;
+                });
+                
+                // Tandai jalur dari simpul akhir ke simpul awal
+                let currentNode = endNode;
+                
+                while (previousNodes[currentNode] !== null) {
+                    const prevNode = previousNodes[currentNode];
+                    
+                    // Temukan edge antara currentNode dan prevNode
+                    const edge = graph.edges.find(e => 
+                        (e.from === currentNode && e.to === prevNode) || 
+                        (e.from === prevNode && e.to === currentNode)
+                    );
+                    
+                    if (edge) {
+                        edge.isShortestPath = true;
+                    }
+                    
+                    currentNode = prevNode;
+                }
+            }
+
+            // Reset graph ke keadaan awal
+            function resetGraph() {
+                // Reset edges ke contoh awal
+                graph.edges = [
+                    { from: 'a', to: 'b', weight: 104 },
+                    { from: 'a', to: 'd', weight: 35 },
+                    { from: 'a', to: 'c', weight: 91 },
+                    { from: 'b', to: 'e', weight: 89 },
+                    { from: 'b', to: 'd', weight: 10 },
+                    { from: 'c', to: 'e', weight: 70 },
+                    { from: 'c', to: 'f', weight: 17 },
+                    { from: 'd', to: 'f', weight: 15 },
+                    { from: 'e', to: 'f', weight: 110 }
+                ];
+                
+                // Reset nodes
+                graph.nodes = ['a', 'b', 'c', 'd', 'e', 'f'];
+                
+                // Reset algoritma
+                isAlgorithmRunning = false;
+                visitedNodes = [];
+                currentNode = null;
+                algorithmSteps = [];
+                currentStep = 0;
+                endNode = '';
+                
+                // Reset input
+                document.getElementById('node1').value = 'a';
+                document.getElementById('node2').value = 'b';
+                document.getElementById('weight').value = '10.0';
+                document.getElementById('start-node-input').value = 'b';
+                document.getElementById('end-node-input').value = '';
+                
+                // Update tampilan
+                initializeNodePositions();
+                updateEdgesList();
+                renderGraph();
+                displayAlgorithmSteps();
+                
+                // Update suggestions
+                updateSuggestions();
+                
+                // Sembunyikan hasil
+                document.getElementById('results-container').style.display = 'none';
+                document.getElementById('path-container').style.display = 'none';
+                
+                // Jalankan algoritma otomatis untuk menunjukkan hasil
+                setTimeout(() => {
+                    startNode = 'b';
+                    runDijkstraComplete();
+                    displayResults();
+                }, 500);
+            }
+            
+            // Fungsi untuk menampilkan suggestions
+            function showSuggestions(inputElement, suggestionsElement) {
+                const inputValue = inputElement.value.trim().toLowerCase();
+                const suggestions = graph.nodes.filter(node => 
+                    node.toLowerCase().includes(inputValue)
+                );
+                
+                // Kosongkan suggestions sebelumnya
+                suggestionsElement.innerHTML = '';
+                
+                if (inputValue === '' || suggestions.length === 0) {
+                    suggestionsElement.style.display = 'none';
+                    return;
+                }
+                
+                // Tambahkan suggestions
+                suggestions.forEach(node => {
+                    const suggestionItem = document.createElement('div');
+                    suggestionItem.className = 'suggestion-item';
+                    suggestionItem.textContent = node;
+                    
+                    suggestionItem.addEventListener('click', function() {
+                        inputElement.value = node;
+                        suggestionsElement.style.display = 'none';
+                        inputElement.focus();
+                    });
+                    
+                    suggestionsElement.appendChild(suggestionItem);
+                });
+                
+                suggestionsElement.style.display = 'block';
+            }
+            
+            // Update semua suggestions
+            function updateSuggestions() {
+                // Untuk simpul 1
+                showSuggestions(document.getElementById('node1'), document.getElementById('suggestions1'));
+                // Untuk simpul 2
+                showSuggestions(document.getElementById('node2'), document.getElementById('suggestions2'));
+                // Untuk simpul awal
+                showSuggestions(document.getElementById('start-node-input'), document.getElementById('start-suggestions'));
+                // Untuk simpul akhir
+                showSuggestions(document.getElementById('end-node-input'), document.getElementById('end-suggestions'));
+            }
+
+            // Event listeners
+            document.getElementById('add-edge-btn').addEventListener('click', addEdge);
+            document.getElementById('run-algorithm-btn').addEventListener('click', runAlgorithm);
+            document.getElementById('calculate-path-btn').addEventListener('click', calculateShortestPath);
+            document.getElementById('reset-btn').addEventListener('click', resetGraph);
+            document.getElementById('reset-edges-btn').addEventListener('click', resetEdges);
+            document.getElementById('clear-weight').addEventListener('click', function() {
+                document.getElementById('weight').value = '';
+                document.getElementById('weight').focus();
+            });
+            
+            // Tambah edge dengan Enter pada input bobot
+            document.getElementById('weight').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addEdge();
+                }
+            });
+            
+            // Event listeners untuk suggestions
+            const nodeInputs = [
+                document.getElementById('node1'),
+                document.getElementById('node2'),
+                document.getElementById('start-node-input'),
+                document.getElementById('end-node-input')
+            ];
+            
+            nodeInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    const suggestionsId = this.id === 'node1' ? 'suggestions1' : 
+                                        this.id === 'node2' ? 'suggestions2' :
+                                        this.id === 'start-node-input' ? 'start-suggestions' : 'end-suggestions';
+                    showSuggestions(this, document.getElementById(suggestionsId));
+                });
+                
+                // Sembunyikan suggestions ketika klik di luar
+                document.addEventListener('click', function(e) {
+                    if (!input.contains(e.target)) {
+                        const suggestionsId = input.id === 'node1' ? 'suggestions1' : 
+                                            input.id === 'node2' ? 'suggestions2' :
+                                            input.id === 'start-node-input' ? 'start-suggestions' : 'end-suggestions';
+                        document.getElementById(suggestionsId).style.display = 'none';
+                    }
+                });
+                
+                // Navigasi suggestions dengan keyboard
+                input.addEventListener('keydown', function(e) {
+                    const suggestionsId = this.id === 'node1' ? 'suggestions1' : 
+                                        this.id === 'node2' ? 'suggestions2' :
+                                        this.id === 'start-node-input' ? 'start-suggestions' : 'end-suggestions';
+                    const suggestionsElement = document.getElementById(suggestionsId);
+                    const suggestionItems = suggestionsElement.querySelectorAll('.suggestion-item');
+                    
+                    if (suggestionItems.length === 0) return;
+                    
+                    let activeIndex = -1;
+                    for (let i = 0; i < suggestionItems.length; i++) {
+                        if (suggestionItems[i].classList.contains('active')) {
+                            activeIndex = i;
+                            break;
+                        }
+                    }
+                    
+                    if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        if (activeIndex < suggestionItems.length - 1) {
+                            if (activeIndex >= 0) {
+                                suggestionItems[activeIndex].classList.remove('active');
+                            }
+                            suggestionItems[activeIndex + 1].classList.add('active');
+                            suggestionItems[activeIndex + 1].scrollIntoView({ block: 'nearest' });
+                        }
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        if (activeIndex > 0) {
+                            suggestionItems[activeIndex].classList.remove('active');
+                            suggestionItems[activeIndex - 1].classList.add('active');
+                            suggestionItems[activeIndex - 1].scrollIntoView({ block: 'nearest' });
+                        }
+                    } else if (e.key === 'Enter' && activeIndex >= 0) {
+                        e.preventDefault();
+                        this.value = suggestionItems[activeIndex].textContent;
+                        suggestionsElement.style.display = 'none';
+                    }
+                });
+            });
+
+            // Inisialisasi
+            initializeNodePositions();
+            updateEdgesList();
+            updateSuggestions();
+            renderGraph();
+            
+            // Update posisi node saat ukuran window berubah
+            window.addEventListener('resize', function() {
+                initializeNodePositions();
+                updateCanvasRect();
+                renderGraph();
+            });
+            
+            // Update canvas rect saat scroll atau resize
+            window.addEventListener('scroll', updateCanvasRect);
+            
+            // Tampilkan langkah awal algoritma
+            displayAlgorithmSteps();
+            
+            // Jalankan algoritma otomatis saat halaman dimuat untuk menunjukkan hasil
+            setTimeout(() => {
+                startNode = 'b';
+                runDijkstraComplete();
+                displayResults();
+            }, 500);
+        });
+    </script>
+</body>
+</html>
